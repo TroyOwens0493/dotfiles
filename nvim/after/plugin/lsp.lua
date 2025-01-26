@@ -32,6 +32,7 @@ require('mason-lspconfig').setup({
         'omnisharp',
         'harper_ls',
         'emmet_language_server',
+        'zls',
     },
     handlers = {
         function(server_name)
