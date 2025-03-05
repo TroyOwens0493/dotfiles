@@ -42,6 +42,8 @@ vim.keymap.set("n", "<leader>ps", function()
 	builtin.grep_string({ search = vim.fn.input("Grep > ") });
 end)
 
+vim.keymap.set("n", "<leader>wt", ":set wrap!<CR>")
+
 -- Function to open Lazygit in a floating terminal window
 local function open_lazygit()
     -- Window configuration
