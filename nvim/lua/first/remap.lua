@@ -34,12 +34,12 @@ vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz")
 vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
 
 vim.keymap.set("n", "<leader>s", ":%s/\\<<C-r><C-w>\\>/<C-r><C-w>/gI<Left><Left>")
-vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", {silent = true})
+vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 
 vim.keymap.set("n", "<leader>pf", builtin.find_files, {})
 vim.keymap.set("n", "<C-p>", builtin.git_files, {})
 vim.keymap.set("n", "<leader>ps", function()
-	builtin.grep_string({ search = vim.fn.input("Grep > ") });
+    builtin.grep_string({ search = vim.fn.input("Grep > ") });
 end)
 
 vim.keymap.set("n", "<leader>wt", ":set wrap!<CR>")
@@ -47,8 +47,8 @@ vim.keymap.set("n", "<leader>wt", ":set wrap!<CR>")
 -- Function to open Lazygit in a floating terminal window
 local function open_lazygit()
     -- Window configuration
-    local width = math.floor(vim.o.columns * 0.8)  -- 80% of screen width
-    local height = math.floor(vim.o.lines * 0.8)   -- 80% of screen height
+    local width = math.floor(vim.o.columns * 0.8)      -- 80% of screen width
+    local height = math.floor(vim.o.lines * 0.8)       -- 80% of screen height
     local row = math.floor((vim.o.lines - height) / 2) -- Center the window
     local col = math.floor((vim.o.columns - width) / 2)
 
@@ -68,9 +68,11 @@ local function open_lazygit()
     vim.fn.termopen("lazygit", { detach = 0 })
 
     -- Enter terminal mode in the buffer automatically
-    vim.cmd("startinsert")  -- Start terminal input mode
+    vim.cmd("startinsert") -- Start terminal input mode
 end
 
 -- Keymap to open Lazygit
 vim.keymap.set("n", "<leader>lg", open_lazygit, { noremap = true, silent = true, desc = "Open Lazygit" })
 
+-- Keymap to open .md preview
+vim.keymap.set("n", "<leader>md", "<cmd>Glow<CR>", { desc = "Open Markdown Preview" })

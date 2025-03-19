@@ -57,7 +57,7 @@ require("lazy").setup({
         },
 
         -- Harpoon
-        { 'theprimeagen/harpoon', config = true },
+        { 'theprimeagen/harpoon',  config = true },
 
         -- UndoTree
         {
@@ -89,6 +89,9 @@ require("lazy").setup({
                 'L3MON4D3/LuaSnip',
             }
         },
+
+        -- Markdown previewer
+        { "ellisonleao/glow.nvim", config = true },
     },
 
     -- Colorscheme that will be used when installing plugins.
