@@ -22,7 +22,6 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
 -- Setup lazy
--- Setup lazy
 require("lazy").setup({
     spec = {
         -- Telescope
@@ -92,6 +91,17 @@ require("lazy").setup({
 
         -- Markdown previewer
         { "ellisonleao/glow.nvim", config = true },
+
+        --Custom english plugin
+        {
+            "English-autocomplete",
+            dir = "~/.config/nvim/after/plugin/english-complete",
+            ft = { "markdown" },
+            dependencies = {
+                "L3MON4D3/LuaSnip",
+                "hrsh7th/nvim-cmp",
+            },
+        }
     },
 
     -- Colorscheme that will be used when installing plugins.

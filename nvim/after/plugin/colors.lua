@@ -26,7 +26,7 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-    pattern = "typescript",
+    pattern = { "typescript", "javascript", "typescriptreact", "javascriptreact" }, -- Array of patterns
     callback = function()
         ColorMyPencils('moonfly')
     end,
