@@ -91,17 +91,10 @@ require("lazy").setup({
 
         -- Markdown previewer
         { "ellisonleao/glow.nvim", config = true },
-
-        --Custom english plugin
+        -- SuperMaven AI autocompletion
         {
-            "English-autocomplete",
-            dir = "~/.config/nvim/after/plugin/english-complete",
-            ft = { "markdown" },
-            dependencies = {
-                "L3MON4D3/LuaSnip",
-                "hrsh7th/nvim-cmp",
-            },
-        }
+            "supermaven-inc/supermaven-nvim",
+        },
     },
 
     -- Colorscheme that will be used when installing plugins.

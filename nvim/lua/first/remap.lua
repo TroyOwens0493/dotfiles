@@ -34,6 +34,7 @@ vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz")
 vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
 
 vim.keymap.set("n", "<leader>s", ":%s/\\<<C-r><C-w>\\>/<C-r><C-w>/gI<Left><Left>")
+
 vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 
 vim.keymap.set("n", "<leader>pf", builtin.find_files, {})
@@ -76,3 +77,14 @@ vim.keymap.set("n", "<leader>lg", open_lazygit, { noremap = true, silent = true,
 
 -- Keymap to open .md preview
 vim.keymap.set("n", "<leader>md", "<cmd>Glow<CR>", { desc = "Open Markdown Preview" })
+
+vim.keymap.set("n", "<leader>ts", function()
+    require("supermaven-nvim.api").toggle()
+    print("Supermaven is now " .. (require("supermaven-nvim.api").is_running() and "active" or "inactive"))
+end, { desc = "Toggle Supermaven" })
+
+vim.keymap.set("n", "<leader>xx", function() require("trouble").toggle() end)
+vim.keymap.set("n", "<leader>xX", function() require("trouble").toggle("workspace_diagnostics") end)
+vim.keymap.set("n", "<leader>xd", function() require("trouble").toggle("document_diagnostics") end)
+vim.keymap.set("n", "<leader>xl", function() require("trouble").toggle("loclist") end)
+vim.keymap.set("n", "<leader>xq", function() require("trouble").toggle("quickfix") end)
