@@ -16,10 +16,15 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end,
 })
 
+-- capabilities for cmp
 local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 require('mason').setup({})
-require('mason-lspconfig').setup({
+
+-- mason-lspconfig: register server configs using vim.lsp.config and enable them
+local mason_lspconfig = require('mason-lspconfig')
+
+mason_lspconfig.setup({
     ensure_installed = {
         'ts_ls',
         'jsonls',
@@ -36,18 +41,25 @@ require('mason-lspconfig').setup({
         'zls',
     },
     handlers = {
-        function(server_name)
-            require('lspconfig')[server_name].setup({
+        -- Default handler: register and enable server with basic capabilities
+        function(server_name) -- Fallback/default handler
+            -- Register the server config (this associates the config with `server_name`)
+            vim.lsp.config(server_name, {
                 capabilities = lsp_capabilities,
             })
+            -- Enable auto-starting for that server (filetype matching will start it)
+            -- If you want to start immediately for open buffers, you can call vim.lsp.start()
+            vim.lsp.enable(server_name)
         end,
+
+        -- Server override for Lua_ls (keeps my Lua settings)
         lua_ls = function()
-            require('lspconfig').lua_ls.setup({
+            vim.lsp.config('lua_ls', {
                 capabilities = lsp_capabilities,
                 settings = {
                     Lua = {
                         runtime = {
-                            version = 'LuaJIT'
+                            version = 'LuaJIT',
                         },
                         diagnostics = {
                             globals = { 'vim' },
@@ -55,21 +67,25 @@ require('mason-lspconfig').setup({
                         workspace = {
                             library = {
                                 vim.env.VIMRUNTIME,
-                            }
-                        }
-                    }
-                }
+                            },
+                        },
+                    },
+                },
             })
+            vim.lsp.enable('lua_ls')
         end,
-    }
+    },
 })
 
-require('lspconfig').sourcekit.setup({                       --Setup apple dev lsp manually
+-- Manual server setup
+vim.lsp.config('sourcekit', {
     capabilities = lsp_capabilities,
-    filetypes = { 'swift', 'objective-c', 'objective-cpp' }, -- Supported file types
-    cmd = { 'xcrun', 'sourcekit-lsp' },                      -- Command to start sourcekit-lsp
+    filetypes = { 'swift', 'objective-c', 'objective-cpp' },
+    cmd = { 'xcrun', 'sourcekit-lsp' },
 })
+vim.lsp.enable('sourcekit')
 
+-- Cmp setup remains unchanged
 local cmp = require('cmp')
 local cmp_select = { behavior = cmp.SelectBehavior.Select }
 
