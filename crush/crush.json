@@ -4,7 +4,8 @@
         "allowed_tools": [
             "view",
             "ls",
-            "grep"
+            "grep",
+            "fetch"
         ]
     },
     "lsp": {
