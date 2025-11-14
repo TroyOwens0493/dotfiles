@@ -16,15 +16,11 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end,
 })
 
--- capabilities for cmp
-local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
-
 require('mason').setup({})
 
--- mason-lspconfig: register server configs using vim.lsp.config and enable them
-local mason_lspconfig = require('mason-lspconfig')
+local cmp_capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-mason_lspconfig.setup({
+require('mason-lspconfig').setup({
     ensure_installed = {
         'ts_ls',
         'jsonls',
@@ -41,21 +37,15 @@ mason_lspconfig.setup({
         'zls',
     },
     handlers = {
-        -- Default handler: register and enable server with basic capabilities
-        function(server_name) -- Fallback/default handler
-            -- Register the server config (this associates the config with `server_name`)
+        function(server_name)
             vim.lsp.config(server_name, {
-                capabilities = lsp_capabilities,
+                capabilities = cmp_capabilities,
             })
-            -- Enable auto-starting for that server (filetype matching will start it)
-            -- If you want to start immediately for open buffers, you can call vim.lsp.start()
             vim.lsp.enable(server_name)
         end,
-
-        -- Server override for Lua_ls (keeps my Lua settings)
         lua_ls = function()
             vim.lsp.config('lua_ls', {
-                capabilities = lsp_capabilities,
+                capabilities = cmp_capabilities,
                 settings = {
                     Lua = {
                         runtime = {
@@ -77,9 +67,8 @@ mason_lspconfig.setup({
     },
 })
 
--- Manual server setup
 vim.lsp.config('sourcekit', {
-    capabilities = lsp_capabilities,
+    capabilities = cmp_capabilities,
     filetypes = { 'swift', 'objective-c', 'objective-cpp' },
     cmd = { 'xcrun', 'sourcekit-lsp' },
 })

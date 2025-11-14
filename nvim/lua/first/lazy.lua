@@ -74,23 +74,20 @@ require("lazy").setup({
             end
         },
 
-        -- LSP Zero
+        -- LSP
         {
-            'VonHeikemen/lsp-zero.nvim',
-            branch = 'v3.x',
-            dependencies = {
-                -- Uncomment if you want to manage language servers from neovim
-                'williamboman/mason.nvim',
-                'williamboman/mason-lspconfig.nvim',
-                'neovim/nvim-lspconfig',
-                'hrsh7th/nvim-cmp',
-                'hrsh7th/cmp-nvim-lsp',
-                'L3MON4D3/LuaSnip',
-            }
+            'williamboman/mason.nvim',
+            build = ':MasonUpdate'
         },
+        'williamboman/mason-lspconfig.nvim',
+        'neovim/nvim-lspconfig',
+        'hrsh7th/nvim-cmp',
+        'hrsh7th/cmp-nvim-lsp',
+        'L3MON4D3/LuaSnip',
 
         -- Markdown previewer
         { "ellisonleao/glow.nvim", config = true },
+
         -- SuperMaven AI autocompletion
         {
             "supermaven-inc/supermaven-nvim",
