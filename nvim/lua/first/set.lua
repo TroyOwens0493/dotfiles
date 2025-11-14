@@ -27,7 +27,22 @@ vim.opt.signcolumn = "yes"
 vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 50
+vim.opt.autoread = true
 
 vim.opt.colorcolumn = "80"
+
+local autoread_group = vim.api.nvim_create_augroup("AutoRead", { clear = true })
+
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
+    command = "checktime",
+    group = autoread_group,
+})
+
+vim.api.nvim_create_autocmd("FileChangedShellPost", {
+    group = autoread_group,
+    callback = function()
+        vim.notify("File changed on disk.")
+    end,
+})
 
 vim.g.mapleader = " "
