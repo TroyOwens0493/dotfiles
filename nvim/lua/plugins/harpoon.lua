@@ -16,4 +16,3 @@ return {
         vim.keymap.set("n", "<C-m>", function() harpoon:list():select(4) end)
     end,
 }
-

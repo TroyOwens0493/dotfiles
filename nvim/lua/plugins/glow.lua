@@ -1,4 +1,5 @@
 return {
-  "ellisonleao/glow.nvim",
-  config = true,
+    "ellisonleao/glow.nvim",
+    config = true,
 }
+
