@@ -56,7 +56,12 @@ require("lazy").setup({
         },
 
         -- Harpoon
-        { 'theprimeagen/harpoon',  config = true },
+        {
+            'theprimeagen/harpoon',
+            config = true,
+            branch = 'harpoon2',
+            dependencies = { "nvim-lua/plenary.nvim" }
+        },
 
         -- UndoTree
         {
