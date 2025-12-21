@@ -22,7 +22,7 @@ local cmp_capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 require('mason-lspconfig').setup({
     ensure_installed = {
-        'ts_ls',
+        'vtsls',
         'jsonls',
         'rust_analyzer',
         'pylsp',

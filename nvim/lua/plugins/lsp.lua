@@ -14,7 +14,7 @@ return {
             -- Setup mason-lspconfig
             require('mason-lspconfig').setup({
                 ensure_installed = {
-                    'ts_ls',
+                    'vtsls',
                     'jsonls',
                     'rust_analyzer',
                     'pylsp',
@@ -73,7 +73,47 @@ return {
                 callback = function(event)
                     local opts = { buffer = event.buf }
 
-                    vim.keymap.set('n', 'gd', function() vim.lsp.buf.definition() end, opts)
+                    -- Function to goto definition
+                    -- It will just if there is only one definition
+                    -- It also will remove duplicates (in case you have multiple lsps returning the same result)
+                    -- Otherwise it will open the quickfix window
+                    vim.keymap.set('n', 'gd', function()
+                        vim.lsp.buf.definition({
+                            on_list = function(options)
+                                local items = options.items
+                                if #items > 1 then
+                                    local seen = {}
+                                    local unique_items = {}
+                                    for _, item in ipairs(items) do
+                                        local key = (item.filename or item.bufnr or '') ..
+                                            ':' .. item.lnum .. ':' .. item.col
+                                        if not seen[key] then
+                                            table.insert(unique_items, item)
+                                            seen[key] = true
+                                        end
+                                    end
+                                    items = unique_items
+                                    options.items = unique_items
+                                end
+
+                                if #items > 1 then
+                                    vim.fn.setqflist({}, ' ', options)
+                                    vim.cmd.copen()
+                                elseif #items == 1 then
+                                    local item = items[1]
+                                    vim.cmd("normal! m'")
+                                    if item.bufnr then
+                                        vim.cmd('b ' .. item.bufnr)
+                                    else
+                                        vim.cmd('e ' .. vim.fn.fnameescape(item.filename))
+                                    end
+                                    vim.api.nvim_win_set_cursor(0, { item.lnum, item.col - 1 })
+                                end
+                            end,
+                        })
+                    end, opts)
+
+                    -- Lsp remaps
                     vim.keymap.set('n', 'si', function() vim.lsp.buf.hover() end, opts)
                     vim.keymap.set('n', '<leader>vws', function() vim.lsp.buf.workspace_symbol() end, opts)
                     vim.keymap.set('n', '<leader>vd', function() vim.diagnostic.open_float() end, opts)
@@ -88,4 +128,3 @@ return {
         end,
     },
 }
-
