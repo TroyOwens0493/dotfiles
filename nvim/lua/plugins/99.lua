@@ -14,7 +14,7 @@ return {
                 path = "/tmp/" .. basename .. ".99.debug",
                 print_on_error = true,
             },
-            model = "openrouter/openai/gpt-5.2",
+            model = "openai/gpt-5.2",
 
             --- A new feature that is centered around tags
             completion = {
@@ -68,7 +68,7 @@ return {
         -- likely ill add a mode check and assert on required visual mode
         -- so just prepare for it now
         vim.keymap.set("v", "<leader>9v", function()
-            _99.visual_prompt()
+            _99.visual()
         end)
 
         --- if you have a request you dont want to make any changes, just cancel it
