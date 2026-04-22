@@ -23,3 +23,9 @@ When you need documentation or are unsure about an API, library, or framework de
 - Write inline comments for code that is complex, surprising, or otherwise hard to follow.
 - Do not add comments for straightforward code or comments that only restate the code.
 - Prefer comments that explain why the code exists, what edge case it handles, or what assumption it relies on.
+
+# Searching
+
+## Prefer `ripgrep` (`rg`) over `grep`
+- All agents and scripts should default to using **`ripgrep` (`rg`)** instead of traditional `grep` for text search operations.
+
