@@ -2,3 +2,5 @@
 mole/*.log
 stripe
 gh
+auth.json
+sessions/
