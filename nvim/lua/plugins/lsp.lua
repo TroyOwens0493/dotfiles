@@ -27,6 +27,7 @@ return {
                     'emmet_language_server',
                     'erlangls',
                     'zls',
+                    'astro',
                 },
                 handlers = {
                     function(server_name)
