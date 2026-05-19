@@ -46,7 +46,7 @@ brew "opencode"
 brew "pi-coding-agent"
 
 # Window manager and explicitly requested apps.
-cask "aerospace"
+cask "nikitabobko/tap/aerospace"
 cask "helium-browser"
 cask "iterm2"
 
