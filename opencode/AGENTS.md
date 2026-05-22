@@ -1,6 +1,6 @@
 # Agent Documentation Guidance
 
-When you need documentation or are unsure about an API, library, or framework detail, use Context7 to fetch up-to-date docs and examples. This should be your default source for resolving uncertainty and confirming usage.
+When you need documentation or are unsure about an API, library, or framework detail, use the `find-docs` skill, which fetches up-to-date docs and examples through the authenticated `ctx7` CLI. This should be your default source for resolving uncertainty and confirming usage.
 
 # Coding Rules
 
@@ -28,4 +28,3 @@ When you need documentation or are unsure about an API, library, or framework de
 
 ## Prefer `ripgrep` (`rg`) over `grep`
 - All agents and scripts should default to using **`ripgrep` (`rg`)** instead of traditional `grep` for text search operations.
-
