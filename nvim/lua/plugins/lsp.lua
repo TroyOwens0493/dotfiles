@@ -28,6 +28,7 @@ return {
                     'erlangls',
                     'zls',
                     'astro',
+                    'svelte',
                 },
                 handlers = {
                     function(server_name)

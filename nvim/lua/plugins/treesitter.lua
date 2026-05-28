@@ -4,8 +4,8 @@ return {
     build = ':TSUpdate',
     ---Configures parser installation and enables Treesitter features per filetype.
     config = function()
-        local parsers = { "lua", "python", "javascript", "typescript", "tsx", "rust", "go", "html", "css", "json", "yaml", "markdown", "astro" }
-        local filetypes = { "lua", "python", "javascript", "javascriptreact", "typescript", "typescriptreact", "rust", "go", "html", "css", "json", "yaml", "markdown", "astro" }
+        local parsers = { "lua", "python", "javascript", "typescript", "tsx", "rust", "go", "html", "css", "json", "yaml", "markdown", "astro", "svelte" }
+        local filetypes = { "lua", "python", "javascript", "javascriptreact", "typescript", "typescriptreact", "rust", "go", "html", "css", "json", "yaml", "markdown", "astro", "svelte" }
 
         require('nvim-treesitter').setup()
         require('nvim-treesitter').install(parsers)
