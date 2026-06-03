@@ -29,6 +29,7 @@ return {
                     'zls',
                     'astro',
                     'svelte',
+                    'powershell_es',
                 },
                 handlers = {
                     function(server_name)
