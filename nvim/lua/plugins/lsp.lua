@@ -70,6 +70,12 @@ return {
             })
             vim.lsp.enable('sourcekit')
 
+            vim.diagnostic.config({
+                float = {
+                    border = 'rounded',
+                },
+            })
+
             -- LSP keymaps
             vim.api.nvim_create_autocmd('LspAttach', {
                 group = vim.api.nvim_create_augroup('user_lsp_attach', { clear = true }),

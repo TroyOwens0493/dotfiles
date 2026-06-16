@@ -17,6 +17,10 @@ return {
             }, {
                 { name = 'buffer' },
             }),
+            window = {
+                completion = cmp.config.window.bordered(),
+                documentation = cmp.config.window.bordered(),
+            },
             mapping = cmp.mapping.preset.insert({
                 ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
                 ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
@@ -31,4 +35,3 @@ return {
         })
     end,
 }
-
