@@ -3,4 +3,5 @@ mole/*.log
 stripe
 gh
 auth.json
+credentials.json
 sessions/
