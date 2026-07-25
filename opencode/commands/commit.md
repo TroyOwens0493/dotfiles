@@ -1,5 +1,5 @@
 ---
-description: Create a commit msg and desc, then push changes.
+description: Create a commit msg and desc.
 agent: build
 model: openrouter/openai/gpt-5-nano
 ---
