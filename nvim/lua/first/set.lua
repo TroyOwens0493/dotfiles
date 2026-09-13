@@ -46,4 +46,13 @@ vim.api.nvim_create_autocmd("FileChangedShellPost", {
     end,
 })
 
+vim.api.nvim_create_autocmd("TextYankPost", {
+    group = vim.api.nvim_create_augroup("HighlightYank", { clear = true }),
+    desc = "Briefly highlight yanked text",
+    --- Flash the region affected by a yank.
+    callback = function()
+        vim.hl.on_yank({ higroup = "IncSearch", timeout = 100 })
+    end,
+})
+
 vim.g.mapleader = " "
