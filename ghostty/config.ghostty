@@ -1,0 +1,3 @@
+# Match iTerm's transparency (13.65%) and approximate its blur radius (12.46).
+background-opacity = 0.8635
+background-blur = 12
