@@ -1,7 +1,34 @@
-.crush/
-mole/*.log
-stripe
-gh
+# Ignore new apps and files at the repository root by default.
+/*
+
+# Repository setup and documentation.
+!/.gitignore
+!/Brewfile
+!/install.sh
+!/readme.md
+
+# Approved apps: include their contents recursively.
+!/NuGet/
+!/aerospace/
+!/cmux/
+!/git/
+!/iterm2/
+!/nvim/
+!/opencode/
+!/pi/
+!/shopify/
+!/tmux/
+
+# Exlude local credentials and generated files within approved apps.
+.DS_Store
 auth.json
 credentials.json
+.env
+.env.*
 sessions/
+node_modules/
+*.log
+*.backup.*
+/nvim/tmp/
+/shopify/logs/
+/tmux/plugins/
