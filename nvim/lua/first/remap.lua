@@ -24,9 +24,10 @@ vim.keymap.set("i", "<C-c>", "<Esc>")
 
 vim.keymap.set("n", "Q", "<nop>")
 vim.keymap.set("n", "nt", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
+--- Format the current buffer using its configured formatter.
 vim.keymap.set("n", "<leader>f", function()
-    vim.lsp.buf.format()
-end)
+    require('conform').format({ async = true })
+end, { desc = 'Format buffer' })
 
 vim.keymap.set("n", "<leader>j", "<cmd>cnext<CR>zz")
 vim.keymap.set("n", "<leader>k", "<cmd>cprev<CR>zz")
