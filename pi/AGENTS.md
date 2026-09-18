@@ -1,7 +1,14 @@
-# Global Pi Agent Instructions
+When working in typescript:
 
-- After making code changes, run the project's type check and any applicable tests before reporting completion.
-- If the checks reveal straightforward errors caused by the changes, fix them and rerun the relevant checks.
-- If failures are ambiguous, require product/design decisions, appear unrelated to the changes, or are not straightforward to fix, stop and ask the user how they want to proceed.
-- Use the `find-docs` skill whenever you are not sure how to do something, especially for library, framework, SDK, CLI, or tool usage.
-- If the `find-docs` skill indicates the current Node.js version is too old, you may use `nvm` to switch to or install a compatible Node.js version.
+- when adding a package to a project add it with an install command, instead of manually editing the package json
+- run check/format/lint commands when your done making a change. if they don't exist, suggest making them for the project you're in
+- avoid explicit return types unless absolutely needed
+- `as any` should be an absolute last resort. always use real type safety. lean on type inference instead of manually writing new types over and over again
+
+When working in svelte(kit):
+
+- use modern svelte practices, reference the svelte best practicies skill when writing .svelte file code
+
+In general:
+
+- when asking questions, ask them one at a time
