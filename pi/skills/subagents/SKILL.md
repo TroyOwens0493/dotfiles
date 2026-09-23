@@ -20,8 +20,8 @@ Pi can use any model shown by `pi --list-models`. Prefer `provider/model-id`; a 
 | Model                            | Recommended effort |
 | -------------------------------- | ------------------ |
 | inherited parent model (default) | inherited          |
-| `openai-codex/gpt-5.6-sol`       | `high`             |
-| `openai-codex/gpt-5.6-terra`     | `high`             |
+| `openai/gpt-6-sol`             | `high`             |
+| `openai/gpt-5.6-terra`          | `high`             |
 | `opencode/claude-fable-5`        | `medium`           |
 
 **Thinking budgets:** `off`, `minimal`, `low`, `medium`, `high`, `xhigh`, `max`. These map directly to pi thinking levels.
@@ -44,11 +44,11 @@ Requires Claude Code to be installed and authenticated.
 
 **Harness:** `codex`
 **Prompt nicknames:** “codex”, “Codex CLI”, “codex agent”, “codex subagent”
-**Best default:** `gpt-5.6-sol` with `high` effort for coding work. Do not use anything other than sol unless the user specifically asks for it.
+**Best default:** `gpt-6-sol` with `high` effort for coding work. Do not use anything other than sol unless the user specifically asks for it.
 
 | Model           | Recommended effort |
 | --------------- | ------------------ |
-| `gpt-5.6-sol`   | `high`             |
+| `gpt-6-sol`     | `high`             |
 | `gpt-5.6-terra` | `high`             |
 | `gpt-5.6-luna`  | `high`             |
 
