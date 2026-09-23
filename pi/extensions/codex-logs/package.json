@@ -1,0 +1,10 @@
+{
+  "name": "codex-logs",
+  "scripts": {
+    "check": "tsc --noEmit -p .",
+    "import": "node --experimental-strip-types import.ts",
+    "test": "node --test --experimental-strip-types codex-log.test.ts"
+  },
+  "type": "module",
+  "private": true
+}
