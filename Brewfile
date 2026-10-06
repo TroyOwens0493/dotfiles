@@ -48,7 +48,7 @@ brew "pi-coding-agent"
 # Window manager and explicitly requested apps.
 cask "nikitabobko/tap/aerospace"
 cask "helium-browser"
-cask "iterm2"
+cask "ghostty"
 
 # AI GUI/terminal casks currently installed on this machine.
 cask "claude-code"

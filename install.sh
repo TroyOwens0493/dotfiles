@@ -82,7 +82,7 @@ adopt_cask_app() {
 }
 
 adopt_existing_apps() {
-  adopt_cask_app "iterm2" "iTerm.app"
+  adopt_cask_app "ghostty" "Ghostty.app"
   adopt_cask_app "helium-browser" "Helium.app"
 }
 
@@ -191,7 +191,7 @@ print_next_steps() {
   printf '%s\n' "- Open AeroSpace once and grant Accessibility permissions."
   printf '%s\n' "- Sign into GitHub/AI CLIs as needed: gh, opencode, codex, claude, gemini, pi."
   printf '%s\n' "- Import or configure your GPG private key before relying on signed commits."
-  printf '%s\n' "- Open iTerm2 and Helium once so macOS finishes first-launch setup."
+  printf '%s\n' "- Open Ghostty and Helium once so macOS finishes first-launch setup."
 }
 
 main() {

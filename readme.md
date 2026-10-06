@@ -10,7 +10,7 @@ git clone git@github.com-personal:TroyOwens0493/config_files.git ~/.config
 ~/.config/install.sh
 ```
 
-The installer uses Homebrew to install iTerm2, Helium, AeroSpace, AI CLIs, and the dev tools used by these configs. It also links tmux and AeroSpace configs, installs tmux plugins, and backs up existing files before replacing them.
+The installer uses Homebrew to install Ghostty, Helium, AeroSpace, AI CLIs, and the dev tools used by these configs. It also links tmux and AeroSpace configs, installs tmux plugins, and backs up existing files before replacing them.
 
 After the script finishes, open AeroSpace once and grant macOS Accessibility permissions. Sign into app and AI CLIs manually where needed.
 
