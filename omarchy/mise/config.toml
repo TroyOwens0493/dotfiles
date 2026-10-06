@@ -1,0 +1,24 @@
+[tools]
+claude = "latest"
+codex = "latest"
+copilot = "latest"
+direnv = "latest"
+erlang = "28"
+gemini = { version = "latest", allow_builds = ["@github/keytar", "node-pty"] }
+gh = "latest"
+git-lfs = "latest"
+glow = "latest"
+go = "latest"
+kubectl = "latest"
+node = "26.8.2"
+"npm:@shopify/cli" = "latest"
+"npm:prettier" = "latest"
+opencode = "latest"
+pnpm = "latest"
+powershell = "latest"
+rebar = { version = "latest", asset_pattern = "rebar3" }
+rust = "latest"
+stripe = "latest"
+
+[settings.upgrade]
+auto_prune = false

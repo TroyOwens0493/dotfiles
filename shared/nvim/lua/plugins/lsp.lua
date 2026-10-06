@@ -14,6 +14,7 @@ return {
             -- Setup mason-lspconfig
             require('mason-lspconfig').setup({
                 ensure_installed = {
+                    'lua_ls',
                     'vtsls',
                     'jsonls',
                     'rust_analyzer',
@@ -31,44 +32,35 @@ return {
                     'svelte',
                     'powershell_es',
                 },
-                handlers = {
-                    function(server_name)
-                        vim.lsp.config(server_name, {
-                            capabilities = cmp_capabilities,
-                        })
-                        vim.lsp.enable(server_name)
-                    end,
-                    lua_ls = function()
-                        vim.lsp.config('lua_ls', {
-                            capabilities = cmp_capabilities,
-                            settings = {
-                                Lua = {
-                                    runtime = {
-                                        version = 'LuaJIT',
-                                    },
-                                    diagnostics = {
-                                        globals = { 'vim' },
-                                    },
-                                    workspace = {
-                                        library = {
-                                            vim.env.VIMRUNTIME,
-                                        },
-                                    },
-                                },
-                            },
-                        })
-                        vim.lsp.enable('lua_ls')
-                    end,
+            })
+
+            -- Mason v2 enables servers through Neovim's native LSP configuration.
+            vim.lsp.config('*', { capabilities = cmp_capabilities })
+            vim.lsp.config('lua_ls', {
+                settings = {
+                    Lua = {
+                        runtime = { version = 'LuaJIT' },
+                        diagnostics = { globals = { 'vim' } },
+                        workspace = { library = { vim.env.VIMRUNTIME } },
+                    },
                 },
             })
 
-            -- Swift support
-            vim.lsp.config('sourcekit', {
-                capabilities = cmp_capabilities,
-                filetypes = { 'swift', 'objective-c', 'objective-cpp' },
-                cmd = { 'xcrun', 'sourcekit-lsp' },
-            })
-            vim.lsp.enable('sourcekit')
+            -- Use the platform's Swift language server when it is installed.
+            local swift_cmd
+            if vim.fn.has('mac') == 1 and vim.fn.executable('xcrun') == 1 then
+                swift_cmd = { 'xcrun', 'sourcekit-lsp' }
+            elseif vim.fn.executable('sourcekit-lsp') == 1 then
+                swift_cmd = { 'sourcekit-lsp' }
+            end
+            if swift_cmd then
+                vim.lsp.config('sourcekit', {
+                    capabilities = cmp_capabilities,
+                    filetypes = { 'swift', 'objective-c', 'objective-cpp' },
+                    cmd = swift_cmd,
+                })
+                vim.lsp.enable('sourcekit')
+            end
 
             vim.diagnostic.config({
                 float = {
