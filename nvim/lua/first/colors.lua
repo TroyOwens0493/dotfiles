@@ -2,10 +2,18 @@
 function ColorMyPencils(color)
     color = color or "rose-pine"
     vim.cmd('colorscheme ' .. color)
+
+    -- Keep the theme's background in the gutter before clearing Normal.
+    local theme_bg = vim.api.nvim_get_hl(0, { name = "Normal", link = false }).bg
+    for _, group in ipairs({ "LineNr", "LineNrAbove", "LineNrBelow", "CursorLineNr", "SignColumn" }) do
+        local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
+        hl.bg = theme_bg
+        vim.api.nvim_set_hl(0, group, hl)
+    end
+
     vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
     vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
     vim.api.nvim_set_hl(0, "FloatBorder", { fg = "#908caa", bg = "none" })
-    vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
     vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "none" })
 end
 
