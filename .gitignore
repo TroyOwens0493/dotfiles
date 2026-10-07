@@ -15,6 +15,7 @@
 !/git/
 !/iterm2/
 !/nvim/
+!/omarchy/
 !/opencode/
 !/pi/
 !/shopify/
@@ -33,3 +34,4 @@ node_modules/
 /nvim/tmp/
 /shopify/logs/
 /tmux/plugins/
+/omarchy/__pycache__/
