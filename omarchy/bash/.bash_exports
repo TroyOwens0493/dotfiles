@@ -1,0 +1,25 @@
+# Keep the Linux toolchain paths already supplied by Omarchy.
+for dotfiles_path in "$HOME/.local/bin" "$HOME/.local/share/nvim/mason/bin"; do
+    if [[ -d "$dotfiles_path" ]]; then
+        case ":$PATH:" in
+            *":$dotfiles_path:"*) ;;
+            *) PATH="$dotfiles_path:$PATH" ;;
+        esac
+    fi
+done
+unset dotfiles_path
+export PATH
+# Keep the existing Omarchy Codex configuration location.
+if [[ -t 0 ]]; then
+    GPG_TTY=$(tty)
+    export GPG_TTY
+fi
+if command -v direnv >/dev/null 2>&1 && [[ ${PROMPT_COMMAND[*]-} != *"_direnv_hook"* ]]; then
+    eval "$(direnv hook bash)"
+fi
+# Use an existing NVM installation only when Omarchy has no Node manager.
+if ! command -v mise >/dev/null 2>&1 && [[ -s "$HOME/.nvm/nvm.sh" ]]; then
+    export NVM_DIR="$HOME/.nvm"
+    source "$NVM_DIR/nvm.sh"
+    [[ ! -s "$NVM_DIR/bash_completion" ]] || source "$NVM_DIR/bash_completion"
+fi

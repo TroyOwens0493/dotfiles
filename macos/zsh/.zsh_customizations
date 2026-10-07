@@ -1,0 +1,11 @@
+# Load version control information
+autoload -Uz vcs_info
+precmd() { vcs_info }
+
+# Format the vcs_info_msg_0_ variable
+zstyle ':vcs_info:git:*' formats '%F{214} %b%f'  # Orange color and git icon
+
+# Set up the prompt (with git branch name)
+setopt PROMPT_SUBST
+PROMPT='%F{33}%n%f in %F{37}${PWD/#$HOME/~}%f ${vcs_info_msg_0_}
+>>>> '

@@ -1,0 +1,16 @@
+# Use the personal two-line prompt by default. Set DOTFILES_PROMPT=0 to opt out.
+if [[ ${DOTFILES_PROMPT:-1} == 1 ]]; then
+    _dotfiles_git_branch() {
+        local branch
+        branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null) || return 0
+        printf '  %s' "$branch"
+    }
+    _dotfiles_set_prompt() {
+        PS1='\[\e[38;5;33m\]\u\[\e[0m\] in \[\e[38;2;187;154;247m\]\w\[\e[0m\]\[\e[38;5;214m\]$(_dotfiles_git_branch)\[\e[0m\]\n>>>> '
+    }
+    # Run after Omarchy's prompt hooks, preserving mise, direnv, and zoxide hooks.
+    if [[ ";${PROMPT_COMMAND[*]};" != *"_dotfiles_set_prompt"* ]]; then
+        PROMPT_COMMAND+=(_dotfiles_set_prompt)
+    fi
+    _dotfiles_set_prompt
+fi

@@ -1,0 +1,16 @@
+# Native packages; runtimes and AI CLIs are managed by mise.
+ghostty
+git-lfs
+direnv
+fd
+lazygit
+neovim
+ripgrep
+tmux
+tree-sitter-cli
+clang
+llvm
+base-devel
+dotnet-sdk
+fzf
+git-delta

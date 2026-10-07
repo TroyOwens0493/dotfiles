@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Choose a local project and open its tmux session for Neovim's nt mapping.
+set -euo pipefail
+if [[ $# -gt 0 ]]; then
+  selected="$1"
+else
+  selected=$(find "$HOME/Projects" "$HOME/Work" "$HOME/Documents" -mindepth 1 -maxdepth 2 -type d -not -path '*/.*' 2>/dev/null | fzf) || exit 0
+fi
+[[ -d "$selected" ]] || exit 0
+name=$(basename "$selected" | tr '.:' '__')
+if ! tmux has-session -t "=$name" 2>/dev/null; then
+  tmux new-session -ds "$name" -c "$selected"
+fi
+if [[ -n "${TMUX:-}" ]]; then
+  tmux switch-client -t "=$name"
+else
+  tmux attach-session -t "=$name"
+fi

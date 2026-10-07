@@ -1,6 +1,6 @@
-# Personal MacBook setup managed by ~/.config/install.sh.
+# macOS packages installed by the repository installer.
 
-tap "homebrew/bundle"
+tap "nikitabobko/tap"
 
 # Core shell and source-control tooling.
 brew "bash"
@@ -8,6 +8,7 @@ brew "coreutils"
 brew "direnv"
 brew "git"
 brew "git-lfs"
+brew "git-delta"
 brew "gh"
 brew "gnupg"
 brew "pinentry-mac"
@@ -19,10 +20,15 @@ brew "neovim"
 brew "ripgrep"
 brew "tmux"
 brew "tree-sitter"
+brew "glow"
+brew "fzf"
+brew "prettier"
+brew "powershell"
 
 # Language runtimes and dev tooling used by the checked-in configs.
 brew "dotnet"
-brew "erlang"
+# Erlang 28 is required by the configured erlang-ls dependencies.
+brew "erlang@28"
 brew "go"
 brew "llvm"
 brew "lua-language-server"
@@ -43,12 +49,13 @@ brew "stripe"
 # AI CLIs.
 brew "gemini-cli"
 brew "opencode"
-brew "pi-coding-agent"
+# Pi is installed from shared/pi/package-lock.json by the shared installer.
 
 # Window manager and explicitly requested apps.
 cask "nikitabobko/tap/aerospace"
 cask "helium-browser"
 cask "ghostty"
+cask "cmux"
 
 # AI GUI/terminal casks currently installed on this machine.
 cask "claude-code"

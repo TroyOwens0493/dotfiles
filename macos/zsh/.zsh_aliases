@@ -1,0 +1,20 @@
+# Alias for git log
+alias glog="git log --oneline --graph --color --all --decorate"
+# Create as alias for nuget
+alias nuget="mono /usr/local/bin/nuget.exe"
+# Alias for lazygit
+alias lg="lazygit"
+# Alias for tmux
+alias tm="tmux"
+# Open Omarchy tmux, then copy committed Git state when the session detaches.
+alias omarchy='python3 "$HOME/.config/omarchy-sync/sync.py" connect'
+alias omarchy-sync='python3 "$HOME/.config/omarchy-sync/sync.py" sync'
+# Alias for Claude Code with Opus, no system prompt, and no tool prompts
+alias cc='claude --model fable --system-prompt ""'
+# Alias for Claude Code in API mode through Vibe Proxy using GPT-5.6 Sol
+alias claudex='ANTHROPIC_BASE_URL=http://127.0.0.1:8317 ANTHROPIC_AUTH_TOKEN=vibeproxy CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY=1 claude --model gpt-5.6-sol --effort medium'
+# Aliases for git and diff viewing
+alias gd='git diff'
+alias gds='git diff --staged'
+alias glp='git log -p'
+alias d='delta'

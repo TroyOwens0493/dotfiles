@@ -7,19 +7,9 @@
 
 ## Install Instructions
 
- > Install requires Neovim 0.11+. Always review the code before installing a configuration.
-
-Clone the repository and install the plugins:
-
-```sh
-git clone git@github.com:TroyOwens0493/config_files ~/.config/TroyOwens0493/config_files
-```
-
-Open Neovim with this config:
-
-```sh
-NVIM_APPNAME=TroyOwens0493/config_files/nvim nvim
-```
+Use the root `install.sh` from the config repo. It installs Neovim and links
+`shared/nvim` to `~/.config/nvim` on both platforms. The dependency setup restores
+the plugin versions from `lazy-lock.json`. Restart Neovim after config changes.
 
 ## Plugins
 

@@ -1,0 +1,13 @@
+# Preserve optional tool paths without tying them to one username.
+for tool_path in \
+  /usr/local/mysql/bin \
+  "$HOME/Library/Python/3.12/bin" \
+  /Library/Frameworks/Python.framework/Versions/3.12/bin \
+  "$HOME/lsps/sourcekit-lsp/.build/debug" \
+  "$HOME/.config/nvim/manual-lsp/sourcekit-lsp/.build/debug" \
+  "$HOME/.local/share/nvim/mason/bin"; do
+  [[ ! -d "$tool_path" ]] || path=("$tool_path" $path)
+done
+unset tool_path
+typeset -U path
+[[ ! -t 0 ]] || export GPG_TTY=$(tty)

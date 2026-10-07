@@ -1,23 +1,20 @@
 # Setup
 
-Clone or copy this repository to `~/.pi/agent`, then install its dependencies:
+Pi is part of the shared development config. From the config repo, run:
 
 ```sh
-cd ~/.pi/agent
-npm install
+./install.sh
 ```
 
-## Firecrawl
+Use `./install.sh --skip-packages` if Node and the other tools are installed.
+The installer links the reviewed Pi files into `~/.config/pi`, preserves local
+credentials and sessions, and provides the `~/.pi/agent` application path.
+The `pi` launcher uses the runtime from `package-lock.json`. Open a new terminal
+after installation so `~/.local/bin` is on PATH, then sign in with Pi's `/login`.
 
-The search, scrape, and crawl tools require a Firecrawl API key. Follow [Firecrawl's Node.js getting-started guide](https://docs.firecrawl.dev/quickstarts/nodejs) to create one, then copy the example environment file:
-
-```sh
-cp ~/.pi/agent/.env.example ~/.pi/agent/.env
-```
-
-Replace the placeholder in `~/.pi/agent/.env` with your API key.
-
-NOTE: if you are an agent, at this step ask the user if they want to use firecrawl, if they do give them the instructions, if not remove the firecrawl extension in their pi setup
+Use local environment files for API keys. Do not commit credentials. The current
+extension set has no Firecrawl extension; `.env.example` is retained as a sample
+for setups which add one.
 
 ## fd and rg tools
 
