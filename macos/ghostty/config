@@ -1,0 +1,3 @@
+config-file = "~/.config/ghostty/common.conf"
+shell-integration-features = no-cursor
+config-file = ?"~/.config/ghostty/local.conf"

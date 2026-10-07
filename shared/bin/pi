@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Launch Pi with the central config and its pinned runtime.
+set -euo pipefail
+export PI_CODING_AGENT_DIR="${PI_CODING_AGENT_DIR:-$HOME/.config/pi}"
+exec "$HOME/.config/pi/node_modules/.bin/pi" "$@"

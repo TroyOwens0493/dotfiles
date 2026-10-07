@@ -1,37 +1,36 @@
-# Ignore new apps and files at the repository root by default.
+# Only the reviewed source directories are tracked.
 /*
-
-# Repository setup and documentation.
 !/.gitignore
-!/Brewfile
 !/install.sh
 !/readme.md
-
-# Approved apps: include their contents recursively.
-!/NuGet/
-!/aerospace/
-!/cmux/
-!/ghostty/
-!/git/
-!/iterm2/
-!/nvim/
+!/shared/
+!/macos/
 !/omarchy/
-!/opencode/
-!/pi/
-!/shopify/
-!/tmux/
+!/scripts/
+!/tests/
 
-# Exlude local credentials and generated files within approved apps.
+# Local machine overrides and generated/private state.
+local/
+local.conf
+local.lua
 .DS_Store
-auth.json
-credentials.json
 .env
 .env.*
+!.env.example
+auth.json
+credentials.json
+trust.json
+models-store.json
 sessions/
-node_modules/
+/shared/pi/workflows/
+node_modules
+__pycache__/
 *.log
+*.tmp
+*.swp
+*.pem
+*.key
 *.backup.*
-/nvim/tmp/
-/shopify/logs/
-/tmux/plugins/
-/omarchy/__pycache__/
+/shared/nvim/tmp/
+/shared/shopify/logs/
+/shared/tmux/plugins/
