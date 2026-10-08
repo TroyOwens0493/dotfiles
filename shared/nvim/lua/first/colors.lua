@@ -4,41 +4,33 @@ function ColorMyPencils(color)
     vim.cmd('colorscheme ' .. color)
 end
 
--- Python files -> tokyonight
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "python",
-    callback = function()
-        ColorMyPencils('tokyonight')
-    end,
-})
+local filetype_colors = {
+    python = "tokyonight",
+    cs = "yorumi",
+    rust = "gruvbox",
+    typescript = "moonfly",
+    javascript = "moonfly",
+    typescriptreact = "moonfly",
+    javascriptreact = "moonfly",
+}
 
--- C# files -> yorumi (pattern should be "cs", not "CS")
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "cs",
-    callback = function()
-        ColorMyPencils('yorumi')
-    end,
-})
+local current_color
+local current_colors_name
 
--- Rust files -> gruvbox
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "rust",
-    callback = function()
-        ColorMyPencils('gruvbox')
-    end,
-})
+-- FileType handles newly opened files; entry events handle files already loaded.
+vim.api.nvim_create_autocmd({ "FileType", "BufEnter", "WinEnter", "VimEnter" }, {
+    group = vim.api.nvim_create_augroup("FiletypeColors", { clear = true }),
+    callback = function(event)
+        if event.buf ~= vim.api.nvim_get_current_buf() then
+            return
+        end
 
--- TypeScript/JavaScript files -> moonfly
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
-    callback = function()
-        ColorMyPencils('moonfly')
-    end,
-})
-
--- Set default colorscheme on startup
-vim.api.nvim_create_autocmd("VimEnter", {
-    callback = function()
-        ColorMyPencils() -- Apply the default colorscheme after startup
+        local color = filetype_colors[vim.bo.filetype] or "rose-pine"
+        -- Themes can set colors_name to a variant, such as tokyonight-moon.
+        if color ~= current_color or vim.g.colors_name ~= current_colors_name then
+            ColorMyPencils(color)
+            current_color = color
+            current_colors_name = vim.g.colors_name
+        end
     end,
 })
