@@ -11,6 +11,21 @@ Use the root `install.sh` from the config repo. It installs Neovim and links
 `shared/nvim` to `~/.config/nvim` on both platforms. The dependency setup restores
 the plugin versions from `lazy-lock.json`. Restart Neovim after config changes.
 
+## Code Review
+
+CodeDiff opens a file list beside a split diff:
+
+| Shortcut | Comparison |
+| --- | --- |
+| `Space gp` | `main` against the current branch's `HEAD` |
+| `Space gc` | Latest commit: `HEAD^` against `HEAD` |
+| `Space gu` | Unstaged changes: index against working files |
+
+Press Enter to select a file, `]c` / `[c` to move between changes, and `q` to
+close the diff. The colorscheme follows the selected file's language, including
+while focus stays in the file list. Staged changes are hidden by default; `gs`
+in the file list toggles them.
+
 ## Plugins
 
 ### colorscheme
