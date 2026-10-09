@@ -32,8 +32,52 @@ return {
             end
         end
 
+        local refresh_timer
+        local function stop_refresh()
+            if refresh_timer then
+                vim.fn.timer_stop(refresh_timer)
+                refresh_timer = nil
+            end
+        end
+
+        local function visible_status_buffers()
+            local buffers = {}
+            for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+                local buf = vim.api.nvim_win_get_buf(win)
+                if vim.bo[buf].filetype == 'fugitive' then
+                    buffers[buf] = true
+                end
+            end
+            return buffers
+        end
+
+        local function update_refresh()
+            if not next(visible_status_buffers()) then
+                stop_refresh()
+            elseif not refresh_timer then
+                refresh_timer = vim.fn.timer_start(1000, function()
+                    local buffers = visible_status_buffers()
+                    if not next(buffers) then
+                        stop_refresh()
+                        return
+                    end
+                    if vim.api.nvim_get_mode().mode ~= 'n' then
+                        return
+                    end
+                    local refreshed = {}
+                    for buf in pairs(buffers) do
+                        local repo = vim.fn.FugitiveGitDir(buf)
+                        if repo ~= '' and not refreshed[repo] then
+                            refreshed[repo] = true
+                            vim.fn.FugitiveDidChange(buf)
+                        end
+                    end
+                end, { ['repeat'] = -1 })
+            end
+        end
+
         local pending = false
-        local function schedule_resize()
+        local function schedule_update()
             if pending then
                 return
             end
@@ -41,18 +85,27 @@ return {
             vim.schedule(function()
                 pending = false
                 resize_status()
+                update_refresh()
             end)
         end
 
         local group = vim.api.nvim_create_augroup('FugitiveAutoHeight', { clear = true })
-        vim.api.nvim_create_autocmd({ 'BufWinEnter', 'TextChanged', 'VimResized', 'WinResized' }, {
+        vim.api.nvim_create_autocmd({
+            'BufWinEnter', 'BufWinLeave', 'TabEnter', 'WinClosed',
+            'TextChanged', 'VimResized', 'WinResized',
+        }, {
             group = group,
-            callback = schedule_resize,
+            callback = schedule_update,
         })
         vim.api.nvim_create_autocmd('User', {
             group = group,
             pattern = { 'FugitiveIndex', 'FugitiveChanged' },
-            callback = schedule_resize,
+            callback = schedule_update,
         })
+        vim.api.nvim_create_autocmd('VimLeavePre', {
+            group = group,
+            callback = stop_refresh,
+        })
+        schedule_update()
     end,
 }
