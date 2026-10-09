@@ -16,6 +16,7 @@ local filetype_colors = {
 
 local current_color
 local current_colors_name
+local pending = false
 
 -- FileType handles newly opened files; entry events handle files already loaded.
 vim.api.nvim_create_autocmd({ "FileType", "BufEnter", "WinEnter", "VimEnter" }, {
@@ -24,13 +25,21 @@ vim.api.nvim_create_autocmd({ "FileType", "BufEnter", "WinEnter", "VimEnter" }, 
         if event.buf ~= vim.api.nvim_get_current_buf() then
             return
         end
-
-        local color = filetype_colors[vim.bo.filetype] or "rose-pine"
-        -- Themes can set colors_name to a variant, such as tokyonight-moon.
-        if color ~= current_color or vim.g.colors_name ~= current_colors_name then
-            ColorMyPencils(color)
-            current_color = color
-            current_colors_name = vim.g.colors_name
+        if pending then
+            return
         end
+        pending = true
+        -- Fugitive can temporarily enter its status window while refreshing.
+        -- Select the theme after it has restored the user's current window.
+        vim.schedule(function()
+            pending = false
+            local color = filetype_colors[vim.bo.filetype] or "rose-pine"
+            -- Themes can set colors_name to a variant, such as tokyonight-moon.
+            if color ~= current_color or vim.g.colors_name ~= current_colors_name then
+                ColorMyPencils(color)
+                current_color = color
+                current_colors_name = vim.g.colors_name
+            end
+        end)
     end,
 })

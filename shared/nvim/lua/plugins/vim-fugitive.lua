@@ -33,11 +33,14 @@ return {
         end
 
         local refresh_timer
+        local refresh_states = {}
         local function stop_refresh()
             if refresh_timer then
                 vim.fn.timer_stop(refresh_timer)
                 refresh_timer = nil
             end
+            -- Discard results from checks started before the status was hidden.
+            refresh_states = {}
         end
 
         local function visible_status_buffers()
@@ -49,6 +52,73 @@ return {
                 end
             end
             return buffers
+        end
+
+        local function status_signature(status, tree)
+            local signature = { status }
+            local fields = { ['1'] = 8, ['2'] = 9, u = 10, ['?'] = 1 }
+            local skip_original = false
+            for record in status:gmatch('[^%z]+') do
+                if skip_original then
+                    skip_original = false
+                else
+                    local kind = record:sub(1, 1)
+                    local count = fields[kind]
+                    if count then
+                        -- Porcelain -z preserves spaces and newlines in filenames.
+                        local path = record:match('^' .. ('%S+ '):rep(count) .. '(.*)$')
+                        local stat = path and vim.uv.fs_stat(tree .. '/' .. path)
+                        if stat then
+                            -- Further edits to an already dirty file leave its
+                            -- Git status unchanged, but can change expanded diffs.
+                            signature[#signature + 1] = vim.inspect({ stat.size, stat.mtime, stat.ctime })
+                        end
+                        skip_original = kind == '2'
+                    end
+                end
+            end
+            return table.concat(signature, '\0')
+        end
+
+        local function poll_status(buf, repo)
+            local tree = vim.fn.FugitiveWorkTree(buf)
+            if tree == '' then
+                return
+            end
+            local state = refresh_states[repo]
+            if not state then
+                state = {}
+                refresh_states[repo] = state
+            end
+            if state.pending then
+                return
+            end
+            state.pending = true
+            -- Check asynchronously without entering windows or redrawing them.
+            vim.system({
+                'git', '--git-dir=' .. repo, '--work-tree=' .. tree,
+                '--no-optional-locks', 'status', '--porcelain=v2', '--branch',
+                '--show-stash', '--untracked-files=all', '-z',
+            }, { cwd = tree, timeout = 10000 }, vim.schedule_wrap(function(result)
+                if refresh_states[repo] ~= state then
+                    return
+                end
+                state.pending = false
+                if result.code ~= 0 or vim.api.nvim_get_mode().mode ~= 'n' then
+                    return
+                end
+                local signature = status_signature(result.stdout, tree)
+                if signature == state.signature then
+                    return
+                end
+                for visible_buf in pairs(visible_status_buffers()) do
+                    if vim.fn.FugitiveGitDir(visible_buf) == repo then
+                        state.signature = signature
+                        vim.fn.FugitiveDidChange(visible_buf)
+                        break
+                    end
+                end
+            end))
         end
 
         local function update_refresh()
@@ -69,7 +139,7 @@ return {
                         local repo = vim.fn.FugitiveGitDir(buf)
                         if repo ~= '' and not refreshed[repo] then
                             refreshed[repo] = true
-                            vim.fn.FugitiveDidChange(buf)
+                            poll_status(buf, repo)
                         end
                     end
                 end, { ['repeat'] = -1 })
