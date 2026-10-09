@@ -209,7 +209,7 @@ def main():
     args = parser.parse_args()
     config = json.loads(Path(__file__).with_name('settings.json').read_text())
     if args.action == 'connect':
-        command = shlex.join(['tmux', 'new-session', '-A', '-s', args.session or config['session']])
+        command = shlex.join(['tmux', '-u', 'new-session', '-A', '-s', args.session or config['session']])
         code = subprocess.call(['ssh', '-t', '-o', 'ConnectTimeout=10', '-o', 'ServerAliveInterval=15',
                                 '-o', 'ServerAliveCountMax=2', config['host'], command])
         if code:
