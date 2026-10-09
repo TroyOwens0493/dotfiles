@@ -116,7 +116,9 @@ install_shared_configs() {
     fi
   fi
   link_path "$REPO_DIR/shared/nvim" "$CONFIG_DIR/nvim"
+  link_path "$REPO_DIR/shared/shell/colors.sh" "$CONFIG_DIR/shell/colors.sh"
   link_path "$REPO_DIR/shared/tmux/tmux.conf" "$CONFIG_DIR/tmux/tmux.conf"
+  link_path "$REPO_DIR/shared/tmux/colors.sh" "$CONFIG_DIR/tmux/colors.sh"
   link_path "$CONFIG_DIR/tmux/tmux.conf" "$HOME/.tmux.conf"
   link_path "$REPO_DIR/shared/git/ignore" "$CONFIG_DIR/git/ignore"
   link_path "$REPO_DIR/shared/ghostty/common.conf" "$CONFIG_DIR/ghostty/common.conf"

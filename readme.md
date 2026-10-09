@@ -122,6 +122,38 @@ Use these optional files for private or machine-specific overrides:
 - Omarchy desktop: `~/.config/hypr/local.lua`
 - Ghostty: `~/.config/ghostty/local.conf`
 
+### Color overrides
+
+Without overrides, Bash and Zsh use their original color 37 for the path,
+Starship uses cyan, and tmux uses Dracula's original palette. Export any of these
+variables in `~/.bashrc.local` on Omarchy or `~/.zshrc.local` on macOS:
+
+| Variable | Changes | Default |
+| --- | --- | --- |
+| `DOTFILES_PATH_COLOR` | Shell and Starship path | Shell color 37; Starship cyan |
+| `DOTFILES_TMUX_BAR_COLOR` | tmux bar background and accent | `#44475a` background; `#8be9fd` accent |
+| `DOTFILES_TMUX_ACTIVE_COLOR` | Active tmux tab background | `#6272a4` |
+| `DOTFILES_TMUX_TEXT_COLOR` | tmux bar and tab text | `#f8f8f2` |
+
+For the purple colors on this Omarchy machine:
+
+```sh
+export DOTFILES_PATH_COLOR='#bb9af7'
+export DOTFILES_TMUX_BAR_COLOR='#bb9af7'
+export DOTFILES_TMUX_ACTIVE_COLOR='#987bc7'
+export DOTFILES_TMUX_TEXT_COLOR='#282a36'
+```
+
+Values must use `#RRGGBB`. Unset, empty, and invalid values use the defaults.
+The tmux network section keeps its original cyan. Open a new terminal after
+changing local exports. If tmux is already running, run `tmux-colors` from that
+terminal to update its colors without closing sessions. Unset variables and run
+`tmux-colors` again to restore the defaults. tmux colors apply to the whole server.
+
+The Starship override is generated under `~/.cache/dotfiles/` (or
+`$XDG_CACHE_HOME/dotfiles/`). The tracked config stays unchanged. A separate
+custom `STARSHIP_CONFIG` is preserved.
+
 Before replacing a config, the installer saves it under
 `~/.dotfiles-backup/<installation-directory>/`. It prints the backup path.
 Correct links are left alone when you run it again. Shell files are backed up

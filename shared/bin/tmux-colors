@@ -1,0 +1,11 @@
+#!/bin/sh
+# Copy this shell's color exports to an existing server without closing sessions.
+set -eu
+for name in DOTFILES_PATH_COLOR DOTFILES_TMUX_BAR_COLOR DOTFILES_TMUX_ACTIVE_COLOR DOTFILES_TMUX_TEXT_COLOR; do
+    if value=$(printenv "$name"); then
+        tmux set-environment -g "$name" "$value"
+    else
+        tmux set-environment -gu "$name"
+    fi
+done
+tmux source-file "$HOME/.config/tmux/tmux.conf"
