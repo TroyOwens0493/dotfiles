@@ -14,9 +14,10 @@ scripts/      Install helpers and backup restoration
 tests/       Installer checks with temporary home folders
 ```
 
-The shell files from the old `dotfiles` repo are included. That repo is no longer
-required. The Omarchy settings were imported from the running Omarchy 4.0.4
-machine, including its custom AeroSpace-style workspace controls and Bash prompt.
+The shell files from the former shell-only repo are included. That separate repo
+is no longer required. The Omarchy settings were imported from the running
+Omarchy 4.0.4 machine, including its custom AeroSpace-style workspace controls and
+Bash prompt.
 The installer requires an existing Omarchy installation with Lua Hyprland configs;
 it does not install Linux or support older `.conf`-based Omarchy desktops.
 
@@ -26,7 +27,7 @@ Install Apple's command line tools if Git is not available. Then clone the repo
 using HTTPS, or use your own configured SSH URL:
 
 ```sh
-git clone https://github.com/TroyOwens0493/config_files.git ~/dotfiles
+git clone https://github.com/TroyOwens0493/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ./install.sh --dry-run
 ./install.sh

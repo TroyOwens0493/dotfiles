@@ -1,9 +1,4 @@
-# config_files/nvim
-
-<a href="https://dotfyle.com/TroyOwens0493/configfiles-nvim"><img src="https://dotfyle.com/TroyOwens0493/configfiles-nvim/badges/plugins?style=flat" /></a>
-<a href="https://dotfyle.com/TroyOwens0493/configfiles-nvim"><img src="https://dotfyle.com/TroyOwens0493/configfiles-nvim/badges/leaderkey?style=flat" /></a>
-<a href="https://dotfyle.com/TroyOwens0493/configfiles-nvim"><img src="https://dotfyle.com/TroyOwens0493/configfiles-nvim/badges/plugin-manager?style=flat" /></a>
-
+# dotfiles/shared/nvim
 
 ## Install Instructions
 
