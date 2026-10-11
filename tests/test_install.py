@@ -84,7 +84,9 @@ class InstallerTests(unittest.TestCase):
         profile = self.home / '.zprofile'
         profile.write_text('# existing profile\n')
         self.install('macos')
-        self.assertEqual((self.home / '.aerospace.toml').resolve(), self.repo / 'macos/aerospace/aerospace.toml')
+        self.assertEqual((self.home / '.config/aerospace/aerospace.toml').resolve(), self.repo / 'macos/aerospace/aerospace.toml')
+        self.assertFalse((self.home / '.aerospace.toml').exists())
+        self.assertFalse((self.home / '.aerospace.toml').is_symlink())
         self.assertEqual((self.home / '.config/ghostty/config').resolve(), self.repo / 'macos/ghostty/config')
         self.assertIn('# existing profile', profile.read_text())
         self.assertEqual(profile.read_text().count('macos-profile.sh'), 2)
@@ -130,6 +132,25 @@ class InstallerTests(unittest.TestCase):
         subprocess.run(['bash', str(self.repo / 'scripts/restore.sh'), str(backup)],
                        env=self.env, check=True, capture_output=True)
         self.assertEqual((config / 'opencode').resolve(), previous)
+
+    def test_legacy_aerospace_path_is_retired(self):
+        """Remove the second config path and retain it for restoration."""
+        target = self.home / '.aerospace.toml'
+        target.symlink_to(self.home / '.config/aerospace/aerospace.toml')
+        self.install('macos', '--dry-run')
+        self.assertTrue(target.is_symlink())
+        self.assertFalse((self.home / '.dotfiles-backup').exists())
+        self.install('macos')
+        self.assertFalse(target.exists())
+        self.assertFalse(target.is_symlink())
+        self.assertEqual((self.home / '.config/aerospace/aerospace.toml').resolve(), self.repo / 'macos/aerospace/aerospace.toml')
+        backup = next((self.home / '.dotfiles-backup').iterdir())
+        saved = backup / 'files/.aerospace.toml'
+        self.assertTrue(saved.is_symlink())
+        self.assertEqual(os.readlink(saved), str(self.home / '.config/aerospace/aerospace.toml'))
+        self.install('macos')
+        self.assertFalse(target.is_symlink())
+        self.assertEqual(list((self.home / '.dotfiles-backup').iterdir()), [backup])
 
     def test_legacy_ghostty_filename_uses_selected_platform(self):
         """Keep one Ghostty config so common.conf is not included twice."""

@@ -22,7 +22,8 @@ install_platform_packages() {
 
 install_platform_configs() {
   link_tree "$REPO_DIR/macos/aerospace" "$CONFIG_DIR/aerospace"
-  link_path "$CONFIG_DIR/aerospace/aerospace.toml" "$HOME/.aerospace.toml"
+  # AeroSpace reports a conflict if both supported config paths exist.
+  retire_path "$HOME/.aerospace.toml"
   link_tree "$REPO_DIR/macos/cmux" "$CONFIG_DIR/cmux"
   link_path "$REPO_DIR/macos/ghostty/config" "$CONFIG_DIR/ghostty/config"
   # Ghostty reads both names; keeping both would include common.conf twice.
