@@ -1,8 +1,6 @@
-local dev_path = vim.fn.expand('~/nvimPuginDev/codediff.nvim')
-
 return {
     'TroyOwens0493/codediff.nvim',
-    dir = vim.fn.isdirectory(dev_path) == 1 and dev_path or nil,
+    branch = 'feat/ai-change-summaries',
     cmd = { 'CodeDiff', 'CodeDiffAI' },
     opts = {
         ai = {
