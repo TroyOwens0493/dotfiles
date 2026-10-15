@@ -241,6 +241,7 @@ push/pull to share this config repo.
 python3 -m unittest discover -s tests -v
 python3 -m unittest discover -s macos/omarchy-sync -v
 lua omarchy/tests/aerospace-layout.lua
+lua omarchy/tests/macos-keys.lua
 ```
 
 Installer tests use temporary homes and checkouts. They check both platform

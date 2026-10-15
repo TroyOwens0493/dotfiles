@@ -4,97 +4,58 @@ local M = {}
 local layout_rules = {}
 local state_home = os.getenv("XDG_STATE_HOME") or (os.getenv("HOME") .. "/.local/state")
 
--- Flat AeroSpace tiles: every window shares the row/column. Unlike dwindle,
--- opening a third window does not split just one of the existing windows.
--- This implements root tiles, not AeroSpace's nested containers or accordion.
-local tile_states = {}
-local function tile_state(ctx)
-  local window = ctx.targets[1] and ctx.targets[1].window
-  local ws = window and window.workspace
-  if not ws then return end
-  local state = tile_states[ws.id]
-  if not state then
-    local file = io.open(state_home .. "/omarchy/workspace-layouts/" .. ws.id .. ".orientation", "r")
-    local orientation = file and file:read("*l") or "auto"
-    if file then file:close() end
-    if orientation ~= "horizontal" and orientation ~= "vertical" then orientation = "auto" end
-    state = { weights = {}, orientation = orientation, workspace = ws.id }
-  end
-  tile_states[ws.id] = state
-  local present, changed = {}, false
-  for _, target in ipairs(ctx.targets) do
-    local id = target.window.stable_id
-    present[id] = true
-    if not state.weights[id] then changed = true end
-  end
-  for id in pairs(state.weights) do
-    if not present[id] then changed = true end
-  end
-  -- Rebalance when windows enter/leave; preserve sizes when merely reordered.
-  if changed then
-    state.weights = {}
-    for id in pairs(present) do state.weights[id] = 1 end
-  end
-  return state
+-- Layout geometry is kept separate from compositor commands.
+local layouts_dir = state_home .. "/omarchy/workspace-layouts"
+local function tree_file(id) return layouts_dir .. "/" .. id .. ".tree" end
+local function encode(node)
+  if node.id then return string.format("{id=%d,weight=%.17g}", node.id, node.weight) end
+  local children = {}
+  for _, child in ipairs(node.children) do children[#children + 1] = encode(child) end
+  return string.format("{orientation=%q,mode=%q,weight=%.17g,children={%s}}",
+    node.orientation, node.mode, node.weight, table.concat(children, ","))
 end
-
-do
-  local function horizontal(ctx)
-    local orientation = tile_state(ctx).orientation
-    return orientation == "horizontal" or (orientation == "auto" and ctx.area.w >= ctx.area.h)
+local function load_tree(id)
+  local file = io.open(tree_file(id), "r")
+  if not file then return end
+  local data = file:read(262145); file:close()
+  if not data or #data > 262144 then return end
+  -- The format contains data only. Reject code before loading in an empty env.
+  if data:find("[^%w%s{}=,%.%+%-\"_]") then return end
+  local chunk = load("return " .. data, tree_file(id), "t", {})
+  if not chunk then return end
+  local ok, root = pcall(chunk)
+  if not ok then return end
+  local seen, count = {}, 0
+  local function valid(node, depth)
+    count = count + 1
+    if type(node) ~= "table" or depth > 64 or count > 1024 or type(node.weight) ~= "number"
+        or node.weight <= 0 or node.weight > 1e12 then return false end
+    if node.id then
+      if type(node.id) ~= "number" or node.id % 1 ~= 0 or seen[node.id] then return false end
+      seen[node.id] = true; return true
+    end
+    if node.orientation ~= "auto" and node.orientation ~= "horizontal" and node.orientation ~= "vertical" then return false end
+    if node.mode ~= "tiles" and node.mode ~= "accordion" or type(node.children) ~= "table" then return false end
+    for _, child in ipairs(node.children) do if not valid(child, depth + 1) then return false end end
+    return true
   end
-  hl.layout.register("aerospace", {
-    recalculate = function(ctx)
-      local state = tile_state(ctx)
-      if not state then return end
-      local total, offset = 0, 0
-      for _, target in ipairs(ctx.targets) do total = total + state.weights[target.window.stable_id] end
-      for _, target in ipairs(ctx.targets) do
-        local fraction = state.weights[target.window.stable_id] / total
-        local a = ctx.area
-        if horizontal(ctx) then
-          target:place({ x = a.x + offset * a.w, y = a.y, w = fraction * a.w, h = a.h })
-        else
-          target:place({ x = a.x, y = a.y + offset * a.h, w = a.w, h = fraction * a.h })
-        end
-        offset = offset + fraction
-      end
-    end,
-    layout_msg = function(ctx, msg)
-      local state = tile_state(ctx)
-      if not state then return true end
-      if msg == "toggle" then
-        state.orientation = horizontal(ctx) and "vertical" or "horizontal"
-        local path = state_home .. "/omarchy/workspace-layouts/" .. state.workspace .. ".orientation"
-        local file, err = io.open(path, "w")
-        if file then
-          file:write(state.orientation, "\n")
-          file:close()
-        else
-          hl.notification.create({ text = "Could not save tile orientation: " .. tostring(err), icon = "error" })
-        end
-        return true
-      end
-      local delta = tonumber(msg:match("^resize (%-?%d+)$"))
-      if not delta then return "Expected toggle or resize <pixels>" end
-      if #ctx.targets < 2 then return true end
-      local total, active = 0, nil
-      for i, target in ipairs(ctx.targets) do
-        total = total + state.weights[target.window.stable_id]
-        if target.window.active then active = i end
-      end
-      if not active then return true end
-      local neighbor = active < #ctx.targets and active + 1 or active - 1
-      local a = ctx.targets[active].window.stable_id
-      local b = ctx.targets[neighbor].window.stable_id
-      local extent = horizontal(ctx) and ctx.area.w or ctx.area.h
-      local minimum = math.min(100 / extent * total, (state.weights[a] + state.weights[b]) / 4)
-      local change = math.max(minimum - state.weights[a], math.min(delta / extent * total, state.weights[b] - minimum))
-      state.weights[a], state.weights[b] = state.weights[a] + change, state.weights[b] - change
-      return true
-    end,
-  })
+  if valid(root, 1) and root.children then return root end
 end
+local function save_tree(id, root)
+  local file = io.open(tree_file(id), "w")
+  if file then file:write(encode(root), "\n"); file:close() end
+end
+local provider = require("hypr.aerospace-layout").new(function(id)
+  local file = io.open(layouts_dir .. "/" .. id .. ".orientation", "r")
+  local value = file and file:read("*l") or "auto"
+  if file then file:close() end
+  return (value == "horizontal" or value == "vertical") and value or "auto"
+end, function(id, orientation)
+  local file, err = io.open(layouts_dir .. "/" .. id .. ".orientation", "w")
+  if file then file:write(orientation, "\n"); file:close()
+  else hl.notification.create({ text = "Could not save tile orientation: " .. tostring(err), icon = "error" }) end
+end, load_tree, save_tree)
+hl.layout.register("aerospace", provider)
 
 hl.config({ general = { layout = "lua:aerospace" }, input = { follow_mouse = 0 } })
 
@@ -113,6 +74,8 @@ end
 
 -- Existing workspaces retain their names across reloads and ID changes.
 hl.on("config.reloaded", function()
+  -- Run after the compositor has populated the replacement layout provider.
+  hl.timer(provider.finish_restore, { timeout = 200, type = "oneshot" })
   for _, ws in ipairs(hl.get_workspaces()) do
     local letter = ws.id >= 10 and ws.id <= 9 + #letters and letters:sub(ws.id - 9, ws.id - 9)
     if letter and ws.name == tostring(ws.id) then
@@ -125,7 +88,17 @@ function M.focus(direction)
   local window = hl.get_active_window()
   local ws = hl.get_active_special_workspace() or hl.get_active_workspace()
   local backward = direction == "l" or direction == "u"
-  if ws and ws.tiled_layout == "monocle" and (not window or not window.floating) then
+  if ws and ws.tiled_layout == "lua:aerospace" and window and not window.floating then
+    provider.activate(window)
+    local neighbor = provider.neighbor(ws.id, direction)
+    if neighbor then
+      hl.dispatch(hl.dsp.focus({ window = "address:" .. neighbor.address }))
+      hl.dispatch(hl.dsp.window.bring_to_top())
+    else
+      -- At a tree edge, native focus can cross to the next monitor.
+      hl.dispatch(hl.dsp.focus({ monitor = direction }))
+    end
+  elseif ws and ws.tiled_layout == "monocle" and (not window or not window.floating) then
     hl.dispatch(hl.dsp.layout(backward and "cycleprev" or "cyclenext"))
   elseif window and window.group and window.group.size > 1 and (direction == "l" or direction == "r") then
     hl.dispatch(backward and hl.dsp.group.prev() or hl.dsp.group.next())
@@ -140,7 +113,7 @@ for key, direction in pairs({ H = "l", J = "d", K = "u", L = "r" }) do
   -- Alt+Shift+L previously copied a web app's URL.
   if key == "L" then hl.unbind("ALT + SHIFT + L") end
   o.bind("ALT + SHIFT + " .. key, "Move window " .. direction,
-    hl.dsp.window.move({ direction = direction, group_aware = true }), { repeating = true })
+    function() M.move(direction) end, { repeating = true })
 end
 
 function M.set_layout(layout)
@@ -162,7 +135,12 @@ end
 
 -- Punctuation keysyms are case-sensitive: COMMA does not match comma.
 hl.unbind("ALT + COMMA")
-o.bind("ALT + comma", "Overlap windows (monocle)", function() M.set_layout("monocle") end)
+o.bind("ALT + comma", "Accordion / toggle horizontal and vertical", function()
+  local ws = hl.get_active_special_workspace() or hl.get_active_workspace()
+  if ws and ws.tiled_layout ~= "lua:aerospace" then M.set_layout("lua:aerospace") end
+  hl.dispatch(hl.dsp.layout("accordion"))
+  hl.dispatch(hl.dsp.window.bring_to_top())
+end)
 function M.toggle_tiles()
   local ws = hl.get_active_special_workspace() or hl.get_active_workspace()
   if not ws then return end
@@ -206,5 +184,62 @@ hl.unbind("ALT + SHIFT + MINUS")
 hl.unbind("ALT + SHIFT + EQUAL")
 o.bind("ALT + SHIFT + minus", "Shrink window by 50 pixels", function() M.resize(-50) end, { repeating = true })
 o.bind("ALT + SHIFT + equal", "Expand window by 50 pixels", function() M.resize(50) end, { repeating = true })
+
+function M.move(direction)
+  local window = hl.get_active_window()
+  local ws = hl.get_active_special_workspace() or hl.get_active_workspace()
+  if window and not window.floating and ws and ws.tiled_layout == "lua:aerospace" then
+    hl.dispatch(hl.dsp.layout("move " .. direction))
+  else
+    hl.dispatch(hl.dsp.window.move({ direction = direction, group_aware = true }))
+  end
+end
+
+function M.flatten()
+  local ws = hl.get_active_special_workspace() or hl.get_active_workspace()
+  if ws and ws.tiled_layout ~= "lua:aerospace" then M.set_layout("lua:aerospace") end
+  hl.dispatch(hl.dsp.layout("flatten"))
+end
+
+function M.close_others()
+  local current = hl.get_active_window()
+  local ws = hl.get_active_special_workspace() or hl.get_active_workspace()
+  if not current or not ws then return end
+  for _, window in ipairs(ws:get_windows()) do
+    if window.stable_id ~= current.stable_id then
+      hl.dispatch(hl.dsp.window.close({ window = "address:" .. window.address }))
+    end
+  end
+end
+
+-- AeroSpace service mode: every command returns to normal mode.
+o.bind("ALT + SHIFT + semicolon", "AeroSpace service mode", hl.dsp.submap("aerospace-service"))
+hl.define_submap("aerospace-service", "reset", function()
+  o.bind("Escape", "Reload config and leave service mode", "hyprctl reload")
+  o.bind("R", "Flatten workspace tree", M.flatten)
+  o.bind("F", "Toggle floating/tiling", hl.dsp.window.float({ action = "toggle" }))
+  o.bind("BackSpace", "Close other windows on this workspace", M.close_others)
+  for key, direction in pairs({ H = "l", J = "d", K = "u", L = "r" }) do
+    o.bind("ALT + SHIFT + " .. key, "Join with window " .. direction, function()
+      hl.dispatch(hl.dsp.layout("join " .. direction))
+    end)
+  end
+end)
+
+-- Match monitor-lazy-center: move the cursor only if it is outside the monitor.
+hl.on("monitor.focused", function(monitor)
+  if not monitor then return end
+  local cursor = hl.get_cursor_pos()
+  local width, height = monitor.width / monitor.scale, monitor.height / monitor.scale
+  if cursor and (cursor.x < monitor.x or cursor.y < monitor.y or cursor.x >= monitor.x + width or cursor.y >= monitor.y + height) then
+    hl.dispatch(hl.dsp.cursor.move({ x = monitor.x + width / 2, y = monitor.y + height / 2 }))
+  end
+end)
+hl.on("window.active", function(window)
+  provider.activate(window)
+  if window and provider.is_accordion(window) then
+    hl.dispatch(hl.dsp.window.bring_to_top({ window = "address:" .. window.address }))
+  end
+end)
 
 return M
