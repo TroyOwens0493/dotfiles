@@ -3,10 +3,12 @@
 
 -- Keyboard layout and options.
 -- See https://wiki.hypr.land/Configuring/Basics/Variables/#input
--- Swap Caps Lock with left Ctrl; both Shift keys still cancel Caps Lock.
+-- PC signals with Mac keycaps: Control, Option, Command, Space.
+-- Swap Alt/Super so the physical key beside Space is Command.
+-- Preserve the existing Caps Lock / left Control swap.
 hl.config({
   input = {
-    kb_options = "ctrl:swapcaps,shift:both_capslock_cancel",
+    kb_options = "ctrl:swapcaps,altwin:swap_alt_win,shift:both_capslock_cancel",
   },
 })
 

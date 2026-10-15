@@ -22,6 +22,7 @@ require("hypr.bindings")
 require("hypr.looknfeel")
 require("hypr.autostart")
 require("hypr.aerospace")
+require("hypr.macos-keys")
 
 -- Toggle config flags dynamically.
 require("default.hypr.toggles")
