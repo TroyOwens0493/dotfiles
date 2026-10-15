@@ -1,8 +1,10 @@
+local function setup_trouble()
+    require("trouble").setup {
+        icons = true,
+    }
+end
+
 return {
     "folke/trouble.nvim",
-    config = function()
-        require("trouble").setup {
-            icons = true,
-        }
-    end,
+    config = setup_trouble,
 }

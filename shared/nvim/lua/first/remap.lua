@@ -1,5 +1,40 @@
 vim.g.mapleader = " "
 local builtin = require('telescope.builtin')
+
+--- Format the current buffer using its configured formatter.
+local function format_buffer()
+    require('conform').format({ async = true })
+end
+
+local function grep_prompt()
+    builtin.grep_string({ search = vim.fn.input("Grep > ") })
+end
+
+local function toggle_supermaven()
+    require("supermaven-nvim.api").toggle()
+    print("Supermaven is now " .. (require("supermaven-nvim.api").is_running() and "active" or "inactive"))
+end
+
+local function toggle_trouble()
+    require("trouble").toggle()
+end
+
+local function toggle_workspace_diagnostics()
+    require("trouble").toggle("workspace_diagnostics")
+end
+
+local function toggle_document_diagnostics()
+    require("trouble").toggle("document_diagnostics")
+end
+
+local function toggle_location_list()
+    require("trouble").toggle("loclist")
+end
+
+local function toggle_quickfix()
+    require("trouble").toggle("quickfix")
+end
+
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
 
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
@@ -24,10 +59,7 @@ vim.keymap.set("i", "<C-c>", "<Esc>")
 
 vim.keymap.set("n", "Q", "<nop>")
 vim.keymap.set("n", "nt", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
---- Format the current buffer using its configured formatter.
-vim.keymap.set("n", "<leader>f", function()
-    require('conform').format({ async = true })
-end, { desc = 'Format buffer' })
+vim.keymap.set("n", "<leader>f", format_buffer, { desc = 'Format buffer' })
 
 vim.keymap.set("n", "<leader>j", "<cmd>cnext<CR>zz")
 vim.keymap.set("n", "<leader>k", "<cmd>cprev<CR>zz")
@@ -40,9 +72,7 @@ vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 
 vim.keymap.set("n", "<leader>pf", builtin.find_files, {})
 vim.keymap.set("n", "<C-p>", builtin.git_files, {})
-vim.keymap.set("n", "<leader>ps", function()
-    builtin.grep_string({ search = vim.fn.input("Grep > ") });
-end)
+vim.keymap.set("n", "<leader>ps", grep_prompt)
 
 vim.keymap.set("n", "<leader>wt", ":set wrap!<CR>")
 
@@ -79,13 +109,10 @@ vim.keymap.set("n", "<leader>lg", open_lazygit, { noremap = true, silent = true,
 -- Keymap to open .md preview
 vim.keymap.set("n", "<leader>md", "<cmd>Glow<CR>", { desc = "Open Markdown Preview" })
 
-vim.keymap.set("n", "<leader>ts", function()
-    require("supermaven-nvim.api").toggle()
-    print("Supermaven is now " .. (require("supermaven-nvim.api").is_running() and "active" or "inactive"))
-end, { desc = "Toggle Supermaven" })
+vim.keymap.set("n", "<leader>ts", toggle_supermaven, { desc = "Toggle Supermaven" })
 
-vim.keymap.set("n", "<leader>xx", function() require("trouble").toggle() end)
-vim.keymap.set("n", "<leader>xX", function() require("trouble").toggle("workspace_diagnostics") end)
-vim.keymap.set("n", "<leader>xd", function() require("trouble").toggle("document_diagnostics") end)
-vim.keymap.set("n", "<leader>xl", function() require("trouble").toggle("loclist") end)
-vim.keymap.set("n", "<leader>xq", function() require("trouble").toggle("quickfix") end)
+vim.keymap.set("n", "<leader>xx", toggle_trouble)
+vim.keymap.set("n", "<leader>xX", toggle_workspace_diagnostics)
+vim.keymap.set("n", "<leader>xd", toggle_document_diagnostics)
+vim.keymap.set("n", "<leader>xl", toggle_location_list)
+vim.keymap.set("n", "<leader>xq", toggle_quickfix)
