@@ -1,3 +1,130 @@
+local function show_definitions(options)
+    local items = options.items
+    if #items > 1 then
+        local seen = {}
+        local unique_items = {}
+        for _, item in ipairs(items) do
+            local key = (item.filename or item.bufnr or '') ..
+                ':' .. item.lnum .. ':' .. item.col
+            if not seen[key] then
+                table.insert(unique_items, item)
+                seen[key] = true
+            end
+        end
+        items = unique_items
+        options.items = unique_items
+    end
+
+    if #items > 1 then
+        vim.fn.setqflist({}, ' ', options)
+        vim.cmd.copen()
+    elseif #items == 1 then
+        local item = items[1]
+        vim.cmd("normal! m'")
+        if item.bufnr then
+            vim.cmd('b ' .. item.bufnr)
+        else
+            vim.cmd('e ' .. vim.fn.fnameescape(item.filename))
+        end
+        vim.api.nvim_win_set_cursor(0, { item.lnum, item.col - 1 })
+    end
+end
+
+local function goto_definition()
+    vim.lsp.buf.definition({
+        on_list = show_definitions,
+    })
+end
+
+local function attach_lsp_keymaps(event)
+    local opts = { buffer = event.buf }
+
+    -- Function to goto definition
+    -- It will just if there is only one definition
+    -- It also will remove duplicates (in case you have multiple lsps returning the same result)
+    -- Otherwise it will open the quickfix window
+    vim.keymap.set('n', 'gd', goto_definition, opts)
+
+    -- Lsp remaps
+    vim.keymap.set('n', 'si', vim.lsp.buf.hover, opts)
+    vim.keymap.set('n', '<leader>vws', vim.lsp.buf.workspace_symbol, opts)
+    vim.keymap.set('n', '<leader>vd', vim.diagnostic.open_float, opts)
+    vim.keymap.set('n', '[d', vim.diagnostic.goto_next, opts)
+    vim.keymap.set('n', ']d', vim.diagnostic.goto_prev, opts)
+    vim.keymap.set('n', '<leader>vca', vim.lsp.buf.code_action, opts)
+    vim.keymap.set('n', '<leader>vfr', vim.lsp.buf.references, opts)
+    vim.keymap.set('n', '<leader>vrn', vim.lsp.buf.rename, opts)
+    vim.keymap.set('i', '<C-h>', vim.lsp.buf.signature_help, opts)
+end
+
+local function setup_lsp()
+    -- Setup capabilities first
+    local cmp_capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+    -- Setup mason-lspconfig
+    require('mason-lspconfig').setup({
+        ensure_installed = {
+            'lua_ls',
+            'vtsls',
+            'jsonls',
+            'rust_analyzer',
+            'pylsp',
+            'gopls',
+            'html',
+            'cssls',
+            'clangd',
+            'omnisharp',
+            'harper_ls',
+            'emmet_language_server',
+            'erlangls',
+            'zls',
+            'astro',
+            'svelte',
+            'powershell_es',
+        },
+    })
+
+    -- Mason v2 enables servers through Neovim's native LSP configuration.
+    vim.lsp.config('*', { capabilities = cmp_capabilities })
+    vim.lsp.config('lua_ls', {
+        settings = {
+            Lua = {
+                runtime = { version = 'LuaJIT' },
+                diagnostics = { globals = { 'vim' } },
+                workspace = { library = { vim.env.VIMRUNTIME } },
+            },
+        },
+    })
+
+    -- Use the platform's Swift language server when it is installed.
+    local swift_cmd
+    if vim.fn.has('mac') == 1 and vim.fn.executable('xcrun') == 1 then
+        swift_cmd = { 'xcrun', 'sourcekit-lsp' }
+    elseif vim.fn.executable('sourcekit-lsp') == 1 then
+        swift_cmd = { 'sourcekit-lsp' }
+    end
+    if swift_cmd then
+        vim.lsp.config('sourcekit', {
+            capabilities = cmp_capabilities,
+            filetypes = { 'swift', 'objective-c', 'objective-cpp' },
+            cmd = swift_cmd,
+        })
+        vim.lsp.enable('sourcekit')
+    end
+
+    vim.diagnostic.config({
+        float = {
+            border = 'rounded',
+        },
+    })
+
+    -- LSP keymaps
+    vim.api.nvim_create_autocmd('LspAttach', {
+        group = vim.api.nvim_create_augroup('user_lsp_attach', { clear = true }),
+        callback = attach_lsp_keymaps,
+    })
+end
+
 return {
     -- LSP Support
     'neovim/nvim-lspconfig',
@@ -7,125 +134,6 @@ return {
             'williamboman/mason.nvim',
             'hrsh7th/cmp-nvim-lsp',
         },
-        config = function()
-            -- Setup capabilities first
-            local cmp_capabilities = require('cmp_nvim_lsp').default_capabilities()
-
-            -- Setup mason-lspconfig
-            require('mason-lspconfig').setup({
-                ensure_installed = {
-                    'lua_ls',
-                    'vtsls',
-                    'jsonls',
-                    'rust_analyzer',
-                    'pylsp',
-                    'gopls',
-                    'html',
-                    'cssls',
-                    'clangd',
-                    'omnisharp',
-                    'harper_ls',
-                    'emmet_language_server',
-                    'erlangls',
-                    'zls',
-                    'astro',
-                    'svelte',
-                    'powershell_es',
-                },
-            })
-
-            -- Mason v2 enables servers through Neovim's native LSP configuration.
-            vim.lsp.config('*', { capabilities = cmp_capabilities })
-            vim.lsp.config('lua_ls', {
-                settings = {
-                    Lua = {
-                        runtime = { version = 'LuaJIT' },
-                        diagnostics = { globals = { 'vim' } },
-                        workspace = { library = { vim.env.VIMRUNTIME } },
-                    },
-                },
-            })
-
-            -- Use the platform's Swift language server when it is installed.
-            local swift_cmd
-            if vim.fn.has('mac') == 1 and vim.fn.executable('xcrun') == 1 then
-                swift_cmd = { 'xcrun', 'sourcekit-lsp' }
-            elseif vim.fn.executable('sourcekit-lsp') == 1 then
-                swift_cmd = { 'sourcekit-lsp' }
-            end
-            if swift_cmd then
-                vim.lsp.config('sourcekit', {
-                    capabilities = cmp_capabilities,
-                    filetypes = { 'swift', 'objective-c', 'objective-cpp' },
-                    cmd = swift_cmd,
-                })
-                vim.lsp.enable('sourcekit')
-            end
-
-            vim.diagnostic.config({
-                float = {
-                    border = 'rounded',
-                },
-            })
-
-            -- LSP keymaps
-            vim.api.nvim_create_autocmd('LspAttach', {
-                group = vim.api.nvim_create_augroup('user_lsp_attach', { clear = true }),
-                callback = function(event)
-                    local opts = { buffer = event.buf }
-
-                    -- Function to goto definition
-                    -- It will just if there is only one definition
-                    -- It also will remove duplicates (in case you have multiple lsps returning the same result)
-                    -- Otherwise it will open the quickfix window
-                    vim.keymap.set('n', 'gd', function()
-                        vim.lsp.buf.definition({
-                            on_list = function(options)
-                                local items = options.items
-                                if #items > 1 then
-                                    local seen = {}
-                                    local unique_items = {}
-                                    for _, item in ipairs(items) do
-                                        local key = (item.filename or item.bufnr or '') ..
-                                            ':' .. item.lnum .. ':' .. item.col
-                                        if not seen[key] then
-                                            table.insert(unique_items, item)
-                                            seen[key] = true
-                                        end
-                                    end
-                                    items = unique_items
-                                    options.items = unique_items
-                                end
-
-                                if #items > 1 then
-                                    vim.fn.setqflist({}, ' ', options)
-                                    vim.cmd.copen()
-                                elseif #items == 1 then
-                                    local item = items[1]
-                                    vim.cmd("normal! m'")
-                                    if item.bufnr then
-                                        vim.cmd('b ' .. item.bufnr)
-                                    else
-                                        vim.cmd('e ' .. vim.fn.fnameescape(item.filename))
-                                    end
-                                    vim.api.nvim_win_set_cursor(0, { item.lnum, item.col - 1 })
-                                end
-                            end,
-                        })
-                    end, opts)
-
-                    -- Lsp remaps
-                    vim.keymap.set('n', 'si', function() vim.lsp.buf.hover() end, opts)
-                    vim.keymap.set('n', '<leader>vws', function() vim.lsp.buf.workspace_symbol() end, opts)
-                    vim.keymap.set('n', '<leader>vd', function() vim.diagnostic.open_float() end, opts)
-                    vim.keymap.set('n', '[d', function() vim.diagnostic.goto_next() end, opts)
-                    vim.keymap.set('n', ']d', function() vim.diagnostic.goto_prev() end, opts)
-                    vim.keymap.set('n', '<leader>vca', function() vim.lsp.buf.code_action() end, opts)
-                    vim.keymap.set('n', '<leader>vfr', function() vim.lsp.buf.references() end, opts)
-                    vim.keymap.set('n', '<leader>vrn', function() vim.lsp.buf.rename() end, opts)
-                    vim.keymap.set('i', '<C-h>', function() vim.lsp.buf.signature_help() end, opts)
-                end,
-            })
-        end,
+        config = setup_lsp,
     },
 }

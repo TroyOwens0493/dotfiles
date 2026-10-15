@@ -1,3 +1,34 @@
+local function expand_snippet(args)
+    require('luasnip').lsp_expand(args.body)
+end
+
+local function setup_completion()
+    local cmp = require('cmp')
+    local cmp_select = { behavior = cmp.SelectBehavior.Select }
+
+    cmp.setup({
+        sources = cmp.config.sources({
+            { name = 'nvim_lsp' },
+            { name = 'luasnip' },
+        }, {
+            { name = 'buffer' },
+        }),
+        window = {
+            completion = cmp.config.window.bordered(),
+            documentation = cmp.config.window.bordered(),
+        },
+        mapping = cmp.mapping.preset.insert({
+            ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
+            ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
+            ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+            ['<C-Space>'] = cmp.mapping.complete(),
+        }),
+        snippet = {
+            expand = expand_snippet,
+        },
+    })
+end
+
 return {
     -- Autocompletion
     'hrsh7th/nvim-cmp',
@@ -6,32 +37,5 @@ return {
         'hrsh7th/cmp-buffer',
         'L3MON4D3/LuaSnip',
     },
-    config = function()
-        local cmp = require('cmp')
-        local cmp_select = { behavior = cmp.SelectBehavior.Select }
-
-        cmp.setup({
-            sources = cmp.config.sources({
-                { name = 'nvim_lsp' },
-                { name = 'luasnip' },
-            }, {
-                { name = 'buffer' },
-            }),
-            window = {
-                completion = cmp.config.window.bordered(),
-                documentation = cmp.config.window.bordered(),
-            },
-            mapping = cmp.mapping.preset.insert({
-                ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-                ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-                ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-                ['<C-Space>'] = cmp.mapping.complete(),
-            }),
-            snippet = {
-                expand = function(args)
-                    require('luasnip').lsp_expand(args.body)
-                end,
-            },
-        })
-    end,
+    config = setup_completion,
 }

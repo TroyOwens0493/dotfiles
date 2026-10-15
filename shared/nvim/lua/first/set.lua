@@ -1,3 +1,12 @@
+local function notify_file_changed()
+    vim.notify("File changed on disk.")
+end
+
+--- Flash the region affected by a yank.
+local function highlight_yank()
+    vim.hl.on_yank({ higroup = "IncSearch", timeout = 100 })
+end
+
 vim.opt.guicursor = ""
 
 vim.opt.nu = true
@@ -41,18 +50,13 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
 
 vim.api.nvim_create_autocmd("FileChangedShellPost", {
     group = autoread_group,
-    callback = function()
-        vim.notify("File changed on disk.")
-    end,
+    callback = notify_file_changed,
 })
 
 vim.api.nvim_create_autocmd("TextYankPost", {
     group = vim.api.nvim_create_augroup("HighlightYank", { clear = true }),
     desc = "Briefly highlight yanked text",
-    --- Flash the region affected by a yank.
-    callback = function()
-        vim.hl.on_yank({ higroup = "IncSearch", timeout = 100 })
-    end,
+    callback = highlight_yank,
 })
 
 vim.g.mapleader = " "
