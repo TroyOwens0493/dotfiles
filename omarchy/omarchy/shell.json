@@ -48,6 +48,10 @@
           "id": "omarchy.bluetooth"
         },
         {
+          "id": "lucas.system-pulse",
+          "intervalSeconds": 5
+        },
+        {
           "id": "omarchy.network"
         },
         {
