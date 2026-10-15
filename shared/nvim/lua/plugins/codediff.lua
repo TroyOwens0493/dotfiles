@@ -1,7 +1,17 @@
+local dev_path = vim.fn.expand('~/nvimPuginDev/codediff.nvim')
+
 return {
-    'esmuellert/codediff.nvim',
-    cmd = 'CodeDiff',
+    'TroyOwens0493/codediff.nvim',
+    dir = vim.fn.isdirectory(dev_path) == 1 and dev_path or nil,
+    cmd = { 'CodeDiff', 'CodeDiffAI' },
     opts = {
+        ai = {
+            enabled = true,
+            auto_summary = true,
+            keymap = 'gs',
+            why_keymap = 'gb',
+            detail = 'detailed',
+        },
         explorer = {
             visible_groups = {
                 staged = false,
