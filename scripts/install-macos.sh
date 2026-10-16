@@ -17,6 +17,10 @@ install_platform_packages() {
       brew install --cask --adopt "$cask"
     fi
   done
+  # V1 and V2 install the same command; Homebrew cannot install both formulas.
+  if brew list --formula opencode >/dev/null 2>&1; then
+    brew uninstall opencode || return
+  fi
   brew bundle --file="$REPO_DIR/macos/Brewfile"
 }
 

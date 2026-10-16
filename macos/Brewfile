@@ -48,7 +48,7 @@ brew "stripe"
 
 # AI CLIs.
 brew "gemini-cli"
-brew "opencode"
+brew "anomalyco/tap/opencode-v2"
 # Pi is installed from shared/pi/package-lock.json by the shared installer.
 
 # Window manager and explicitly requested apps.

@@ -164,6 +164,36 @@ class InstallerTests(unittest.TestCase):
         backup = next((self.home / '.dotfiles-backup').iterdir())
         self.assertEqual((backup / 'files/.config/ghostty/config.ghostty').read_text(), 'old config')
 
+    def test_macos_package_setup_replaces_opencode_v1_before_bundle(self):
+        """Remove the conflicting V1 formula only when it is installed."""
+        for legacy_installed in [True, False]:
+            with self.subTest(legacy_installed=legacy_installed):
+                tools = self.base / f'fake-mac-tools-{legacy_installed}'
+                tools.mkdir()
+                log = self.base / f'mac-package-calls-{legacy_installed}'
+                uname = tools / 'uname'
+                uname.write_text('#!/usr/bin/env bash\nprintf "Darwin\\n"\n')
+                uname.chmod(0o755)
+                brew = tools / 'brew'
+                brew.write_text(
+                    '#!/usr/bin/env bash\n'
+                    'printf "%s\\n" "$*" >> "$SETUP_TEST_LOG"\n'
+                    'if [[ "$*" == "list --formula opencode" ]]; then\n'
+                    '  exit "$SETUP_TEST_LEGACY_STATUS"\n'
+                    'fi\n')
+                brew.chmod(0o755)
+                env = dict(self.env, PATH=str(tools) + os.pathsep + self.env['PATH'],
+                           SETUP_TEST_LOG=str(log), SETUP_TEST_REPO=str(self.repo),
+                           SETUP_TEST_LEGACY_STATUS='0' if legacy_installed else '1')
+                subprocess.run(['bash', '-ec', 'REPO_DIR="$SETUP_TEST_REPO"; source "$REPO_DIR/scripts/install-macos.sh"; install_platform_packages'],
+                               env=env, check=True, capture_output=True)
+                calls = log.read_text().splitlines()
+                expected = ['list --formula opencode']
+                if legacy_installed:
+                    expected.append('uninstall opencode')
+                expected.append(f'bundle --file={self.repo}/macos/Brewfile')
+                self.assertEqual(calls, expected)
+
     def test_omarchy_package_setup_selects_repo_mise_config(self):
         """A fresh machine installs the repo tools before its global link exists."""
         tools = self.base / 'fake-package-tools'

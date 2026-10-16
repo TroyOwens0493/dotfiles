@@ -38,6 +38,10 @@ shared and Mac settings, and installs Pi dependencies, tmux plugins, and Neovim
 plugins. The Zsh config loads the included aliases, paths, and prompt. Homebrew
 paths support both Apple Silicon and Intel Macs.
 
+The Mac package setup installs OpenCode 2 from `anomalyco/tap/opencode-v2`.
+It removes the old Homebrew `opencode` formula first because both provide the
+same command. After pulling this package change, run `./install.sh` to apply it.
+
 Open a new terminal after installation. Grant AeroSpace Accessibility permission.
 Sign into your applications and AI tools. Configure Git identity, signing keys,
 and SSH access on this machine. Existing Git identity and signing settings are
