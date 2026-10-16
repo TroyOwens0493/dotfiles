@@ -1,6 +1,6 @@
 -- Run from the repository root: lua omarchy/tests/aerospace-layout.lua
 package.path = './omarchy/?.lua;' .. package.path
-local providers, bindings, submaps, files, events = {}, {}, {}, {}, {}
+local providers, bindings, submaps, files, events, pointer_bindings = {}, {}, {}, {}, {}, {}
 local active, workspace, dispatched, scope
 local dispatches = {}
 local function command(kind)
@@ -9,6 +9,7 @@ end
 hl = {
   layout = { register = function(name, provider) providers[name] = provider end },
   config = function() end,
+  bind = function(key, action, options) pointer_bindings[key] = { action = action, options = options } end,
   on = function(name, fn) events[name] = fn end,
   unbind = function() end,
   define_submap = function(name, reset, fn)
@@ -23,7 +24,7 @@ hl = {
   dsp = {
     focus = command('focus'), layout = command('layout'), submap = command('submap'),
     window = { move = command('move'), resize = command('resize'), close = command('close'),
-      float = command('float'), bring_to_top = command('raise') },
+      float = command('float'), bring_to_top = command('raise'), alter_zorder = command('zorder') },
     workspace = { rename = command('rename'), move = command('move-workspace') },
     group = { prev = command('group-prev'), next = command('group-next') },
     cursor = { move = command('cursor') },
@@ -138,6 +139,65 @@ for i, target in ipairs(restored.targets) do
   for _, key in ipairs({ 'x', 'y', 'w', 'h' }) do near(target.box[key], expected[i][key]) end
 end
 assert(provider.is_accordion(restored.targets[2].window))
+-- Model native click handling: hit-test tiles bottom-first, then raise the
+-- clicked window. Each repeated click must still reach the visible window.
+local clicks = context(9007, 1200, 900, 4)
+provider.recalculate(clicks); provider.layout_msg(clicks, 'accordion')
+local stack, cursor = {}, { x = 600, y = 400 }
+for _, target in ipairs(clicks.targets) do
+  local window, box = target.window, target.box
+  window.mapped, window.accepts_input, window.fullscreen = true, true, 0
+  window.at, window.size = { x = box.x, y = box.y }, { x = box.w, y = box.h }
+  stack[#stack + 1] = window
+end
+hl.get_cursor_pos = function() return cursor end
+hl.get_monitor_at = function() return { active_workspace = clicks.targets[1].window.workspace } end
+hl.get_windows = function() return stack end
+local normal_dispatch = hl.dispatch
+hl.dispatch = function(cmd)
+  normal_dispatch(cmd)
+  if cmd.kind == 'zorder' then
+    assert(cmd.args.mode == 'bottom')
+    for i, window in ipairs(stack) do
+      if cmd.args.window == 'address:' .. window.address then
+        table.insert(stack, 1, table.remove(stack, i)); break
+      end
+    end
+  end
+end
+local click_binding = pointer_bindings['mouse:272']
+assert(click_binding.options.non_consuming and click_binding.options.ignore_mods
+  and click_binding.options.submap_universal)
+local function click_visible(expected)
+  click_binding.action()
+  local hit
+  for i, window in ipairs(stack) do
+    if cursor.x >= window.at.x and cursor.x < window.at.x + window.size.x
+        and cursor.y >= window.at.y and cursor.y < window.at.y + window.size.y then
+      hit = window; table.insert(stack, table.remove(stack, i)); break
+    end
+  end
+  assert(hit == expected, 'Click reached an obscured accordion window')
+  active = hit
+end
+for index = 1, 4 do
+  focus(clicks, index)
+  for _ = 1, 3 do click_visible(active) end
+end
+-- A visible strip must select its own window, including strips where several
+-- background tiles overlap. The renderer paints later stack entries on top.
+focus(clicks, 1); cursor.x = 1205
+local expected = stack[#stack]
+click_visible(expected)
+click_visible(expected)
+-- Native floating windows and fullscreen windows need no adjustment.
+local floating = { mapped = true, accepts_input = true, fullscreen = 0, floating = true,
+  at = { x = 0, y = 0 }, size = { x = 2000, y = 2000 } }
+stack[#stack + 1] = floating
+dispatches = {}; click_binding.action(); assert(#dispatches == 0)
+table.remove(stack); stack[1].fullscreen = 1
+click_binding.action(); assert(#dispatches == 0)
+hl.dispatch = normal_dispatch
 provider.recalculate(ctx)
 near(ctx.targets[1].box.w, 1200); near(ctx.targets[1].box.h, ctx_height)
 assert(bindings['ALT + A'].args.workspace == '10')
@@ -172,4 +232,4 @@ dispatches = {}; events['monitor.focused']({ x = 0, y = 0, width = 1920, height 
 assert(#dispatches == 0)
 events['monitor.focused']({ x = 1200, y = 0, width = 1920, height = 1080, scale = 1.6 })
 assert(dispatched.kind == 'cursor'); near(dispatched.args.x, 1800)
-print('PASS: tiles, portrait, resize bounds, reorder, accordion, nested join/focus/move, flatten, cleanup, orientation reload, workspaces, service mode, and monitor cursor')
+print('PASS: tiles, portrait, resize bounds, reorder, accordion, repeated/strip clicks, floating/fullscreen click bypass, nested join/focus/move, flatten, cleanup, orientation reload, workspaces, service mode, and monitor cursor')
