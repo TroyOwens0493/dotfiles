@@ -1,7 +1,7 @@
 {
   "lastChangelogVersion": "0.87.1",
   "theme": "github-dark-default",
-  "defaultProvider": "openai",
-  "defaultModel": "gpt-6-sol",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-6.1-sol",
   "defaultThinkingLevel": "high"
 }

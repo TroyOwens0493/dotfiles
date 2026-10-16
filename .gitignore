@@ -44,3 +44,6 @@ __pycache__/
 .zshrc.local
 .bashrc.local
 colors.local.sh
+
+# Machine-specific mise tools.
+/omarchy/mise/config.local.toml

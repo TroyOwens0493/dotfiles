@@ -87,10 +87,12 @@ return {
     opts = {
         ai = {
             enabled = true,
+            effort = 'high',
             auto_summary = true,
             keymap = 'gs',
             why_keymap = 'gb',
             detail = 'detailed',
+            max_input_bytes = math.huge,
         },
         explorer = {
             visible_groups = {

@@ -13,8 +13,9 @@ java = "21.0.2"
 kubectl = "latest"
 node = "26.8.2"
 "npm:@shopify/cli" = "latest"
+"npm:playwright" = "latest"
 "npm:prettier" = "latest"
-opencode = "latest"
+opencode = { version = "latest", allow_builds = ["@opencode/cli"] }
 pnpm = "latest"
 powershell = "latest"
 rebar = { version = "latest", asset_pattern = "rebar3" }
