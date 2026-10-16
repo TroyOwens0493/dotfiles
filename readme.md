@@ -50,6 +50,13 @@ The installer selects `omarchy/` automatically, installs its extra packages and
 mise tools, and links the shared and Linux configs. It keeps Omarchy's packaged
 Hyprland and Bash defaults and loads your settings after them.
 
+Dependency sync also installs the [System Pulse bar widget](https://github.com/lucaslus/omarchy-statusline)
+referenced by `shell.json`. Existing plugin installations are retained and validated;
+`--configs-only` skips this download along with the other config dependencies.
+Neovim dependencies are restored to the commits in `shared/nvim/lazy-lock.json`,
+including when Omarchy already has other plugin versions cached. Setup verifies
+those checkouts and preserves the lockfile rather than accepting startup changes.
+
 The package list covers this development setup. It is not a full backup of all
 installed applications, drivers, services, or hardware settings.
 

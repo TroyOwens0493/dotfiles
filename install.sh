@@ -54,7 +54,10 @@ if [[ "$DRY_RUN" == 0 && "$PACKAGES" == 1 ]]; then install_platform_packages; fi
 install_shared_configs
 install_platform_configs
 if [[ "$DRY_RUN" == 0 ]]; then
-  if [[ "$SYNC" == 1 ]]; then sync_shared_dependencies; fi
+  if [[ "$SYNC" == 1 ]]; then
+    if declare -F sync_platform_dependencies >/dev/null; then sync_platform_dependencies; fi
+    sync_shared_dependencies
+  fi
   print_platform_next_steps
   printf '\nConfigured %s. Edit tracked files here, then git add, commit, and push.\n' "$PLATFORM"
   [[ ! -d "$BACKUP_DIR" ]] || printf 'Previous files and restore manifest: %s\n' "$BACKUP_DIR"
