@@ -52,6 +52,11 @@ uses a 10-pixel layout offset; Hyprland also applies window borders and gaps.
 Mouse hover does not change window focus. Monitor focus moves the cursor to
 the monitor center only when the cursor is outside that monitor.
 
+Accordion clicks follow the visible window, including exposed background
+strips. Hyprland 0.56 checks tiled windows from bottom to top even though it
+draws the focused tile on top. Non-consuming mouse bindings correct that order
+before each click; the app receives the original button event and modifiers.
+
 Numbers use workspace IDs 1–9. Letter workspaces use IDs 10–31. Tree structure,
 orientation, accordion mode, and resized proportions are saved under
 `~/.local/state/omarchy/workspace-layouts/` (or `$XDG_STATE_HOME`). They survive

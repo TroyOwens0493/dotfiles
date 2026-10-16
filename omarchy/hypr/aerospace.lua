@@ -242,4 +242,41 @@ hl.on("window.active", function(window)
   end
 end)
 
+-- Hyprland 0.56 draws the active tile last, but hit-tests tiles from bottom
+-- to top. Before native click handling, put the visible accordion tile first
+-- in that hit-test order. Native handling then delivers the original click
+-- and raises the window again, so this must run on every button press.
+function M.prepare_pointer_click()
+  local cursor = hl.get_cursor_pos()
+  local monitor = cursor and hl.get_monitor_at(cursor)
+  local ws = monitor and (monitor.active_special_workspace or monitor.active_workspace)
+  if not ws or ws.tiled_layout ~= "lua:aerospace" then return end
+  local windows = hl.get_windows({ workspace = ws })
+  local function contains(window)
+    if not window.mapped or window.hidden or not window.accepts_input then return false end
+    local at, size = window.at, window.size
+    return cursor.x >= at.x and cursor.y >= at.y
+      and cursor.x < at.x + size.x and cursor.y < at.y + size.y
+  end
+  local active, top = hl.get_active_window(), nil
+  for i = #windows, 1, -1 do
+    local window = windows[i]
+    if window.fullscreen ~= 0 then return end
+    if contains(window) then
+      if window.floating then return end -- Native floating hit-testing is correct.
+      if not top then top = window end
+      if active and window.address == active.address then top = window end
+    end
+  end
+  if top and provider.is_accordion(top) then
+    hl.dispatch(hl.dsp.window.alter_zorder({ mode = "bottom", window = "address:" .. top.address }))
+  end
+end
+for button = 272, 279 do
+  hl.bind("mouse:" .. button, M.prepare_pointer_click, {
+    description = "AeroSpace: click the visible accordion window",
+    non_consuming = true, ignore_mods = true, submap_universal = true,
+  })
+end
+
 return M
