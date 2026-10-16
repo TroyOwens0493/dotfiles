@@ -23,6 +23,8 @@ vim.g.maplocalleader = "\\"
 
 -- Setup lazy
 require("lazy").setup({
+    -- Installer sync uses a disposable lock so startup cannot rewrite tracked pins.
+    lockfile = vim.env.DOTFILES_NVIM_LOCKFILE or (vim.fn.stdpath("config") .. "/lazy-lock.json"),
     spec = {
         { import = "plugins" },
     },

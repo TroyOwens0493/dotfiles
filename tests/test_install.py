@@ -233,6 +233,7 @@ class InstallerTests(unittest.TestCase):
             'tmux': 'printf "tmux %s\\n" "$*" >> "$SETUP_TEST_LOG"\ncase "$*" in *display-message*) printf "/test/socket,42,0\\n" ;; esac\n',
             'nvim': 'printf "nvim %s\\n" "$*" >> "$SETUP_TEST_LOG"\n',
             'git-lfs': 'printf "git-lfs %s\\n" "$*" >> "$SETUP_TEST_LOG"\n',
+            'omarchy': 'printf "omarchy %s\\n" "$*" >> "$SETUP_TEST_LOG"\nif [[ "$1 $2" == "plugin add" ]]; then mkdir -p "$HOME/.config/omarchy/plugins/lucas.system-pulse"; printf "{}\\n" > "$HOME/.config/omarchy/plugins/lucas.system-pulse/manifest.json"; fi\n',
         }
         for name, content in mocks.items():
             tool = tools / name
@@ -252,7 +253,9 @@ class InstallerTests(unittest.TestCase):
         self.assertIn('TPM /test/socket,42,0', calls)
         self.assertIn('kill-server', calls)
         self.assertIn('git-lfs install', calls)
-        self.assertIn('nvim --headless +Lazy! restore +qa', calls)
+        self.assertIn('nvim --headless +lua dofile(vim.env.DOTFILES_NVIM_RESTORE_SCRIPT) +qa', calls)
+        self.assertEqual(calls.count('omarchy plugin add '), 1)
+        self.assertEqual(calls.count('omarchy plugin validate '), 2)
 
 
 if __name__ == '__main__':

@@ -162,6 +162,21 @@ install_shared_configs() {
   fi
 }
 
+# Startup can install missing plugins and rewrite the lock before :Lazy restore.
+# Give Lazy a disposable working lock and preserve the input pins independently.
+# The Lua helper checks the actual plugin commits before exiting.
+restore_nvim_plugins() (
+  local lockfile="$REPO_DIR/shared/nvim/lazy-lock.json" staging
+  staging=$(mktemp -d "${TMPDIR:-/tmp}/dotfiles-nvim-lock.XXXXXX")
+  trap 'rm -rf "$staging"' EXIT
+  cp "$lockfile" "$staging/input.json"
+  cp "$lockfile" "$staging/working.json"
+  DOTFILES_NVIM_LOCK_SNAPSHOT="$staging/input.json" \
+    DOTFILES_NVIM_LOCKFILE="$staging/working.json" \
+    DOTFILES_NVIM_RESTORE_SCRIPT="$REPO_DIR/scripts/restore-nvim.lua" \
+    nvim --headless '+lua dofile(vim.env.DOTFILES_NVIM_RESTORE_SCRIPT)' +qa
+)
+
 # Download only config dependencies; the pinned Pi CLI is supplied by its lockfile.
 sync_shared_dependencies() {
   local label
@@ -185,5 +200,5 @@ sync_shared_dependencies() {
     )
   fi
   if command -v git-lfs >/dev/null; then git lfs install; fi
-  if command -v nvim >/dev/null; then nvim --headless '+Lazy! restore' +qa; fi
+  if command -v nvim >/dev/null; then restore_nvim_plugins; fi
 }

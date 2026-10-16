@@ -25,6 +25,15 @@ install_platform_configs() {
   link_path "$REPO_DIR/omarchy/mise/config.toml" "$CONFIG_DIR/mise/config.toml"
 }
 
+sync_platform_dependencies() {
+  # shell.json already places/enables this widget. Do not use --enable here:
+  # that command would edit the tracked settings through their installed link.
+  if [[ ! -f "$CONFIG_DIR/omarchy/plugins/lucas.system-pulse/manifest.json" ]]; then
+    omarchy plugin add https://github.com/lucaslus/omarchy-statusline.git --yes
+  fi
+  omarchy plugin validate "$CONFIG_DIR/omarchy/plugins/lucas.system-pulse"
+}
+
 print_platform_next_steps() {
   printf 'Reload Hyprland when ready: hyprctl reload; hyprctl configerrors\n'
   printf 'Restart Ghostty and other apps to load their settings.\n'
