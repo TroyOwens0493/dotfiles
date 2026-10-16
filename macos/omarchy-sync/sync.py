@@ -7,8 +7,11 @@ import json
 import os
 from pathlib import Path
 import shlex
+import shutil
+import signal
 import subprocess
 import sys
+import time
 
 INVENTORY = r'''
 import json, os, subprocess, sys
@@ -201,6 +204,67 @@ def sync(config, dry_run=False):
         return int(bool(counts.get('skipped')))
 
 
+def wait_for_forwarder(process, log_path):
+    # Wait for the CLI's connection marker before opening the interactive session.
+    deadline = time.monotonic() + 15
+    while time.monotonic() < deadline:
+        if process.poll() is not None:
+            return False
+        if 'Starting port detection loop...' in log_path.read_text(errors='replace'):
+            return True
+        time.sleep(0.1)
+    return False
+
+
+def connect(config, session):
+    executable = shutil.which('ssh-auto-forward')
+    if not executable:
+        candidate = Path.home() / '.local/bin/ssh-auto-forward'
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            executable = str(candidate)
+    if not executable:
+        print('Install automatic port forwarding: uv tool install ssh-auto-forward==0.0.4',
+              file=sys.stderr)
+        return 1
+
+    state = Path.home() / '.local/state/omarchy-sync'
+    state.mkdir(parents=True, exist_ok=True)
+    log_path = state / f'forward-{os.getpid()}.log'
+    command = shlex.join(['tmux', '-u', 'new-session', '-A', '-s', session])
+    with log_path.open('w') as log:
+        try:
+            forwarder = subprocess.Popen(
+                [executable, config['host'], '--cli', '--max-auto-port', '65535'],
+                stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT,
+                start_new_session=True)
+        except OSError as error:
+            print(f'Cannot start automatic port forwarding: {error}', file=sys.stderr)
+            return 1
+        try:
+            if not wait_for_forwarder(forwarder, log_path):
+                print(f'Automatic port forwarding did not start. See {log_path}', file=sys.stderr)
+                print(log_path.read_text(errors='replace'), file=sys.stderr)
+                return forwarder.poll() or 1
+            print(f'Automatic port forwarding is running. Port mappings: {log_path}', flush=True)
+            code = subprocess.call(['ssh', '-t', '-o', 'ConnectTimeout=10', '-o', 'ServerAliveInterval=15',
+                                    '-o', 'ServerAliveCountMax=2', '-o', 'ControlPath=none',
+                                    '-o', 'ForkAfterAuthentication=no', '-o', 'ClearAllForwardings=yes',
+                                    config['host'], command])
+            if forwarder.poll() is not None:
+                print(f'Automatic port forwarding stopped unexpectedly. See {log_path}', file=sys.stderr)
+                return code or 1
+            return code
+        finally:
+            if forwarder.poll() is None:
+                # CLI mode handles SIGINT and closes all its tunnels before exiting.
+                forwarder.send_signal(signal.SIGINT)
+                try:
+                    forwarder.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    forwarder.kill()
+                    forwarder.wait()
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action', choices=['connect', 'sync'])
@@ -209,9 +273,7 @@ def main():
     args = parser.parse_args()
     config = json.loads(Path(__file__).with_name('settings.json').read_text())
     if args.action == 'connect':
-        command = shlex.join(['tmux', '-u', 'new-session', '-A', '-s', args.session or config['session']])
-        code = subprocess.call(['ssh', '-t', '-o', 'ConnectTimeout=10', '-o', 'ServerAliveInterval=15',
-                                '-o', 'ServerAliveCountMax=2', config['host'], command])
+        code = connect(config, args.session or config['session'])
         if code:
             print('SSH did not exit normally. Run omarchy-sync when the connection is available.', file=sys.stderr)
             return code

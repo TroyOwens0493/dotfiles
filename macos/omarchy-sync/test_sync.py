@@ -3,9 +3,10 @@ import importlib.util
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 spec = importlib.util.spec_from_file_location('omarchy_sync', Path(__file__).with_name('sync.py'))
 sync = importlib.util.module_from_spec(spec)
@@ -143,6 +144,120 @@ class SyncTests(unittest.TestCase):
             self.apply(item)
         self.assertEqual(self.git(self.local, 'rev-parse', 'HEAD'), before)
         self.assertEqual(self.git(self.local, 'status', '--porcelain'), '')
+
+
+class ConnectTests(unittest.TestCase):
+    def invoke(self, tunnel_code=0, attach_code=0, stop_timeout=False, startup_error=None,
+               exits_during_attach=False):
+        events = []
+        stopped = bool(tunnel_code)
+        process = Mock()
+
+        def start(args, **kwargs):
+            events.append('tunnel')
+            self.forward_args = args
+            self.assertEqual(kwargs['stdin'], subprocess.DEVNULL)
+            self.assertTrue(kwargs['start_new_session'])
+            if startup_error:
+                raise startup_error
+            return process
+
+        def stop(sig):
+            nonlocal stopped
+            self.assertEqual(sig, sync.signal.SIGINT)
+            events.append('close')
+            stopped = True
+
+        process.poll.side_effect = lambda: (tunnel_code or 1) if stopped else None
+        process.send_signal.side_effect = stop
+        if stop_timeout:
+            process.wait.side_effect = [subprocess.TimeoutExpired('forwarder', 10), 0]
+            process.kill.side_effect = lambda: events.append('kill')
+
+        def ssh(args):
+            nonlocal stopped
+            self.assertIn('ClearAllForwardings=yes', args)
+            self.assertEqual(args[-1], 'tmux -u new-session -A -s fixture')
+            events.append('attach')
+            if exits_during_attach:
+                stopped = True
+            if isinstance(attach_code, BaseException):
+                raise attach_code
+            return attach_code
+
+        with tempfile.TemporaryDirectory() as home, \
+                patch.object(sync.Path, 'home', return_value=Path(home)), \
+                patch.object(sync.shutil, 'which', return_value='/fixture/ssh-auto-forward'), \
+                patch.object(sync.subprocess, 'Popen', side_effect=start), \
+                patch.object(sync, 'wait_for_forwarder', return_value=not tunnel_code), \
+                patch.object(sync.subprocess, 'call', side_effect=ssh), \
+                patch.object(sync, 'sync', side_effect=lambda *args: events.append('sync') or 0), \
+                patch.object(sys, 'argv', ['sync.py', 'connect', 'fixture']):
+            try:
+                return sync.main(), events
+            finally:
+                self.events = events
+                self.process = process
+
+    def test_detach_closes_tunnel_before_sync(self):
+        code, events = self.invoke()
+        self.assertEqual(code, 0)
+        self.assertEqual(events, ['tunnel', 'attach', 'close', 'sync'])
+        self.assertEqual(self.forward_args[1:], ['omarchy', '--cli', '--max-auto-port', '65535'])
+        self.process.wait.assert_called_once_with(timeout=10)
+
+    def test_failed_tunnel_does_not_attach_or_sync(self):
+        code, events = self.invoke(tunnel_code=255)
+        self.assertEqual(code, 255)
+        self.assertEqual(events, ['tunnel'])
+
+    def test_failed_connection_closes_tunnel_without_sync(self):
+        code, events = self.invoke(attach_code=255)
+        self.assertEqual(code, 255)
+        self.assertEqual(events, ['tunnel', 'attach', 'close'])
+
+    def test_interrupt_closes_tunnel(self):
+        with self.assertRaises(KeyboardInterrupt):
+            self.invoke(attach_code=KeyboardInterrupt())
+        self.assertEqual(self.events, ['tunnel', 'attach', 'close'])
+
+    def test_slow_shutdown_is_killed_before_sync(self):
+        code, events = self.invoke(stop_timeout=True)
+        self.assertEqual(code, 0)
+        self.assertEqual(events, ['tunnel', 'attach', 'close', 'kill', 'sync'])
+
+    def test_cannot_start_forwarder_does_not_attach_or_sync(self):
+        code, events = self.invoke(startup_error=OSError('cannot execute'))
+        self.assertEqual(code, 1)
+        self.assertEqual(events, ['tunnel'])
+
+    def test_forwarder_exit_during_session_does_not_sync(self):
+        code, events = self.invoke(exits_during_attach=True)
+        self.assertEqual(code, 1)
+        self.assertEqual(events, ['tunnel', 'attach'])
+
+    def test_missing_dependency_does_not_start_ssh(self):
+        with patch.object(sync.shutil, 'which', return_value=None), \
+                patch.object(sync.Path, 'is_file', return_value=False), \
+                patch.object(sync.subprocess, 'Popen') as start, \
+                patch.object(sync.subprocess, 'call') as ssh:
+            self.assertEqual(sync.connect({'host': 'fixture'}, 'nomp'), 1)
+        start.assert_not_called()
+        ssh.assert_not_called()
+
+    def test_forwarder_readiness_and_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / 'forward.log'
+            log.write_text('Starting port detection loop...\n')
+            self.assertTrue(sync.wait_for_forwarder(Mock(poll=lambda: None), log))
+            self.assertFalse(sync.wait_for_forwarder(Mock(poll=lambda: 1), log))
+
+    def test_startup_timeout(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / 'forward.log'
+            log.write_text('Connecting...\n')
+            with patch.object(sync.time, 'monotonic', side_effect=[0, 16]):
+                self.assertFalse(sync.wait_for_forwarder(Mock(poll=lambda: None), log))
 
 
 if __name__ == '__main__':

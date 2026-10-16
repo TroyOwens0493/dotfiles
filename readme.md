@@ -210,6 +210,21 @@ Git state from `~/ProgrammingDocs` and `~/dataThink` on Omarchy to the same rela
 paths on the Mac. Both remote root directories must exist. New `nomp` worktrees
 also need the Firebase CLI and staging-project access on the Mac.
 
+Install the automatic port forwarding tool on the Mac:
+
+```sh
+uv tool install ssh-auto-forward==0.0.4
+```
+
+The `omarchy` command runs [ssh-auto-forward](https://github.com/alexeygrigorev/ssh-auto-forward)
+in the background during the tmux session. It reads the `omarchy` host from
+`~/.ssh/config` and checks remote listening TCP ports every five seconds.
+Ports 1000 through 65535 are forwarded automatically, including services started
+after you connect. An occupied local port is mapped to another available port.
+The command prints a log path under `~/.local/state/omarchy-sync/`; read that log
+to find port mappings or connection errors. All tunnels close when you detach,
+before sync starts. Omarchy needs `ss` or `netstat` for port discovery.
+
 Sync runs after a normal detach from the `omarchy` command. It does not run after
 plain SSH or a lost connection. Run `omarchy-sync` manually after reconnecting.
 Local changes, conflicting history, active Git operations, and detached remote

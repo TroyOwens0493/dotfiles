@@ -6,7 +6,7 @@ alias nuget="mono /usr/local/bin/nuget.exe"
 alias lg="lazygit"
 # Alias for tmux
 alias tm="tmux"
-# Open Omarchy tmux, then copy committed Git state when the session detaches.
+# Open Omarchy tmux with automatic port forwarding, then sync after detach.
 alias omarchy='python3 "$HOME/.config/omarchy-sync/sync.py" connect'
 alias omarchy-sync='python3 "$HOME/.config/omarchy-sync/sync.py" sync'
 # Alias for Claude Code with Opus, no system prompt, and no tool prompts
