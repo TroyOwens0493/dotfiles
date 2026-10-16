@@ -43,3 +43,4 @@ __pycache__/
 .dotfiles-package-lock
 .zshrc.local
 .bashrc.local
+colors.local.sh

@@ -1,9 +1,11 @@
 #!/bin/sh
 # Apply validated environment overrides before TPM loads the Dracula theme.
+# Ignore inherited pane exports; only the server and saved local colors apply.
+unset DOTFILES_TMUX_BAR_COLOR DOTFILES_TMUX_ACTIVE_COLOR DOTFILES_TMUX_TEXT_COLOR
 . "$HOME/.config/shell/colors.sh"
 # Read the server's exports so a stale session environment cannot hide updates.
 server_color() {
-    assignment=$(tmux show-environment -g "$1" 2>/dev/null) || assignment=''
+    assignment=$(tmux show-environment -g "$1" 2>/dev/null) || assignment=$(printenv "$1")
     _dotfiles_color "${assignment#*=}" "$2"
 }
 bar=$(server_color DOTFILES_TMUX_BAR_COLOR '#44475a')
