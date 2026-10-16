@@ -132,6 +132,7 @@ application path unless the application can include both files.
 Use these optional files for private or machine-specific overrides:
 
 - Mac shell: `~/.zshrc.local`
+- Saved shell and tmux colors: `~/.config/shell/colors.local.sh`
 - Omarchy shell: `~/.bashrc.local`
 - Omarchy desktop: `~/.config/hypr/local.lua`
 - Ghostty: `~/.config/ghostty/local.conf`
@@ -139,8 +140,10 @@ Use these optional files for private or machine-specific overrides:
 ### Color overrides
 
 Without overrides, Bash and Zsh use their original color 37 for the path,
-Starship uses cyan, and tmux uses Dracula's original palette. Export any of these
-variables in `~/.bashrc.local` on Omarchy or `~/.zshrc.local` on macOS:
+Starship uses cyan, and tmux uses Dracula's original palette. Save any of these
+exports in `~/.config/shell/colors.local.sh` on either platform. Both the shell
+and tmux load this file, including when SSH starts tmux before an interactive
+shell. Use POSIX shell syntax and keep only color settings in this file.
 
 | Variable | Changes | Default |
 | --- | --- | --- |
@@ -149,7 +152,7 @@ variables in `~/.bashrc.local` on Omarchy or `~/.zshrc.local` on macOS:
 | `DOTFILES_TMUX_ACTIVE_COLOR` | Active tmux tab background | `#6272a4` |
 | `DOTFILES_TMUX_TEXT_COLOR` | tmux bar and tab text | `#f8f8f2` |
 
-For the purple colors on this Omarchy machine:
+For the purple colors on this Omarchy machine, create that file with:
 
 ```sh
 export DOTFILES_PATH_COLOR='#bb9af7'
@@ -158,11 +161,16 @@ export DOTFILES_TMUX_ACTIVE_COLOR='#987bc7'
 export DOTFILES_TMUX_TEXT_COLOR='#282a36'
 ```
 
-Values must use `#RRGGBB`. Unset, empty, and invalid values use the defaults.
+Values must use `#RRGGBB`. Empty and invalid values use the defaults. Move existing
+color exports from `~/.bashrc.local` or `~/.zshrc.local` into this file so tmux can
+load them at startup. Those shell override files still work for interactive use.
+
 The tmux network section keeps its original cyan. Open a new terminal after
-changing local exports. If tmux is already running, run `tmux-colors` from that
-terminal to update its colors without closing sessions. Unset variables and run
-`tmux-colors` again to restore the defaults. tmux colors apply to the whole server.
+changing saved colors. If tmux is already running, run `tmux-colors` from that
+terminal to update its colors without closing sessions. Explicit server exports
+take precedence over saved colors. To restore the defaults, remove the saved
+exports, unset those variables in the shell, and run `tmux-colors` again. tmux
+colors apply to the whole server.
 
 The Starship override is generated under `~/.cache/dotfiles/` (or
 `$XDG_CACHE_HOME/dotfiles/`). The tracked config stays unchanged. A separate

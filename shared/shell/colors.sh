@@ -1,4 +1,9 @@
 # Shared Bash/Zsh helpers. Color overrides accept only #RRGGBB.
+# Keep saved colors available to shells and directly launched tmux servers.
+if [ -r "$HOME/.config/shell/colors.local.sh" ]; then
+    . "$HOME/.config/shell/colors.local.sh"
+fi
+
 _dotfiles_color() {
     case "${1:-}" in
         \#[[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]]) printf '%s' "$1" ;;
