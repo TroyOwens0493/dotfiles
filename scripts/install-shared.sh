@@ -174,7 +174,7 @@ restore_nvim_plugins() (
   DOTFILES_NVIM_LOCK_SNAPSHOT="$staging/input.json" \
     DOTFILES_NVIM_LOCKFILE="$staging/working.json" \
     DOTFILES_NVIM_RESTORE_SCRIPT="$REPO_DIR/scripts/restore-nvim.lua" \
-    nvim --headless '+lua dofile(vim.env.DOTFILES_NVIM_RESTORE_SCRIPT)' +qa
+    nvim --headless '+lua local ok, err = pcall(dofile, vim.env.DOTFILES_NVIM_RESTORE_SCRIPT); if not ok then vim.api.nvim_err_writeln(err); vim.cmd("cquit 1") end' +qa
 )
 
 # Download only config dependencies; the pinned Pi CLI is supplied by its lockfile.

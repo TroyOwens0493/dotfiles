@@ -49,7 +49,9 @@ preserved. Secrets and permissions are not restored from this repo.
 
 ## New Omarchy machine
 
-Install Omarchy first. Use the same clone and install commands shown above.
+Install Omarchy first, then run `omarchy update -y` as your normal user. The
+offline ISO does not initialize the online package databases needed to add
+packages. Use the same clone and install commands shown above after the update.
 The installer selects `omarchy/` automatically, installs its extra packages and
 mise tools, and links the shared and Linux configs. It keeps Omarchy's packaged
 Hyprland and Bash defaults and loads your settings after them.
@@ -59,7 +61,8 @@ referenced by `shell.json`. Existing plugin installations are retained and valid
 `--configs-only` skips this download along with the other config dependencies.
 Neovim dependencies are restored to the commits in `shared/nvim/lazy-lock.json`,
 including when Omarchy already has other plugin versions cached. Setup verifies
-those checkouts and preserves the lockfile rather than accepting startup changes.
+those checkouts, fetches older pins missing from shallow caches, and preserves
+the lockfile rather than accepting startup changes.
 
 The package list covers this development setup. It is not a full backup of all
 installed applications, drivers, services, or hardware settings.
