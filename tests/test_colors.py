@@ -30,6 +30,18 @@ class ColorTests(unittest.TestCase):
                                'colors-test', str(ROOT / 'shared/shell/colors.sh'), *map(str, args)],
                               env=self.env, capture_output=True, text=True, check=True)
 
+    def save_colors(self):
+        palette = self.home / '.config/shell/colors.local.sh'
+        palette.parent.mkdir(parents=True, exist_ok=True)
+        palette.write_text("export DOTFILES_PATH_COLOR='#bb9af7'\n"
+                           "export DOTFILES_TMUX_BAR_COLOR='#bb9af7'\n"
+                           "export DOTFILES_TMUX_ACTIVE_COLOR='#987bc7'\n"
+                           "export DOTFILES_TMUX_TEXT_COLOR='#282a36'\n")
+
+    def test_shell_loads_saved_colors(self):
+        self.save_colors()
+        self.assertEqual(self.bash('_dotfiles_path_color').stdout, '#bb9af7')
+
     def test_bash_defaults_overrides_and_invalid_values(self):
         prompt = 'source "$1"; printf "%s" "$PS1"'
         config = ROOT / 'omarchy/bash/.bash_customizations'
@@ -80,9 +92,12 @@ class ColorTests(unittest.TestCase):
         self.env['DOTFILES_PATH_COLOR'] = '#bb9af7'
         result = subprocess.run(args, env=self.env, capture_output=True, text=True, check=True)
         self.assertIn('%F{#bb9af7}', result.stdout)
+        self.env.pop('DOTFILES_PATH_COLOR')
+        self.save_colors()
+        result = subprocess.run(args, env=self.env, capture_output=True, text=True, check=True)
+        self.assertIn('%F{#bb9af7}', result.stdout)
 
-    @unittest.skipUnless(shutil.which('tmux'), 'tmux is not installed')
-    def test_tmux_inherits_exports_and_reload_restores_defaults(self):
+    def start_tmux(self):
         # A private socket and HOME keep this test away from the user's server.
         executable = shutil.which('tmux')
         socket = 'dotfiles-colors-test-' + uuid.uuid4().hex
@@ -93,7 +108,7 @@ class ColorTests(unittest.TestCase):
         wrapper.chmod(0o755)
         self.env['PATH'] = str(bin_dir) + os.pathsep + self.env['PATH']
         config = self.home / '.config'
-        (config / 'shell').mkdir(parents=True)
+        (config / 'shell').mkdir(parents=True, exist_ok=True)
         (config / 'shell/colors.sh').symlink_to(ROOT / 'shared/shell/colors.sh')
         (config / 'tmux/plugins/tpm').mkdir(parents=True)
         tpm = config / 'tmux/plugins/tpm/tpm'
@@ -101,15 +116,49 @@ class ColorTests(unittest.TestCase):
         tpm.chmod(0o755)
         for name in ['colors.sh', 'tmux.conf']:
             (config / 'tmux' / name).symlink_to(ROOT / 'shared/tmux' / name)
-        self.env.update(DOTFILES_TMUX_BAR_COLOR='#bb9af7',
-                        DOTFILES_TMUX_ACTIVE_COLOR='#987bc7', DOTFILES_TMUX_TEXT_COLOR='#282a36')
 
         def tmux(*args):
             return subprocess.run([str(wrapper), *args], env=self.env,
                                   capture_output=True, text=True, check=True)
 
-        tmux('-f', str(config / 'tmux/tmux.conf'), 'new-session', '-d', '-s', 'test')
         self.addCleanup(lambda: subprocess.run([str(wrapper), 'kill-server'], env=self.env, capture_output=True))
+        tmux('-f', str(config / 'tmux/tmux.conf'), 'new-session', '-d', '-s', 'test')
+        return tmux
+
+    @unittest.skipUnless(shutil.which('tmux'), 'tmux is not installed')
+    def test_tmux_loads_saved_colors_without_shell_exports(self):
+        self.save_colors()
+        tmux = self.start_tmux()
+        colors = tmux('show-option', '-gqv', '@dracula-colors').stdout
+        self.assertIn('gray="#bb9af7"', colors)
+        self.assertIn('dark_purple="#987bc7"', colors)
+        self.assertIn('white="#282a36"', colors)
+        self.assertIn('network_blue="#8be9fd"', colors)
+
+        # Reloading from an old pane must still use the saved palette.
+        tmux('set-environment', '-t', 'test', 'DOTFILES_TMUX_BAR_COLOR', '#112233')
+        tmux('source-file', str(self.home / '.config/tmux/tmux.conf'))
+        self.assertEqual(tmux('show-option', '-gqv', '@dracula-colors').stdout, colors)
+
+        # A deliberate live override still takes precedence over the saved file.
+        self.env['DOTFILES_TMUX_BAR_COLOR'] = '#112233'
+        subprocess.run(['sh', str(ROOT / 'shared/bin/tmux-colors')],
+                       env=self.env, capture_output=True, text=True, check=True)
+        self.assertIn('gray="#112233"', tmux('show-option', '-gqv', '@dracula-colors').stdout)
+
+        # Invalid saved values fall back to the default palette.
+        (self.home / '.config/shell/colors.local.sh').write_text(
+            "export DOTFILES_TMUX_BAR_COLOR='#invalid'\n")
+        self.env.pop('DOTFILES_TMUX_BAR_COLOR')
+        subprocess.run(['sh', str(ROOT / 'shared/bin/tmux-colors')],
+                       env=self.env, capture_output=True, text=True, check=True)
+        self.assertIn('gray="#44475a"', tmux('show-option', '-gqv', '@dracula-colors').stdout)
+
+    @unittest.skipUnless(shutil.which('tmux'), 'tmux is not installed')
+    def test_tmux_inherits_exports_and_reload_restores_defaults(self):
+        self.env.update(DOTFILES_TMUX_BAR_COLOR='#bb9af7',
+                        DOTFILES_TMUX_ACTIVE_COLOR='#987bc7', DOTFILES_TMUX_TEXT_COLOR='#282a36')
+        tmux = self.start_tmux()
         colors = tmux('show-option', '-gqv', '@dracula-colors').stdout
         self.assertIn('gray="#bb9af7"', colors)
         self.assertIn('dark_purple="#987bc7"', colors)
