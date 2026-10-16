@@ -1,6 +1,8 @@
 """Check dependency retries without downloading software or touching real configs."""
+import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -64,6 +66,74 @@ fi
         self.assertEqual(sum(line.startswith('plugin add ') for line in calls), 1)
         self.assertEqual(sum(line.startswith('plugin validate ') for line in calls), 2)
         self.assertNotIn('--enable', '\n'.join(calls))
+
+    @unittest.skipUnless(shutil.which('nvim'), 'Neovim is required for the shallow-cache regression')
+    def test_nvim_fetches_old_pin_from_shallow_cache(self):
+        """Use real Git history and Neovim to restore a pin absent from an ISO cache."""
+        origin = self.base / 'origin with spaces'
+        subprocess.run(['git', 'init', '-q', '-b', 'main', str(origin)], check=True)
+
+        def git(directory, *args, check=True):
+            return subprocess.run(['git', '-C', str(directory), *args], check=check,
+                                  capture_output=True, text=True)
+
+        git(origin, 'config', 'user.name', 'Installer Test')
+        git(origin, 'config', 'user.email', 'installer@example.invalid')
+        for content in ('locked', 'newer'):
+            (origin / 'plugin.lua').write_text(content)
+            git(origin, 'add', '.')
+            git(origin, '-c', 'commit.gpgsign=false', 'commit', '-qm', content)
+            if content == 'locked':
+                pinned = git(origin, 'rev-parse', 'HEAD').stdout.strip()
+
+        self.original = json.dumps({'example': {'branch': 'main', 'commit': pinned}}) + '\n'
+        self.lock.write_text(self.original)
+        (self.repo / 'scripts').mkdir()
+        shutil.copy2(ROOT / 'scripts/restore-nvim.lua', self.repo / 'scripts/restore-nvim.lua')
+        init = self.base / 'init.lua'
+        init.write_text('''
+local plugin = { dir = vim.env.TEST_PLUGIN_DIR, _ = { is_local = false } }
+package.preload["lazy.core.config"] = function() return { plugins = { example = plugin } } end
+package.preload["lazy.manage.lock"] = function() return { lock = {}, _loaded = false } end
+package.preload["lazy.core.plugin"] = function() return { has_errors = function() return false end } end
+package.preload["lazy"] = function()
+  return { restore = function()
+    local pin = require("lazy.manage.lock").lock.example.commit
+    vim.fn.system({ "git", "-C", plugin.dir, "checkout", "--detach", pin })
+  end }
+end
+''')
+        nvim = self.bin / 'nvim'
+        nvim.write_text('''#!/bin/bash
+exec "$REAL_NVIM" -u "$TEST_NVIM_INIT" -i NONE --noplugin "$@"
+''')
+        nvim.chmod(0o755)
+        home = self.base / 'isolated home'
+        home.mkdir()
+        self.env.update(HOME=str(home), REAL_NVIM=shutil.which('nvim'),
+                        TEST_NVIM_INIT=str(init), GIT_CONFIG_GLOBAL=os.devnull,
+                        GIT_CONFIG_SYSTEM=os.devnull)
+        for reachable in (True, False):
+            with self.subTest(origin_reachable=reachable):
+                cache = self.base / f'cache-{reachable}'
+                subprocess.run(['git', 'clone', '-q', '--depth=1', origin.as_uri(), str(cache)], check=True)
+                self.assertNotEqual(git(cache, 'cat-file', '-e', pinned, check=False).returncode, 0)
+                before = git(cache, 'rev-parse', 'HEAD').stdout.strip()
+                if not reachable:
+                    git(cache, 'remote', 'set-url', 'origin', (self.base / 'missing').as_uri())
+                self.env['TEST_PLUGIN_DIR'] = str(cache)
+                result = self.run_helper('install-shared.sh', 'restore_nvim_plugins', check=False)
+                self.assertEqual(result.returncode, 0 if reachable else 1, result.stderr)
+                self.assertEqual(git(cache, 'rev-parse', 'HEAD').stdout.strip(), pinned if reachable else before)
+                self.assertEqual(self.lock.read_text(), self.original)
+
+        # A Lua exception must also fail the installer; Neovim otherwise exits
+        # successfully after reporting a command-line error and running +qa.
+        (self.repo / 'scripts/restore-nvim.lua').write_text('error("forced restore failure")\n')
+        result = self.run_helper('install-shared.sh', 'restore_nvim_plugins', check=False)
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn('forced restore failure', result.stderr)
+        self.assertEqual(self.lock.read_text(), self.original)
 
 
 if __name__ == '__main__':

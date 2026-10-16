@@ -283,7 +283,8 @@ class InstallerTests(unittest.TestCase):
         self.assertIn('TPM /test/socket,42,0', calls)
         self.assertIn('kill-server', calls)
         self.assertIn('git-lfs install', calls)
-        self.assertIn('nvim --headless +lua dofile(vim.env.DOTFILES_NVIM_RESTORE_SCRIPT) +qa', calls)
+        self.assertIn('nvim --headless +lua ', calls)
+        self.assertIn('pcall(dofile, vim.env.DOTFILES_NVIM_RESTORE_SCRIPT)', calls)
         self.assertEqual(calls.count('omarchy plugin add '), 1)
         self.assertEqual(calls.count('omarchy plugin validate '), 2)
 
