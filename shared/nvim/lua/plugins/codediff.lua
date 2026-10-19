@@ -6,7 +6,7 @@ local function review_pr()
     end
 
     if vim.fn.executable('gh') == 0 then
-        vim.notify('GitHub CLI (gh) is required to find the PR base', vim.log.levels.ERROR)
+        vim.notify('GitHub CLI (gh) is required to find the branch PR', vim.log.levels.ERROR)
         return
     end
 
@@ -24,57 +24,23 @@ local function review_pr()
     end
 
     local function on_branch(branch)
-        local function on_base(base)
-            local ref = 'refs/remotes/origin/' .. base
-            local function open_diff()
-                vim.api.nvim_cmd({ cmd = 'CodeDiff', args = { '--repo', root, ref, 'HEAD' } }, {})
+        local function on_pr(output)
+            if output == '' then
+                vim.notify('No open PR found for branch ' .. branch, vim.log.levels.ERROR)
+                return
             end
 
-            local function on_merge()
-                vim.cmd('checktime')
-                open_diff()
-            end
-
-            local function on_current_branch(current_branch)
-                if current_branch ~= branch then
-                    vim.notify('Branch changed during fetch; run the shortcut again', vim.log.levels.ERROR)
-                    return
-                end
-
-                vim.notify('Merging origin/' .. base .. '…')
-                run({ 'git', 'merge', '--no-ff', '--no-edit', '--no-autostash', ref }, on_merge)
-            end
-
-            local function on_status(status)
-                if status ~= '' then
-                    vim.notify('Commit or stash changes before merging the PR base', vim.log.levels.ERROR)
-                    return
-                end
-
-                run({ 'git', 'symbolic-ref', '--short', 'HEAD' }, on_current_branch)
-            end
-
-            local function on_count(count)
-                if count == '0' then
-                    open_diff()
-                    return
-                end
-
-                run({ 'git', 'status', '--porcelain' }, on_status)
-            end
-
-            local function on_fetch()
-                run({ 'git', 'rev-list', '--count', 'HEAD..' .. ref }, on_count)
-            end
-
-            vim.notify('Fetching origin/' .. base .. '…')
-            run({ 'git', 'fetch', 'origin', '+refs/heads/' .. base .. ':' .. ref }, on_fetch)
+            local pr = vim.json.decode(output)
+            vim.api.nvim_cmd({
+                cmd = 'CodeDiff',
+                args = { '--repo', root, 'pr', tostring(pr.number), '--base', pr.baseRefName },
+            }, {})
         end
 
         run({
             'gh', 'pr', 'list', '--head', branch, '--state', 'open', '--limit', '1',
-            '--json', 'baseRefName', '--jq', '.[0].baseRefName // "main"',
-        }, on_base)
+            '--json', 'number,baseRefName', '--jq', '.[0] // empty',
+        }, on_pr)
     end
 
     run({ 'git', 'symbolic-ref', '--short', 'HEAD' }, on_branch)
@@ -101,7 +67,7 @@ return {
         },
     },
     keys = {
-        { '<leader>gp', review_pr, desc = 'Fetch and merge PR base, then review branch' },
+        { '<leader>gp', review_pr, desc = 'Review current branch PR' },
         { '<leader>gc', '<cmd>CodeDiff HEAD^ HEAD<CR>', desc = 'Review latest commit' },
         { '<leader>gu', '<cmd>CodeDiff<CR>', desc = 'Review unstaged changes' },
     },
