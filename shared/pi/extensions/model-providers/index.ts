@@ -1,7 +1,6 @@
-import { openaiCodexProvider } from "@earendil-works/pi-ai/providers/openai-codex";
+import { builtinProviders } from "@earendil-works/pi-ai/providers/all";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
-const codexProvider = openaiCodexProvider();
 const gpt6Astra = {
   id: "gpt-6-astra",
   name: "GPT-6 Astra",
@@ -45,6 +44,11 @@ const gpt6Luna = {
 
 /** Registers the Codex subscription models under the OpenAI provider name. */
 export default function modelProviders(pi: ExtensionAPI) {
+  const codexProvider = builtinProviders().find(
+    (provider) => provider.id === "openai-codex",
+  );
+  if (!codexProvider) throw new Error("Pi's Codex provider is unavailable");
+
   pi.registerProvider({
     ...codexProvider,
     id: "openai",
