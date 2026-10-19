@@ -12,7 +12,7 @@ CodeDiff opens a file list beside a split diff:
 
 | Shortcut | Comparison |
 | --- | --- |
-| `Space gp` | Fetch and merge the PR base, then compare it against the current branch's `HEAD` |
+| `Space gp` | Review the current branch's open PR with `CodeDiff pr <number>` |
 | `Space gc` | Latest commit: `HEAD^` against `HEAD` |
 | `Space gu` | Unstaged changes: index against working files |
 
@@ -21,11 +21,12 @@ close the diff. The colorscheme follows the selected file's language, including
 while focus stays in the file list. Staged changes are hidden by default; `gs`
 in the file list toggles them.
 
-`Space gp` uses the GitHub CLI (`gh`) to find the open PR's base branch. If no
-open PR exists, it uses `main`. It fetches the base from `origin` and, if the
-base has commits missing from `HEAD`, merges it with `--no-ff --no-edit` before
-opening CodeDiff. A merge requires a clean working tree. Lookup, fetch, or
-merge failures stop the shortcut; resolve any merge conflicts before retrying.
+`Space gp` uses the GitHub CLI (`gh`) to find the current branch's open PR
+number and base branch. It opens `CodeDiff pr <number> --base <base-branch>`,
+which fetches the published PR from `origin` and shows its merge-base diff.
+It does not merge or change your working files, and it works with uncommitted
+changes. Local commits that you have not pushed are not part of this view.
+If no open PR exists, or a lookup or fetch fails, the shortcut reports an error.
 
 ## Plugins
 
