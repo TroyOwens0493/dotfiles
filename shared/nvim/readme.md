@@ -21,6 +21,16 @@ close the diff. The colorscheme follows the selected file's language, including
 while focus stays in the file list. Staged changes are hidden by default; `gs`
 in the file list toggles them.
 
+To explain code, select it with Visual mode in a diff pane and press `Space ge`.
+The result window shows one `line number: explanation` entry for each selected
+line. Use movement keys to scroll, then press `q` or `Esc` to close it. Change
+`ai.explain_keymap` in `lua/plugins/codediff.lua` to use a different shortcut.
+The AI uses ASD-STE100 Simplified Technical English. Character and block
+selections include the full source lines they touch.
+
+When `~/nvimPuginDev/codediff.nvim` exists, Neovim uses that local checkout.
+Otherwise it uses the configured GitHub fork and branch.
+
 `Space gp` uses the GitHub CLI (`gh`) to find the current branch's open PR
 number and base branch. It opens `CodeDiff pr <number> --base <base-branch>`,
 which fetches the published PR from `origin` and shows its merge-base diff.
