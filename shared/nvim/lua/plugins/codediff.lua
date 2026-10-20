@@ -48,6 +48,8 @@ end
 
 return {
     'TroyOwens0493/codediff.nvim',
+    dir = vim.fn.isdirectory(vim.fn.expand('~/nvimPuginDev/codediff.nvim')) == 1
+        and vim.fn.expand('~/nvimPuginDev/codediff.nvim') or nil,
     branch = 'feat/ai-change-summaries',
     cmd = { 'CodeDiff', 'CodeDiffAI' },
     opts = {
@@ -57,6 +59,7 @@ return {
             auto_summary = true,
             keymap = 'gs',
             why_keymap = 'gb',
+            explain_keymap = '<leader>ge',
             detail = 'detailed',
             max_input_bytes = math.huge,
         },
