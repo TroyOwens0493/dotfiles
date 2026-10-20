@@ -56,7 +56,7 @@ local function update_diff_file(event)
     if not data or not data.tabpage then
         return
     end
-    diff_files[data.tabpage] = event.match == "CodeDiffFileSelect" and data.path or nil
+    diff_files[data.tabpage] = event.match:find("FileSelect$", 1) and data.path or nil
     schedule_update()
 end
 
@@ -70,6 +70,6 @@ vim.api.nvim_create_autocmd({ "FileType", "BufEnter", "WinEnter", "VimEnter", "T
 
 vim.api.nvim_create_autocmd("User", {
     group = group,
-    pattern = { "CodeDiffFileSelect", "CodeDiffClose" },
+    pattern = { "CodeDiffFileSelect", "CodeDiffClose", "CodeDiffReviewFileSelect", "CodeDiffReviewClose" },
     callback = update_diff_file,
 })
