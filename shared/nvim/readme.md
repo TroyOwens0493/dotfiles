@@ -22,11 +22,19 @@ while focus stays in the file list. Staged changes are hidden by default; `gs`
 in the file list toggles them.
 
 To explain code, select it with Visual mode in a diff pane and press `Space ge`.
-The result window shows one `line number: explanation` entry for each selected
-line. Use movement keys to scroll, then press `q` or `Esc` to close it. Change
+The floating window shows the selected code on the left and its explanations
+on the right. Both panes scroll together. Use movement keys to scroll, then
+press `q` or `Esc` to close it. Change
 `ai.explain_keymap` in `lua/plugins/codediff.lua` to use a different shortcut.
 The AI uses ASD-STE100 Simplified Technical English. Character and block
 selections include the full source lines they touch.
+
+CodeDiff's AI features are implemented in the fork: change summaries (`gs`),
+purpose explanations (`gb`), selected-line explanations, loading indicators,
+Codex sign-in, and guided review. The config sets preferences and key bindings;
+it does not build prompts, send AI requests, or render AI results.
+Run `:CodeDiffReview start` to generate or open a guided review. This command
+also loads the plugin when no CodeDiff comparison has been opened yet.
 
 When `~/nvimPuginDev/codediff.nvim` exists, Neovim uses that local checkout.
 Otherwise it uses the configured GitHub fork and branch.

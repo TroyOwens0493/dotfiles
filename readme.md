@@ -1,8 +1,12 @@
 # Personal configs for Mac and Omarchy
 
 One repo holds the shared application settings and the settings for each operating
-system. `install.sh` detects the platform and links the selected files into their
-normal locations. Keep new checkouts outside `~/.config`.
+system. For agent-led setup, ask an agent to follow [install.md](install.md).
+The guide covers packages, config links, local data, and checks for each platform.
+Keep new checkouts outside `~/.config`.
+
+`install.sh` and its helpers remain available. The script commands below are kept
+as a reference while setup moves to the agent guide.
 
 ```text
 shared/       Neovim, tmux, Pi, OpenCode, Git ignore, NuGet, Shopify,
