@@ -10,11 +10,6 @@ local function grep_prompt()
     builtin.grep_string({ search = vim.fn.input("Grep > ") })
 end
 
-local function toggle_supermaven()
-    require("supermaven-nvim.api").toggle()
-    print("Supermaven is now " .. (require("supermaven-nvim.api").is_running() and "active" or "inactive"))
-end
-
 local function toggle_trouble()
     require("trouble").toggle()
 end
@@ -108,8 +103,6 @@ vim.keymap.set("n", "<leader>lg", open_lazygit, { noremap = true, silent = true,
 
 -- Keymap to open .md preview
 vim.keymap.set("n", "<leader>md", "<cmd>Glow<CR>", { desc = "Open Markdown Preview" })
-
-vim.keymap.set("n", "<leader>ts", toggle_supermaven, { desc = "Toggle Supermaven" })
 
 vim.keymap.set("n", "<leader>xx", toggle_trouble)
 vim.keymap.set("n", "<leader>xX", toggle_workspace_diagnostics)
