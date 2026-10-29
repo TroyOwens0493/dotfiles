@@ -12,7 +12,6 @@ macos/        AeroSpace, cmux, Ghostty, Zsh, Homebrew, and Omarchy project sync
 omarchy/      Hyprland, workspace bar plugin, Ghostty, Bash, Starship,
               mise runtimes, and extra Arch packages
 scripts/      Neovim plugin restoration and config backup restoration
-tests/        Color and Neovim restore checks with temporary home folders
 ```
 
 The shell files from the former shell-only repo are included. That separate repo
@@ -245,17 +244,3 @@ Local changes, conflicting history, active Git operations, and detached remote
 checkouts are skipped. Uncommitted remote files, dependency folders, and private
 environment files are not transferred. This is one-way project sync; use Git
 push/pull to share this config repo.
-
-## Checks
-
-```sh
-python3 -m unittest discover -s tests -v
-python3 -m unittest discover -s macos/omarchy-sync -v
-lua omarchy/tests/aerospace-layout.lua
-lua omarchy/tests/macos-keys.lua
-```
-
-The Python tests use temporary files and isolated application sessions. They
-check color settings and the Neovim restore commands from `install.md`, including
-missing pinned commits and restore failures. They do not run a full setup or
-install platform packages.

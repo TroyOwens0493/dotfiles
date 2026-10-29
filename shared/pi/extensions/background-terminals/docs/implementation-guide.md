@@ -45,26 +45,17 @@ extensions/background-terminals/
 ├── index.ts                  # extension edge: tools, command, widget, events (plain TS + runTool)
 ├── docs/
 │   └── implementation-guide.md   (this file)
-├── src/
-│   ├── domain.ts             # types, status union, errors, formatting helpers
-│   ├── manager.ts            # TerminalManager Context.Service + Layer (the Effect core)
-│   ├── output.ts             # OutputBuffer: bounded decoded text + byte counters (plain TS class)
-│   ├── runtime.ts            # ManagedRuntime factory + runTool helper (copy of subagents')
-│   ├── prompt.ts             # all model-facing strings (tool descriptions, result builders)
-│   ├── result-delivery.ts    # deferred one-shot delivery map (copy of subagents')
-│   └── ui/
-│       ├── ps.ts             # /ps picker + detail view components
-│       └── output-view.ts    # stdout/stderr → wrapped display lines
-├── manager.test.ts           # node:test end-to-end through a real ManagedRuntime
-├── output.test.ts            # OutputBuffer truncation/decoding unit tests
-├── result-delivery.test.ts   # (copied semantics, tiny)
-└── ps.test.ts                # selection-reconciliation tests (like takeover.test.ts)
+└── src/
+    ├── domain.ts             # types, status union, errors, formatting helpers
+    ├── manager.ts            # TerminalManager Context.Service + Layer (the Effect core)
+    ├── output.ts             # OutputBuffer: bounded decoded text + byte counters (plain TS class)
+    ├── runtime.ts            # ManagedRuntime factory + runTool helper (copy of subagents')
+    ├── prompt.ts             # all model-facing strings (tool descriptions, result builders)
+    ├── result-delivery.ts    # deferred one-shot delivery map (copy of subagents')
+    └── ui/
+        ├── ps.ts             # /ps picker + detail view components
+        └── output-view.ts    # stdout/stderr → wrapped display lines
 ```
-
-Tests live at the package root, plain `node --test --experimental-strip-types`, exactly like
-`extensions/subagents/package.json`'s `test` script. Note the repo-root `package.json` test
-script (`node --test --experimental-strip-types extensions/*/*.test.ts`) will automatically
-pick these up.
 
 ## 3. Toolchain (copy exactly, per effect-v4-extension-guide.md §1)
 
@@ -77,8 +68,7 @@ pick these up.
   "type": "module",
   "scripts": {
     "check": "tsc --noEmit -p .",
-    "prepare": "effect-tsgo patch",
-    "test": "node --test --experimental-strip-types manager.test.ts output.test.ts result-delivery.test.ts ps.test.ts"
+    "prepare": "effect-tsgo patch"
   },
   "dependencies": {
     "effect": "^4.0.0-beta.99"
@@ -96,7 +86,7 @@ pick these up.
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": { "plugins": [{ "name": "@effect/language-service" }] },
-  "include": ["index.ts", "src/**/*.ts", "*.test.ts"]
+  "include": ["index.ts", "src/**/*.ts"]
 }
 ```
 
@@ -719,7 +709,7 @@ Copy `SubagentDashboard` (`src/ui/takeover.ts` lines 109–344) with terminal ro
   `dispose()`/`cleanup()` (idempotent closed-flag pattern — copy it exactly; overlay components
   are disposed on close and must not be reused, tui.md "Overlay Lifecycle").
 - Keep list selection stable across refreshes with `reconcileDashboardSelection` (takeover.ts
-  lines 95–107) — copy it and its test (`takeover.test.ts`).
+  lines 95–107) — copy the helper.
 
 ### 11.2 Stage 2 — detail (read-only inspector)
 
@@ -820,48 +810,8 @@ All clamped by `Math.min(..., DEFAULT_MAX_BYTES)` and `DEFAULT_MAX_LINES` (impor
 `@earendil-works/pi-coding-agent`, verified exported in `dist/index.d.ts`) — same defensive
 clamp as `truncatedOutput` in subagents index.ts. Always `truncateTail` for process output.
 
-## 14. Test plan
+## 14. Manual validation
 
-Follow the house style: `node:test` + `assert/strict`, end-to-end through a real
-`ManagedRuntime`, minimal count, deterministic (subagents `manager.test.ts` is the template,
-including the `withManager` fixture that guarantees `runtime.dispose()` in `finally`).
-
-**`output.test.ts`** (pure, no processes)
-1. push/view roundtrip; totalBytes/truncatedBytes accounting when the cap evicts head chunks.
-2. multibyte boundary: feeding split UTF-8 via setEncoding path is Node's job, but verify the
-   buffer never splits what it was given and byte counts use `Buffer.byteLength`.
-3. spill callback receives every chunk in order even after eviction.
-
-**`manager.test.ts`** (real processes — use `node -e` one-liners for portability, no shell
-tricks; they exist on any machine running pi)
-1. happy path: `start` node printing to stdout+stderr then exiting 0 → status transitions
-   running→done, exitCode 0, both buffers correct and separate, settle hook fired once with
-   `consumed: false`.
-2. non-zero exit → `failed`, exitCode captured.
-3. `kill` on a `setInterval` never-exiting script → `killed`, signal recorded, `kill()` only
-   resolves after settle; second `kill` of same id reports already-settled, no error.
-4. process-tree termination: spawn a grandchild that updates a unique heartbeat sentinel,
-   kill, then use bounded polling with an explicit timeout to confirm both that the process is
-   gone and that its unique sentinel stopped changing. The sentinel ties the assertion to the
-   spawned child so PID reuse cannot create a false pass.
-5. concurrency cap: cap+1 concurrent starts → last fails with ConcurrencyLimitError;
-   reservation released on spawn failure (start a bogus binary → SpawnError → slot free).
-6. consumed semantics: settle during an in-flight `kill` reports `consumed: true`.
-7. `disposeAll` (via `runtime.dispose()`) kills a running process and settles it as killed;
-   no settle hook fires after dispose (`disposed` guard).
-8. pruning: exceed MAX_TRACKED with settled entries → oldest pruned, running never pruned.
-9. SIGTERM-resistant process → SIGKILL after the 2s grace, within the 5s close bound.
-10. aborted `bg_kill` wait → detached escalation still reaches SIGKILL and settles.
-11. overlapping multi-id kills → every caller observes every captured settlement; each
-    settle hook fires once and consumed state remains true.
-12. shell `exit` without stdio `close` → bounded cleanup reaps the descendant holding the
-    pipes, preserves the shell's natural exit status, and releases the running slot.
-
-**`result-delivery.test.ts`** — consume-before-drain, drain-once (copy subagents' file).
-
-**`ps.test.ts`** — `reconcileTerminalSelection` behavior (copy `takeover.test.ts` cases).
-
-**Manual validation (must actually run pi):**
 - `pi` → ask the model to `bg_start` a dev-server-like command → widget appears above editor
   with correct count/pluralization → `/ps` list → enter detail → live tail scrolls, `t`
   toggles stderr, ANSI-heavy output (e.g. `npm run dev`) renders without smearing → back →
@@ -871,7 +821,7 @@ tricks; they exist on any machine running pi)
   as follow-up after the turn, not mid-stream, and only once.
 - `/new` and `/reload` with a running process → process is dead afterwards (`ps aux | grep`),
   no orphan, widget cleared.
-- `npm run check` green; `npm test` green; repo-root `npm run format:check` clean for the new
+- `npm run check` green; repo-root `npm run format:check` clean for the new
   files (prettier covers `extensions/**/*.ts`).
 
 ## 15. Pitfalls (each burned someone in the reference code)
@@ -915,7 +865,6 @@ tricks; they exist on any machine running pi)
 ## 16. Acceptance checklist
 
 - [ ] `npm install && npm run check` green in `extensions/background-terminals` (TS7 + Effect LS).
-- [ ] `npm test` green (manager, output, result-delivery, ps selection).
 - [ ] Tools registered: `bg_start`, `bg_status`, `bg_list`, `bg_kill`; descriptions document
       no-stdin, session-scoped lifetime, and truncation limits; no stdin/steer surface exists.
 - [ ] stdout and stderr captured separately and completely (in-memory tail + spill file);

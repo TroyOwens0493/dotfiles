@@ -491,7 +491,6 @@ views are exercised end to end:
     ├── read-model.ts          # sync SubagentReadModel bridge for the TUI
     ├── runtime.ts             # AppLayer composition + ManagedRuntime create/dispose helpers
     ├── result-delivery.ts     # deferred delivery buffer (copied from v1, unchanged)
-    ├── result-delivery.test.ts
     ├── prompt.ts              # all model-facing strings (v1 copy + `agent` param description)
     ├── format.ts              # elapsed/context-utilization/activity-status formatting
     │                          # (merged copies of ../shared/{context-utilization,activity-status}.ts)
@@ -508,9 +507,7 @@ Notes:
   `backends/pi.ts` when implemented. The `resolveStandaloneChildProjectTrust` logic *is*
   still referenced by the design (SpawnTask.parentContext.projectTrusted) so the tool
   layer computes trust the same way v1 does.
-- Suggested project scripts (per house rules, to be added): `check` (`tsc --noEmit`),
-  `test` (`node --test` or vitest for `result-delivery` + manager fold tests against
-  stub backends).
+- Suggested project script (per house rules): `check` (`tsc --noEmit`).
 
 ---
 
