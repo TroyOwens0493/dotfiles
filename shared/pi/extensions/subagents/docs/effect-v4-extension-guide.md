@@ -73,7 +73,7 @@ setup — do **not** float the versions.
   "compilerOptions": {
     "plugins": [{ "name": "@effect/language-service" }],
   },
-  "include": ["index.ts", "src/**/*.ts", "*.test.ts"],
+  "include": ["index.ts", "src/**/*.ts"],
 }
 ```
 
@@ -324,7 +324,6 @@ or format:
 cd extensions/<ext>
 npm install        # first time / after dep or script edits — runs `prepare` (effect-tsgo patch)
 npm run check      # tsc --noEmit -p .  ← ground-truth green/red
-npm run test       # only if the extension defines tests; keep them minimal
 ```
 
 `extensions/subagents` is the known-green reference: `npm run check` there exits 0 against

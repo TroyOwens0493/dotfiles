@@ -87,13 +87,11 @@ minimization. Hyprland's Lua layout API does not pass mouse resize deltas to
 this layout; use the resize keys for tiled windows. Floating windows retain
 native mouse resizing. Native Hyprland groups remain separate from the tree.
 
-## Checks and restore
+## Reload and restore
 
-From the repository root:
+After a config change:
 
 ```sh
-lua omarchy/tests/aerospace-layout.lua
-lua omarchy/tests/macos-keys.lua
 hyprctl reload
 hyprctl configerrors
 ```

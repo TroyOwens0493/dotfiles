@@ -7,7 +7,6 @@
 !/macos/
 !/omarchy/
 !/scripts/
-!/tests/
 
 # Local machine overrides and generated/private state.
 local/
@@ -38,7 +37,6 @@ __pycache__/
 # Legacy sync paths on Macs with an in-place migration.
 /omarchy/settings.json
 /omarchy/sync.py
-/omarchy/test_sync.py
 *.bak.*
 .dotfiles-package-lock
 .zshrc.local
