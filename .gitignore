@@ -1,7 +1,6 @@
 # Only the reviewed source directories are tracked.
 /*
 !/.gitignore
-!/install.sh
 !/install.md
 !/readme.md
 !/shared/

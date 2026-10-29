@@ -5,25 +5,22 @@ system. For agent-led setup, ask an agent to follow [install.md](install.md).
 The guide covers packages, config links, local data, and checks for each platform.
 Keep new checkouts outside `~/.config`.
 
-`install.sh` and its helpers remain available. The script commands below are kept
-as a reference while setup moves to the agent guide.
-
 ```text
 shared/       Neovim, tmux, Pi, OpenCode, Git ignore, NuGet, Shopify,
               shared Ghostty appearance, and command launchers
 macos/        AeroSpace, cmux, Ghostty, Zsh, Homebrew, and Omarchy project sync
 omarchy/      Hyprland, workspace bar plugin, Ghostty, Bash, Starship,
               mise runtimes, and extra Arch packages
-scripts/      Install helpers and backup restoration
-tests/       Installer checks with temporary home folders
+scripts/      Neovim plugin restoration and config backup restoration
+tests/        Color and Neovim restore checks with temporary home folders
 ```
 
 The shell files from the former shell-only repo are included. That separate repo
 is no longer required. The Omarchy settings were imported from the running
 Omarchy 4.0.4 machine, including its custom AeroSpace-style workspace controls and
 Bash prompt.
-The installer requires an existing Omarchy installation with Lua Hyprland configs;
-it does not install Linux or support older `.conf`-based Omarchy desktops.
+Setup requires an existing Omarchy installation with Lua Hyprland configs.
+The guide does not install Linux or support older `.conf`-based Omarchy desktops.
 
 ## New Mac
 
@@ -33,18 +30,19 @@ using HTTPS, or use your own configured SSH URL:
 ```sh
 git clone https://github.com/TroyOwens0493/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-./install.sh --dry-run
-./install.sh
 ```
 
-The installer installs Homebrew when needed, installs `macos/Brewfile`, links the
-shared and Mac settings, and installs Pi dependencies, tmux plugins, and Neovim
-plugins. The Zsh config loads the included aliases, paths, and prompt. Homebrew
-paths support both Apple Silicon and Intel Macs.
+Ask an agent to follow [install.md](install.md) on the Mac. Ask for a preview
+first if you want to check the planned changes. Full setup installs Homebrew when
+needed, installs `macos/Brewfile`, links the shared and Mac settings, and installs
+Pi dependencies, tmux plugins, and Neovim plugins. The Zsh config loads the
+included aliases, paths, and prompt. Homebrew paths support both Apple Silicon
+and Intel Macs.
 
 The Mac package setup installs OpenCode 2 from `anomalyco/tap/opencode-v2`.
 It removes the old Homebrew `opencode` formula first because both provide the
-same command. After pulling this package change, run `./install.sh` to apply it.
+same command. Follow the macOS package steps in [install.md](install.md#macos)
+to apply this change.
 
 Open a new terminal after installation. Grant AeroSpace Accessibility permission.
 Sign into your applications and AI tools. Configure Git identity, signing keys,
@@ -55,14 +53,15 @@ preserved. Secrets and permissions are not restored from this repo.
 
 Install Omarchy first, then run `omarchy update -y` as your normal user. The
 offline ISO does not initialize the online package databases needed to add
-packages. Use the same clone and install commands shown above after the update.
-The installer selects `omarchy/` automatically, installs its extra packages and
-mise tools, and links the shared and Linux configs. It keeps Omarchy's packaged
-Hyprland and Bash defaults and loads your settings after them.
+packages. Use the clone commands shown above after the update. Then ask an
+agent to follow [install.md](install.md) on the Omarchy machine. Setup uses
+`omarchy/`, installs its extra packages and mise tools, and links the shared and
+Linux configs. It keeps Omarchy's packaged Hyprland and Bash defaults and loads
+your settings after them.
 
 Dependency sync also installs the [System Pulse bar widget](https://github.com/lucaslus/omarchy-statusline)
-referenced by `shell.json`. Existing plugin installations are retained and validated;
-`--configs-only` skips this download along with the other config dependencies.
+referenced by `shell.json`. Setup keeps and validates existing plugin installations.
+A configs-only request skips this download and the other config dependencies.
 Neovim dependencies are restored to the commits in `shared/nvim/lazy-lock.json`,
 including when Omarchy already has other plugin versions cached. Setup verifies
 those checkouts, fetches older pins missing from shallow caches, and preserves
@@ -78,31 +77,31 @@ hyprctl reload
 hyprctl configerrors
 ```
 
-Restart Ghostty and other applications to load their settings. The installer does
-not restart your running desktop or terminal. Complete application sign-ins and
+Restart Ghostty and other applications to load their settings. The guide leaves
+your running desktop and terminal active. Complete application sign-ins and
 restore your SSH access separately.
 
-Keep `~/.config/hypr/monitors.lua` on each machine. The installer does not replace
-it. See `omarchy/hypr/AEROSPACE.md` for the shared workspace controls.
+Keep `~/.config/hypr/monitors.lua` on each machine. Setup preserves this file.
+See `omarchy/hypr/AEROSPACE.md` for the shared workspace controls.
 
-## Install options
+## Setup scope
 
-```sh
-./install.sh --dry-run         # Preview links; no files or packages change.
-./install.sh --configs-only    # Link configs; no dependency downloads.
-./install.sh --skip-packages   # Link configs and install config dependencies.
-./install.sh --platform macos --dry-run
-./install.sh --platform omarchy --dry-run
-```
+Ask an agent to follow [install.md](install.md) with one of these scopes:
 
-Run the installer as your normal user. Package commands request administrator
-access when needed. Run the full installer when package lists change. The
-installer does not pull, commit, or push this repo automatically.
+| Scope | Work to do |
+| --- | --- |
+| Full setup | Install packages, link configs, and install config dependencies. |
+| Configs only | Link configs with no package or dependency downloads. |
+| Skip packages | Link configs and install config dependencies with existing tools. |
+| Preview / dry run | Report planned changes without changing files or downloading software. |
 
-It uses its own directory, so an existing checkout at `~/.config` still works.
-For a new checkout, use `~/dotfiles`. Do not move a checkout without running its
-installer again: the active configs use absolute links to it. These configs use
-`~/.config`; a different `XDG_CONFIG_HOME` is rejected before installation.
+Run setup as your normal user. Use administrator access only for package commands
+that need it. Use full setup when package lists change. The guide does not pull,
+commit, or push this repo unless you ask.
+
+For a new checkout, use `~/dotfiles`. If you move a checkout, follow the guide
+again to update its absolute config links. These configs use `~/.config`.
+If `XDG_CONFIG_HOME` points elsewhere, resolve that conflict before setup.
 
 ## Edit and share settings
 
@@ -118,16 +117,17 @@ Credentials, sessions, and custom Pi extensions remain local. The `pi` command i
 For Ghostty, edit shared appearance in `shared/ghostty/common.conf`. Edit platform
 options in `macos/ghostty/config` or `omarchy/ghostty/config`.
 
-Commit and push reviewed edits. On the other machine, pull the changes and run:
+Commit and push reviewed edits. On the other machine, pull the changes:
 
 ```sh
 cd ~/dotfiles
 git pull --ff-only
-./install.sh --skip-packages
 ```
 
 Use the actual checkout path if it differs. Existing links use updated files
-immediately. Run the installer to add new links, then reload the affected apps.
+immediately. Ask an agent to follow [install.md](install.md) with the skip-packages
+scope to add new links and restore dependencies. Use full setup if package lists
+changed. Then reload the affected apps.
 A shared file has one owner; do not add a second platform config for the same
 application path unless the application can include both files.
 
@@ -180,15 +180,14 @@ The Starship override is generated under `~/.cache/dotfiles/` (or
 `$XDG_CACHE_HOME/dotfiles/`). The tracked config stays unchanged. A separate
 custom `STARSHIP_CONFIG` is preserved.
 
-Before replacing a config, the installer saves it under
-`~/.dotfiles-backup/<installation-directory>/`. It prints the backup path.
-Correct links are left alone when you run it again. Shell files are backed up
-before replacement; move any additional private shell settings into the local
-files above.
+The guide requires a backup before replacing a config. Backups go under
+`~/.dotfiles-backup/<date>-<unique-suffix>/`, and the agent reports the backup path.
+Setup keeps correct links and backs up shell files before replacement. Move any
+additional private shell settings into the local files above.
 
 If both `~/.pi/agent` and `~/.config/pi` contain separate Pi installations, setup
 stops before changing files. Combine their local state first. A single existing
-Pi installation is preserved automatically.
+Pi installation is preserved during setup.
 
 To undo one config installation, use the backup path printed by that run:
 
@@ -202,8 +201,8 @@ after restoration. The replaced current files are also saved for recovery.
 
 Only reviewed source folders are allowed by `.gitignore`. Credentials, sessions,
 local overrides, dependencies, and backups are excluded. Add new source files
-inside the appropriate group and update the install helper for their target paths.
-Always review staged changes before committing.
+inside the appropriate group and update [install.md](install.md) with their target
+paths. Always review staged changes before committing.
 
 ## Mac-to-Omarchy project sync
 
@@ -218,7 +217,7 @@ omarchy-sync --dry-run  # Inspect proposed changes without fetching.
 
 Configure the `omarchy` SSH host in the Mac's `~/.ssh/config` and authorize its key
 on the Linux machine. Both machines need Git and Python 3; Omarchy also needs tmux.
-The installer does not configure SSH or open firewall ports.
+Configure SSH and firewall access separately from the dotfiles setup.
 
 Settings live in `macos/omarchy-sync/settings.json`. The script copies committed
 Git state from `~/ProgrammingDocs` and `~/dataThink` on Omarchy to the same relative
@@ -256,6 +255,7 @@ lua omarchy/tests/aerospace-layout.lua
 lua omarchy/tests/macos-keys.lua
 ```
 
-Installer tests use temporary homes and checkouts. They check both platform
-profiles, backups, restoration, local data, and repeated installs. Package
-installation requires the actual operating system and is not run by these tests.
+The Python tests use temporary files and isolated application sessions. They
+check color settings and the Neovim restore commands from `install.md`, including
+missing pinned commits and restore failures. They do not run a full setup or
+install platform packages.

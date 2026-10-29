@@ -3,8 +3,9 @@
 Follow this guide when the user asks you to install or update these dotfiles.
 Do the work on the target machine. Do not only print a list of commands.
 Use the files in this checkout as the source for packages and settings.
-Apply the steps directly; do not call `install.sh` or source `scripts/install-*.sh`.
-Those scripts remain available as a reference during this change.
+Apply the steps directly. This guide is the installation procedure; there is no
+install script. It uses `scripts/restore-nvim.lua` to restore pinned Neovim plugins
+and `scripts/restore.sh` to undo config changes from a backup.
 
 ## 1. Check the machine and the requested scope
 

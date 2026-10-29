@@ -1,5 +1,5 @@
 -- lazy.setup may have rewritten its cached lock while installing missing plugins.
--- Restore from the installer's snapshot, rather than that mutated cache.
+-- Restore from the setup snapshot, rather than that mutated cache.
 local pins = vim.json.decode(table.concat(vim.fn.readfile(vim.env.DOTFILES_NVIM_LOCK_SNAPSHOT), "\n"))
 local plugins = require("lazy.core.config").plugins
 

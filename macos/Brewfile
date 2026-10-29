@@ -1,4 +1,4 @@
-# macOS packages installed by the repository installer.
+# macOS packages for the setup in install.md.
 
 tap "nikitabobko/tap"
 
@@ -49,7 +49,7 @@ brew "stripe"
 # AI CLIs.
 brew "gemini-cli"
 brew "anomalyco/tap/opencode-v2"
-# Pi is installed from shared/pi/package-lock.json by the shared installer.
+# Follow install.md to install Pi from shared/pi/package-lock.json.
 
 # Window manager and explicitly requested apps.
 cask "nikitabobko/tap/aerospace"
