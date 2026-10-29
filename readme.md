@@ -1,6 +1,6 @@
 # Dotfiles for Mac and Omarchy
 
-Personal configs for a fresh macOS or Omarchy install.
+My opinionated config files for me mac and Omarchy machines, updated regularly. Meant to be easy to get a new machine running quickly.
 
 ## Install
 
