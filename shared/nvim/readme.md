@@ -2,9 +2,10 @@
 
 ## Install Instructions
 
-Use the root `install.sh` from the config repo. It installs Neovim and links
-`shared/nvim` to `~/.config/nvim` on both platforms. The dependency setup restores
-the plugin versions from `lazy-lock.json`. Restart Neovim after config changes.
+Follow the root [install.md](../../install.md) in the config repo. The guide
+covers installing Neovim and linking `shared/nvim` to `~/.config/nvim` on both
+platforms. The dependency setup restores the plugin versions from `lazy-lock.json`.
+Restart Neovim after config changes.
 
 ## Code Review
 

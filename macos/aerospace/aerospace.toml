@@ -1,5 +1,5 @@
 # Edit this file in the dotfiles repo.
-# The installer links ~/.config/aerospace/aerospace.toml to this file.
+# Follow install.md to link ~/.config/aerospace/aerospace.toml to this file.
 
 # It's not necessary to copy all keys to your config.
 # If the key is missing in your config, "default-config.toml" will serve as a fallback

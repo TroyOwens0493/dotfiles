@@ -1,4 +1,4 @@
-"""Check dependency retries without downloading software or touching real configs."""
+"""Check the Neovim restore guide without downloads or changes to real configs."""
 import json
 import os
 from pathlib import Path
@@ -27,10 +27,11 @@ class DependencyTests(unittest.TestCase):
                         PATH=f'{self.bin}:{os.environ["PATH"]}',
                         CALL_LOG=str(self.base / 'calls'), TEST_LOCK=str(self.lock))
 
-    def run_helper(self, script, expression, check=True):
-        return subprocess.run(['bash', '-euc', f'source "$1"; {expression}',
-                               'test', str(ROOT / 'scripts' / script)],
-                              env=self.env, capture_output=True, text=True, check=check)
+    def run_restore(self, check=True):
+        section = (ROOT / 'install.md').read_text().split('### Neovim\n', 1)[1]
+        command = section.split('```sh\n', 1)[1].split('```', 1)[0]
+        return subprocess.run(['bash', '-ec', command], env=self.env,
+                              capture_output=True, text=True, check=check)
 
     def test_nvim_preserves_input_lock_on_success_and_failure(self):
         """Startup mutation must not become the restore input or dirty the repo."""
@@ -45,27 +46,9 @@ exit "${TEST_NVIM_STATUS:-0}"
         for status in (0, 7):
             with self.subTest(status=status):
                 self.env['TEST_NVIM_STATUS'] = str(status)
-                result = self.run_helper('install-shared.sh', 'restore_nvim_plugins', check=False)
+                result = self.run_restore(check=False)
                 self.assertEqual(result.returncode, status, result.stderr)
                 self.assertEqual(self.lock.read_text(), self.original)
-
-    def test_system_pulse_install_is_idempotent_and_does_not_enable(self):
-        """The existing tracked bar layout enables the widget without CLI edits."""
-        omarchy = self.bin / 'omarchy'
-        omarchy.write_text('''#!/bin/bash
-set -e
-printf '%s\n' "$*" >> "$CALL_LOG"
-if [[ "$1 $2" == "plugin add" ]]; then
-  mkdir -p "$CONFIG_DIR/omarchy/plugins/lucas.system-pulse"
-  printf '{"id":"lucas.system-pulse"}\n' > "$CONFIG_DIR/omarchy/plugins/lucas.system-pulse/manifest.json"
-fi
-''')
-        omarchy.chmod(0o755)
-        self.run_helper('install-omarchy.sh', 'sync_platform_dependencies; sync_platform_dependencies')
-        calls = Path(self.env['CALL_LOG']).read_text().splitlines()
-        self.assertEqual(sum(line.startswith('plugin add ') for line in calls), 1)
-        self.assertEqual(sum(line.startswith('plugin validate ') for line in calls), 2)
-        self.assertNotIn('--enable', '\n'.join(calls))
 
     @unittest.skipUnless(shutil.which('nvim'), 'Neovim is required for the shallow-cache regression')
     def test_nvim_fetches_old_pin_from_shallow_cache(self):
@@ -122,15 +105,15 @@ exec "$REAL_NVIM" -u "$TEST_NVIM_INIT" -i NONE --noplugin "$@"
                 if not reachable:
                     git(cache, 'remote', 'set-url', 'origin', (self.base / 'missing').as_uri())
                 self.env['TEST_PLUGIN_DIR'] = str(cache)
-                result = self.run_helper('install-shared.sh', 'restore_nvim_plugins', check=False)
+                result = self.run_restore(check=False)
                 self.assertEqual(result.returncode, 0 if reachable else 1, result.stderr)
                 self.assertEqual(git(cache, 'rev-parse', 'HEAD').stdout.strip(), pinned if reachable else before)
                 self.assertEqual(self.lock.read_text(), self.original)
 
-        # A Lua exception must also fail the installer; Neovim otherwise exits
+        # A Lua exception must also fail the restore command; Neovim otherwise exits
         # successfully after reporting a command-line error and running +qa.
         (self.repo / 'scripts/restore-nvim.lua').write_text('error("forced restore failure")\n')
-        result = self.run_helper('install-shared.sh', 'restore_nvim_plugins', check=False)
+        result = self.run_restore(check=False)
         self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIn('forced restore failure', result.stderr)
         self.assertEqual(self.lock.read_text(), self.original)

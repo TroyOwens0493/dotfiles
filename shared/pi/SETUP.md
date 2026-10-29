@@ -1,14 +1,11 @@
 # Setup
 
-Pi is part of the shared development config. From the config repo, run:
+Pi is part of the shared development config. Ask an agent to follow the root
+[install.md](../../install.md) in the config repo. Use the skip-packages scope if
+Node and the other tools are installed.
 
-```sh
-./install.sh
-```
-
-Use `./install.sh --skip-packages` if Node and the other tools are installed.
-The installer links the reviewed Pi files into `~/.config/pi`, preserves local
-credentials and sessions, and provides the `~/.pi/agent` application path.
+The guide covers links for the reviewed Pi files in `~/.config/pi`, preserves
+local credentials and sessions, and provides the `~/.pi/agent` application path.
 The `pi` launcher uses the runtime from `package-lock.json`. Open a new terminal
 after installation so `~/.local/bin` is on PATH, then sign in with Pi's `/login`.
 
