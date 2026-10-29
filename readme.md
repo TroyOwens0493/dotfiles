@@ -1,246 +1,29 @@
-# Personal configs for Mac and Omarchy
+# Dotfiles for Mac and Omarchy
 
-One repo holds the shared application settings and the settings for each operating
-system. For agent-led setup, ask an agent to follow [install.md](install.md).
-The guide covers packages, config links, local data, and checks for each platform.
-Keep new checkouts outside `~/.config`.
+Personal configs for a fresh macOS or Omarchy install.
 
-```text
-shared/       Neovim, tmux, Pi, OpenCode, Git ignore, NuGet, Shopify,
-              shared Ghostty appearance, and command launchers
-macos/        AeroSpace, cmux, Ghostty, Zsh, Homebrew, and Omarchy project sync
-omarchy/      Hyprland, workspace bar plugin, Ghostty, Bash, Starship,
-              mise runtimes, and extra Arch packages
-scripts/      Neovim plugin restoration and config backup restoration
-```
+## Install
 
-The shell files from the former shell-only repo are included. That separate repo
-is no longer required. The Omarchy settings were imported from the running
-Omarchy 4.0.4 machine, including its custom AeroSpace-style workspace controls and
-Bash prompt.
-Setup requires an existing Omarchy installation with Lua Hyprland configs.
-The guide does not install Linux or support older `.conf`-based Omarchy desktops.
-
-## New Mac
-
-Install Apple's command line tools if Git is not available. Then clone the repo
-using HTTPS, or use your own configured SSH URL:
+Clone the repo into your home directory:
 
 ```sh
 git clone https://github.com/TroyOwens0493/dotfiles.git ~/dotfiles
-cd ~/dotfiles
 ```
 
-Ask an agent to follow [install.md](install.md) on the Mac. Ask for a preview
-first if you want to check the planned changes. Full setup installs Homebrew when
-needed, installs `macos/Brewfile`, links the shared and Mac settings, and installs
-Pi dependencies, tmux plugins, and Neovim plugins. The Zsh config loads the
-included aliases, paths, and prompt. Homebrew paths support both Apple Silicon
-and Intel Macs.
+Then point your agent at [install.md](install.md) and ask:
 
-The Mac package setup installs OpenCode 2 from `anomalyco/tap/opencode-v2`.
-It removes the old Homebrew `opencode` formula first because both provide the
-same command. Follow the macOS package steps in [install.md](install.md#macos)
-to apply this change.
+> Read ~/dotfiles/install.md and install these dotfiles on this machine.
 
-Open a new terminal after installation. Grant AeroSpace Accessibility permission.
-Sign into your applications and AI tools. Configure Git identity, signing keys,
-and SSH access on this machine. Existing Git identity and signing settings are
-preserved. Secrets and permissions are not restored from this repo.
+## Files and links
 
-## New Omarchy machine
-
-Install Omarchy first, then run `omarchy update -y` as your normal user. The
-offline ISO does not initialize the online package databases needed to add
-packages. Use the clone commands shown above after the update. Then ask an
-agent to follow [install.md](install.md) on the Omarchy machine. Setup uses
-`omarchy/`, installs its extra packages and mise tools, and links the shared and
-Linux configs. It keeps Omarchy's packaged Hyprland and Bash defaults and loads
-your settings after them.
-
-Dependency sync also installs the [System Pulse bar widget](https://github.com/lucaslus/omarchy-statusline)
-referenced by `shell.json`. Setup keeps and validates existing plugin installations.
-A configs-only request skips this download and the other config dependencies.
-Neovim dependencies are restored to the commits in `shared/nvim/lazy-lock.json`,
-including when Omarchy already has other plugin versions cached. Setup verifies
-those checkouts, fetches older pins missing from shallow caches, and preserves
-the lockfile rather than accepting startup changes.
-
-The package list covers this development setup. It is not a full backup of all
-installed applications, drivers, services, or hardware settings.
-
-Open a new terminal. When ready, reload the desktop:
-
-```sh
-hyprctl reload
-hyprctl configerrors
+```text
+shared/    Application configs used on both platforms
+macos/     Mac configs and Homebrew packages
+omarchy/   Omarchy configs and extra packages
 ```
 
-Restart Ghostty and other applications to load their settings. The guide leaves
-your running desktop and terminal active. Complete application sign-ins and
-restore your SSH access separately.
+Setup links configs from this repo into their application paths, mostly under
+`~/.config`. For example, `~/.config/nvim` links to `~/dotfiles/shared/nvim`.
+Editing either path changes the same file. Credentials and app data stay local.
 
-Keep `~/.config/hypr/monitors.lua` on each machine. Setup preserves this file.
-See `omarchy/hypr/AEROSPACE.md` for the shared workspace controls.
-
-## Setup scope
-
-Ask an agent to follow [install.md](install.md) with one of these scopes:
-
-| Scope | Work to do |
-| --- | --- |
-| Full setup | Install packages, link configs, and install config dependencies. |
-| Configs only | Link configs with no package or dependency downloads. |
-| Skip packages | Link configs and install config dependencies with existing tools. |
-| Preview / dry run | Report planned changes without changing files or downloading software. |
-
-Run setup as your normal user. Use administrator access only for package commands
-that need it. Use full setup when package lists change. The guide does not pull,
-commit, or push this repo unless you ask.
-
-For a new checkout, use `~/dotfiles`. If you move a checkout, follow the guide
-again to update its absolute config links. These configs use `~/.config`.
-If `XDG_CONFIG_HOME` points elsewhere, resolve that conflict before setup.
-
-## Edit and share settings
-
-Edit a file in the repo, or edit the linked application file. Both paths refer to
-the same settings. Put settings for both machines in `shared/`, Mac settings in
-`macos/`, and Omarchy settings in `omarchy/`.
-
-For example, `~/.config/nvim` links to `shared/nvim`. Pi's reviewed files are linked
-into `~/.config/pi`, and `~/.pi/agent` provides its normal application path.
-Credentials, sessions, and custom Pi extensions remain local. The `pi` command in
-`~/.local/bin` uses the runtime from the Pi lockfile.
-
-For Ghostty, edit shared appearance in `shared/ghostty/common.conf`. Edit platform
-options in `macos/ghostty/config` or `omarchy/ghostty/config`.
-
-Commit and push reviewed edits. On the other machine, pull the changes:
-
-```sh
-cd ~/dotfiles
-git pull --ff-only
-```
-
-Use the actual checkout path if it differs. Existing links use updated files
-immediately. Ask an agent to follow [install.md](install.md) with the skip-packages
-scope to add new links and restore dependencies. Use full setup if package lists
-changed. Then reload the affected apps.
-A shared file has one owner; do not add a second platform config for the same
-application path unless the application can include both files.
-
-## Local files and backups
-
-Use these optional files for private or machine-specific overrides:
-
-- Mac shell: `~/.zshrc.local`
-- Saved shell and tmux colors: `~/.config/shell/colors.local.sh`
-- Omarchy shell: `~/.bashrc.local`
-- Omarchy desktop: `~/.config/hypr/local.lua`
-- Ghostty: `~/.config/ghostty/local.conf`
-
-### Color overrides
-
-Without overrides, Bash and Zsh use their original color 37 for the path,
-Starship uses cyan, and tmux uses Dracula's original palette. Save any of these
-exports in `~/.config/shell/colors.local.sh` on either platform. Both the shell
-and tmux load this file, including when SSH starts tmux before an interactive
-shell. Use POSIX shell syntax and keep only color settings in this file.
-
-| Variable | Changes | Default |
-| --- | --- | --- |
-| `DOTFILES_PATH_COLOR` | Shell and Starship path | Shell color 37; Starship cyan |
-| `DOTFILES_TMUX_BAR_COLOR` | tmux bar background and accent | `#44475a` background; `#8be9fd` accent |
-| `DOTFILES_TMUX_ACTIVE_COLOR` | Active tmux tab background | `#6272a4` |
-| `DOTFILES_TMUX_TEXT_COLOR` | tmux bar and tab text | `#f8f8f2` |
-
-For the purple colors on this Omarchy machine, create that file with:
-
-```sh
-export DOTFILES_PATH_COLOR='#bb9af7'
-export DOTFILES_TMUX_BAR_COLOR='#bb9af7'
-export DOTFILES_TMUX_ACTIVE_COLOR='#987bc7'
-export DOTFILES_TMUX_TEXT_COLOR='#282a36'
-```
-
-Values must use `#RRGGBB`. Empty and invalid values use the defaults. Move existing
-color exports from `~/.bashrc.local` or `~/.zshrc.local` into this file so tmux can
-load them at startup. Those shell override files still work for interactive use.
-
-The tmux network section keeps its original cyan. Open a new terminal after
-changing saved colors. If tmux is already running, run `tmux-colors` from that
-terminal to update its colors without closing sessions. Explicit server exports
-take precedence over saved colors. To restore the defaults, remove the saved
-exports, unset those variables in the shell, and run `tmux-colors` again. tmux
-colors apply to the whole server.
-
-The Starship override is generated under `~/.cache/dotfiles/` (or
-`$XDG_CACHE_HOME/dotfiles/`). The tracked config stays unchanged. A separate
-custom `STARSHIP_CONFIG` is preserved.
-
-The guide requires a backup before replacing a config. Backups go under
-`~/.dotfiles-backup/<date>-<unique-suffix>/`, and the agent reports the backup path.
-Setup keeps correct links and backs up shell files before replacement. Move any
-additional private shell settings into the local files above.
-
-If both `~/.pi/agent` and `~/.config/pi` contain separate Pi installations, setup
-stops before changing files. Combine their local state first. A single existing
-Pi installation is preserved during setup.
-
-To undo one config installation, use the backup path printed by that run:
-
-```sh
-bash scripts/restore.sh ~/.dotfiles-backup/<installation-directory>
-```
-
-Restore the newest run first. The script restores replaced files and removes new
-links. It retains packages, dependencies, and local application data. Reload apps
-after restoration. The replaced current files are also saved for recovery.
-
-Only reviewed source folders are allowed by `.gitignore`. Credentials, sessions,
-local overrides, dependencies, and backups are excluded. Add new source files
-inside the appropriate group and update [install.md](install.md) with their target
-paths. Always review staged changes before committing.
-
-## Mac-to-Omarchy project sync
-
-The Mac shell includes these aliases:
-
-```sh
-omarchy                 # Connect to the remote nomp tmux session.
-omarchy SESSION         # Connect to another remote session.
-omarchy-sync            # Copy committed project changes to this Mac.
-omarchy-sync --dry-run  # Inspect proposed changes without fetching.
-```
-
-Configure the `omarchy` SSH host in the Mac's `~/.ssh/config` and authorize its key
-on the Linux machine. Both machines need Git and Python 3; Omarchy also needs tmux.
-Configure SSH and firewall access separately from the dotfiles setup.
-
-Settings live in `macos/omarchy-sync/settings.json`. The script copies committed
-Git state from `~/ProgrammingDocs` and `~/dataThink` on Omarchy to the same relative
-paths on the Mac. Both remote root directories must exist. New `nomp` worktrees
-also need the Firebase CLI and staging-project access on the Mac.
-
-Install the automatic port forwarding tool on the Mac:
-
-```sh
-uv tool install ssh-auto-forward==0.0.4
-```
-
-The `omarchy` command runs [ssh-auto-forward](https://github.com/alexeygrigorev/ssh-auto-forward)
-in the background during the tmux session. It reads the `omarchy` host from
-`~/.ssh/config` and checks remote listening TCP ports every five seconds.
-Ports 1000 through 65535 are forwarded automatically, including services started
-after you connect. An occupied local port is mapped to another available port.
-The command prints a log path under `~/.local/state/omarchy-sync/`; read that log
-to find port mappings or connection errors. All tunnels close when you detach,
-before sync starts. Omarchy needs `ss` or `netstat` for port discovery.
-
-Sync runs after a normal detach from the `omarchy` command. It does not run after
-plain SSH or a lost connection. Run `omarchy-sync` manually after reconnecting.
-Local changes, conflicting history, active Git operations, and detached remote
-checkouts are skipped. Uncommitted remote files, dependency folders, and private
-environment files are not transferred. This is one-way project sync; use Git
-push/pull to share this config repo.
+Keep the repo at `~/dotfiles` so the links continue to work.
