@@ -1,11 +1,10 @@
 # Install the dotfiles with an agent
 
-Follow this guide when the user asks you to install or update these dotfiles.
+Follow this guide to install these dotfiles on a fresh macOS or Omarchy machine.
 Do the work on the target machine. Do not only print a list of commands.
 Use the files in this checkout as the source for packages and settings.
 Apply the steps directly. This guide is the installation procedure; there is no
-install script. It uses `scripts/restore-nvim.lua` to restore pinned Neovim plugins
-and `scripts/restore.sh` to undo config changes from a backup.
+install script. Use `scripts/restore-nvim.lua` to restore pinned Neovim plugins.
 
 ## 1. Check the machine and the requested scope
 
@@ -30,38 +29,32 @@ Use the scope requested by the user:
 | Full setup (default) | Install packages, link configs, install config dependencies, and check the result. |
 | Configs only | Link configs and check links. Do not install packages or download dependencies. |
 | Skip packages | Link configs and install config dependencies with the tools already installed. |
-| Preview / dry run | Inspect the machine and report planned changes. Do not create backups, links, files, or downloads. |
+| Preview / dry run | Inspect the machine and report planned changes. Do not create links, files, or downloads. |
 
 Check Pi state before any change. If `~/.pi/agent` and `~/.config/pi` are both
 directories and refer to different directories, stop. Report that their local
 state must be combined first. Do not choose one and hide the other.
 
-## 2. Preserve existing files
+## 2. Prepare config paths
 
-Before each change, inspect the destination. Leave a link alone if it already
-points to the correct source. Do not use `ln -sf` over an existing config.
+This guide is for a fresh install. Replace the default configs at the listed
+destinations with the repo links. Leave correct links alone. Create parent
+directories as needed.
 
-For this run, use one backup directory under
-`~/.dotfiles-backup/<date>-<unique-suffix>/`. Create it only when needed.
-Keep it compatible with `scripts/restore.sh`:
-
-- Append each changed destination to `paths`, as a path relative to the user's
-  home directory, once and before its first change.
-- Move each existing file, directory, or link to `files/<relative-path>` inside
-  that backup directory. Record new destinations too, but leave their backup
-  file absent. This lets restoration remove a newly created link.
-- If an ancestor directory is a link to another checkout, first copy its contents
-  to a real local directory. Preserve nested links. Back up the ancestor link,
-  record it before its children, then put the local copy in its place. Do not
-  write through the ancestor link into the other checkout.
-- For files that need an edit, such as `.zprofile` or the global Git config,
-  copy their resolved contents before you move the old path. Edit the local copy.
-  This also preserves contents when the old path was a relative link.
+Do not write through a directory link into another checkout. If a destination
+parent is such a link, copy its contents to a real local directory first. When
+editing a linked profile or Git config, make a local copy of its resolved
+contents before editing it.
 
 Keep credentials, sessions, SSH files, Git identity, monitor settings, private
 extensions, and local overrides. Do not copy their contents into the repo or
-print secret values. The optional local override paths are listed in
-[readme.md](readme.md#local-files-and-backups).
+print secret values. Keep these optional local override paths:
+
+- Mac shell: `~/.zshrc.local`
+- Shell and tmux colors: `~/.config/shell/colors.local.sh`
+- Omarchy shell: `~/.bashrc.local`
+- Omarchy desktop: `~/.config/hypr/local.lua`
+- Ghostty: `~/.config/ghostty/local.conf`
 
 ## 3. Install platform packages
 
@@ -103,7 +96,7 @@ Do not replace the user's other mise settings just to install the tools.
 
 ## 4. Link shared configs
 
-Create absolute symbolic links with the backup rules above. Paths in the source
+Create absolute symbolic links using the path rules above. Paths in the source
 column are relative to `REPO_DIR`, unless they start with `~`.
 
 | Source | Destination |
@@ -133,8 +126,7 @@ Set only the global Git exclusion path:
 git config --global core.excludesFile "$HOME/.config/git/ignore"
 ```
 
-Back up the effective global config first if this value needs to change. Respect
-`GIT_CONFIG_GLOBAL` when set; otherwise check `~/.gitconfig` and
+Respect `GIT_CONFIG_GLOBAL` when set; otherwise check `~/.gitconfig` and
 `~/.config/git/config`. Preserve all other Git settings.
 
 ### Pi
@@ -161,7 +153,7 @@ Set up dependency access for the linked extensions:
   `~/.config/pi/node_modules`. Keep the link untracked.
 - If it already links to that local dependency directory, leave it alone.
 - If it is an existing dependency directory, preserve it and link
-  `~/.config/pi/node_modules` to it, with the normal destination backup rules.
+  `~/.config/pi/node_modules` to it.
   For another layout, inspect and resolve it without losing local data or
   creating a link cycle.
 
@@ -170,7 +162,7 @@ the same directory.
 
 ## 5. Link configs for the selected platform
 
-Use the same file-tree and backup rules as in section 4.
+Use the same file-tree and link rules as in section 4.
 
 ### macOS
 
@@ -183,9 +175,8 @@ Use the same file-tree and backup rules as in section 4.
 | Files under `macos/omarchy-sync/` | Matching paths under `~/.config/omarchy-sync/` |
 | `macos/shell/profile.sh` | `~/.config/shell/macos-profile.sh` |
 
-Back up and retire `~/.aerospace.toml` and
-`~/.config/ghostty/config.ghostty` if present, including broken links. They
-conflict with the selected config paths.
+Remove `~/.aerospace.toml` and `~/.config/ghostty/config.ghostty` if present,
+including broken links. They conflict with the selected config paths.
 
 Preserve `~/.zprofile`. Append this exact line once if it is absent:
 
@@ -205,7 +196,7 @@ Preserve `~/.zprofile`. Append this exact line once if it is absent:
 | `omarchy/ghostty/config` | `~/.config/ghostty/config` |
 | `omarchy/mise/config.toml` | `~/.config/mise/config.toml` |
 
-Back up and retire `~/.config/ghostty/config.ghostty` if present.
+Remove `~/.config/ghostty/config.ghostty` if present.
 Keep the machine's `monitors.lua` and `local.lua`. Keep Omarchy's packaged
 defaults under `/usr/share/omarchy`; the repo configs load those defaults.
 
@@ -299,24 +290,23 @@ widget. That option would change the tracked settings through their link.
   Use `~/.local/bin/pi` if the current shell does not yet include that path.
 - Check `git status --short` again. Setup must not change tracked source files
   or overwrite the user's existing edits.
-- Report what was installed, the backup path, failures, and remaining user steps.
+- Report what was installed, failures, and remaining user steps.
   Do not restart the desktop, terminal, or active sessions without a request.
 
 On macOS, tell the user to open a new terminal and grant AeroSpace Accessibility
 permission if needed. Git identity, SSH access, and app sign-ins require local
-setup. For remote sessions, configure the `omarchy` SSH host and follow the
-[project sync instructions](readme.md#mac-to-omarchy-project-sync), including the
-`ssh-auto-forward` tool.
+setup. For remote sessions, configure the `omarchy` SSH host in `~/.ssh/config`
+and authorize its key on the Linux machine. Install the port forwarding tool:
+
+```sh
+uv tool install ssh-auto-forward==0.0.4
+```
+
+Review `macos/omarchy-sync/settings.json` for the project paths to sync. The Mac
+shell's `omarchy` command opens a remote tmux session, forwards its ports, and
+syncs committed project changes to the Mac after a normal detach. Both machines
+need Git and Python 3; Omarchy also needs tmux and `ss` or `netstat`.
 
 On Omarchy, tell the user to open a new terminal and restart apps as needed.
 When the user is ready to reload the desktop, use `hyprctl reload`, then
 `hyprctl configerrors`. Keep monitor settings local.
-
-To undo config changes, use the backup path from this run:
-
-```sh
-bash "$REPO_DIR/scripts/restore.sh" "$BACKUP_DIR"
-```
-
-Restore the newest run first. This restores configs; it keeps installed packages
-and dependencies. The restore script saves replaced current files for recovery.
