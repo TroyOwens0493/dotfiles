@@ -113,6 +113,7 @@ column are relative to `REPO_DIR`, unless they start with `~`.
 
 | Source | Destination |
 | --- | --- |
+| `shared/codex/AGENTS.md` | `~/.codex/AGENTS.md` |
 | `shared/nvim` | `~/.config/nvim` (whole directory) |
 | `shared/shell/colors.sh` | `~/.config/shell/colors.sh` |
 | `shared/shell/functions.sh` | `~/.config/shell/functions.sh` |
@@ -141,6 +142,16 @@ git config --global core.excludesFile "$HOME/.config/git/ignore"
 
 Respect `GIT_CONFIG_GLOBAL` when set; otherwise check `~/.gitconfig` and
 `~/.config/git/config`. Preserve all other Git settings.
+
+### Codex
+
+Keep `~/.codex` as a real directory. Link only `AGENTS.md`; keep credentials,
+sessions, and other local settings in that directory.
+
+On an existing machine, compare its `~/.codex/AGENTS.md` with the shared file
+and preserve any machine-specific instructions before replacing the file with
+the link. Keep a local backup of the existing file. Set up this link once on
+each machine. Later pulls update the instructions through the link.
 
 ### Pi
 
