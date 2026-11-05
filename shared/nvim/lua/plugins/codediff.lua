@@ -1,5 +1,8 @@
 local function review_pr()
-    local root = vim.fs.root(0, '.git') or vim.fs.root(vim.fn.getcwd(), '.git')
+    -- Netrw can show a worktree in an unnamed buffer without changing cwd.
+    local path = vim.bo.filetype == 'netrw' and vim.b.netrw_curdir or vim.api.nvim_buf_get_name(0)
+    local root = (path and path ~= '' and vim.fs.root(path, '.git'))
+        or vim.fs.root(vim.fn.getcwd(), '.git')
     if not root then
         vim.notify('Not in a Git repository', vim.log.levels.ERROR)
         return
