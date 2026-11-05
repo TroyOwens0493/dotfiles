@@ -17,6 +17,3 @@ Use `preview_status`, then `preview_open` when needed. Confirm with `t3_preview_
 Server-runtime tabs can work while the desktop is locked. Try the server browser before asking me to unlock the desktop. Do not use a desktop-runtime tab for this work.
 If two server-preview calls fail at the same step, or rendering and animations stop while the desktop is locked, use a headed browser on a separate private virtual display. This fallback can run without unlocking the desktop. Use an authorized browser profile and keep all normal login, advertisement, and security checks. If a login is needed, request the secret through the secure input tool. Do not disable the desktop lock or change server settings to bypass the problem.
 Use GPT 6.1 Terra agents on high reasoning for all computer and browser use tasks.
-
-## Worktree naming
-When creating a git work tree then name should be the linear ticket number, if that is unavailable, then the work tree name should be the branch name.
