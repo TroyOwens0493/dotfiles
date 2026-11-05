@@ -49,7 +49,10 @@ When `~/nvimPuginDev/codediff.nvim` exists, Neovim uses that local checkout.
 Otherwise it uses the configured GitHub fork and branch.
 
 `Space gp` uses the GitHub CLI (`gh`) to find the current branch's open PR
-number and base branch. It opens `CodeDiff pr <number> --base <base-branch>`,
+number and base branch. It uses the directory shown in Netrw or the current
+file's repository, then falls back to Neovim's working directory. You can use
+fzf to select a worktree and open it in Neovim without changing the shell's
+directory. It opens `CodeDiff pr <number> --base <base-branch>`,
 which fetches the published PR from `origin` and shows its merge-base diff.
 It does not merge or change your working files, and it works with uncommitted
 changes. Local commits that you have not pushed are not part of this view.
