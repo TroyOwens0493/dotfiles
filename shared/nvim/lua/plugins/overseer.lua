@@ -1,61 +1,5 @@
-local function find_worktrees()
-    if vim.fn.executable('git') == 0 then
-        return {}
-    end
-
-    local cwd = vim.fn.getcwd()
-    local candidates = { cwd }
-    local buffer = vim.api.nvim_buf_get_name(0)
-    if buffer ~= '' then
-        table.insert(candidates, vim.fs.dirname(buffer))
-    end
-    -- The parent of sibling worktrees is not itself a Git repository.
-    for _, git_dir in ipairs(vim.fn.globpath(cwd, '*/.git', false, true)) do
-        table.insert(candidates, vim.fs.dirname(git_dir))
-    end
-
-    for _, directory in ipairs(candidates) do
-        local result = vim.system({
-            'git', '-C', directory, 'worktree', 'list', '--porcelain', '-z',
-        }):wait(3000)
-        if result.code == 0 then
-            local worktrees = {}
-            for field in result.stdout:gmatch('([^%z]+)%z') do
-                local path = field:match('^worktree (.+)$')
-                if path and vim.fn.isdirectory(path) == 1 then
-                    table.insert(worktrees, path)
-                end
-            end
-            return worktrees
-        end
-    end
-    return {}
-end
-
-local function worktree_name(path)
-    return vim.fs.basename(path)
-end
-
-local function run_task_in_worktree(path)
-    if not path then
-        return
-    end
-    -- Keep VS Code variables and dependent tasks in the selected worktree.
-    vim.cmd.tcd(vim.fn.fnameescape(path))
-    require('overseer').run_task({ search_params = { dir = path } })
-end
-
 local function run_task()
-    local worktrees = find_worktrees()
-    if #worktrees < 2 then
-        require('overseer').run_task()
-        return
-    end
-
-    vim.ui.select(worktrees, {
-        prompt = 'Select worktree:',
-        format_item = worktree_name,
-    }, run_task_in_worktree)
+    require('overseer').run_task({ search_params = { dir = vim.fn.getcwd() } })
 end
 
 local function setup_overseer(_, opts)
@@ -93,7 +37,7 @@ return {
     opts = {},
     config = setup_overseer,
     keys = {
-        { '<leader>tr', run_task, desc = 'Run task in worktree' },
+        { '<leader>tr', run_task, desc = 'Run task' },
         { '<leader>tv', '<cmd>OverseerToggle<CR>', desc = 'Toggle task list' },
     },
 }
