@@ -22,7 +22,14 @@ local diff_files = {}
 local function update_colors()
     pending = false
     local filetype = vim.bo.filetype
-    local diff_file = diff_files[vim.api.nvim_get_current_tabpage()]
+    local tabpage = vim.api.nvim_get_current_tabpage()
+    local diff_file = diff_files[tabpage]
+    -- History does not emit CodeDiffFileSelect; read its selected file instead.
+    local lifecycle = package.loaded["codediff.ui.lifecycle"]
+    local panel = lifecycle and lifecycle.get_panel(tabpage)
+    if panel and panel.name == "history" then
+        diff_file = panel.data.current_file
+    end
     if diff_file then
         -- The explorer and revision buffers have no language filetype.
         filetype = vim.filetype.match({ filename = diff_file })
@@ -72,4 +79,10 @@ vim.api.nvim_create_autocmd("User", {
     group = group,
     pattern = { "CodeDiffFileSelect", "CodeDiffClose", "CodeDiffReviewFileSelect", "CodeDiffReviewClose" },
     callback = update_diff_file,
+})
+
+vim.api.nvim_create_autocmd("User", {
+    group = group,
+    pattern = "CodeDiffUpdated",
+    callback = schedule_update,
 })

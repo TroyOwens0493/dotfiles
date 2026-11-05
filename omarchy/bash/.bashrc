@@ -5,6 +5,7 @@
 # Keep the defaults provided by the installed Omarchy version.
 source "${OMARCHY_PATH:-/usr/share/omarchy}/default/bash/rc"
 source "$HOME/.config/shell/colors.sh"
+source "$HOME/.config/shell/functions.sh"
 for dotfiles_part in .bash_aliases .bash_exports .bash_customizations; do
   source "$HOME/.config/shell/omarchy/$dotfiles_part"
 done

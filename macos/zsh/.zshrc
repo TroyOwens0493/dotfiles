@@ -4,6 +4,7 @@ source "$DOTFILES/../shell/profile.sh"
 source "$DOTFILES/.zsh_aliases"
 source "$DOTFILES/.zsh_exports"
 source "$DOTFILES/../../shared/shell/colors.sh"
+source "$DOTFILES/../../shared/shell/functions.sh"
 source "$DOTFILES/.zsh_customizations"
 
 export NVM_DIR="$HOME/.nvm"

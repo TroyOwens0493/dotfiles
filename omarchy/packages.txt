@@ -14,3 +14,19 @@ base-devel
 dotnet-sdk
 fzf
 git-delta
+
+# Hex runtime dependencies; install Hex itself with the steps in install.md.
+alsa-lib
+curl
+jq
+libxkbcommon
+libxkbcommon-x11
+libx11
+libxcb
+openblas
+openssl
+util-linux
+vulkan-icd-loader
+wl-clipboard
+wtype
+xxd

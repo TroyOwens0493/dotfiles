@@ -56,6 +56,7 @@ cask "nikitabobko/tap/aerospace"
 cask "helium-browser"
 cask "ghostty"
 cask "cmux"
+cask "anomalyco/tap/hex"
 
 # AI GUI/terminal casks currently installed on this machine.
 cask "claude-code"
