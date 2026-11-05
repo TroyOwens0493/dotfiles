@@ -9,11 +9,12 @@ Restart Neovim after config changes.
 
 ## Code Review
 
-CodeDiff opens a file list beside a split diff:
+CodeDiff opens a file list beside an inline diff:
 
 | Shortcut | Comparison |
 | --- | --- |
 | `Space gp` | Review the current branch's open PR with `CodeDiff pr <number>` |
+| `Space gv` | Create or open a guided review for the current comparison |
 | `Space gc` | Latest commit: `HEAD^` against `HEAD` |
 | `Space gu` | Unstaged changes: index against working files |
 
@@ -21,6 +22,12 @@ Press Enter to select a file, `]c` / `[c` to move between changes, and `q` to
 close the diff. The colorscheme follows the selected file's language, including
 while focus stays in the file list. Staged changes are hidden by default; `gs`
 in the file list toggles them.
+
+Diff colors mark changes within a line. Complete added or deleted lines keep
+their `+` or `-` markers without a text background. This uses
+`highlights.char_whole_line = false` in the local CodeDiff fork.
+Deleted and original lines are hidden in inline diffs. Set
+`diff.show_deleted_lines = true` in `lua/plugins/codediff.lua` to show them.
 
 To explain code, select it with Visual mode in a diff pane and press `Space ge`.
 The floating window shows the selected code on the left and its explanations
@@ -34,8 +41,9 @@ CodeDiff's AI features are implemented in the fork: change summaries (`gs`),
 purpose explanations (`gb`), selected-line explanations, loading indicators,
 Codex sign-in, and guided review. The config sets preferences and key bindings;
 it does not build prompts, send AI requests, or render AI results.
-Run `:CodeDiffReview start` to generate or open a guided review. This command
-also loads the plugin when no CodeDiff comparison has been opened yet.
+Press `Space gv` or run `:CodeDiffReview start` to generate or open a guided
+review. This command also loads the plugin when no CodeDiff comparison has
+been opened yet.
 
 When `~/nvimPuginDev/codediff.nvim` exists, Neovim uses that local checkout.
 Otherwise it uses the configured GitHub fork and branch.

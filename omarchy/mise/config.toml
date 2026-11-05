@@ -9,6 +9,7 @@ gh = "latest"
 git-lfs = "latest"
 glow = "latest"
 go = "latest"
+"http:muse" = { version = "latest", url = "https://api.meta.ai/muse-launcher.sh", bin = "muse", version_list_url = "https://api.meta.ai/muse-code/channels/muse-stable", version_json_path = ".version" }
 java = "21.0.2"
 kubectl = "latest"
 node = "26.8.2"
@@ -16,6 +17,7 @@ node = "26.8.2"
 "npm:playwright" = "latest"
 "npm:prettier" = "latest"
 opencode = { version = "latest", allow_builds = ["@opencode/cli"] }
+pi = "latest"
 pnpm = "latest"
 powershell = "latest"
 rebar = { version = "latest", asset_pattern = "rebar3" }

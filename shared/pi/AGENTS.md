@@ -12,3 +12,7 @@ When working in svelte(kit):
 In general:
 
 - when asking questions, ask them one at a time
+
+# T3 Code browser on this machine
+
+When running inside T3 Code on host `omarchy`, use T3 Code's built-in server browser through the `preview_*` tools by default. Prefer server-runtime tabs over desktop-runtime tabs. Browser work must not require a connected physical display or moving T3 Code's main window to a virtual monitor. If the server browser is unavailable, state the limitation instead of silently switching browser systems.

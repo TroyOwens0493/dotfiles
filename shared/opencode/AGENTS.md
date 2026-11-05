@@ -12,6 +12,10 @@ When you need documentation or are unsure about an API, library, or framework de
 - When a type may be shared across files, move it to a shared type module instead of redefining it.
 - Never write explicit return types for functions, when using TypeScript they should always be inferred.
 
+# T3 Code browser on this machine
+
+When running inside T3 Code on host `omarchy`, use T3 Code's built-in server browser through the `preview_*` tools by default. Prefer server-runtime tabs over desktop-runtime tabs. Browser work must not require a connected physical display or moving T3 Code's main window to a virtual monitor. If the server browser is unavailable, state the limitation instead of silently switching browser systems.
+
 ## Functions
 
 - Add a doc comment to every function you write, including exported helpers, server utilities, loaders, actions, React components, and small local helpers.

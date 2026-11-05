@@ -94,6 +94,18 @@ Use the Brewfile as the package list. Do not maintain another copy in this guide
 
 Do not replace the user's other mise settings just to install the tools.
 
+4. Install Hex with its official Linux installer as the normal user:
+
+   ```sh
+   curl -fsSL https://anoma.ly/hex/files/install-linux.sh | sh
+   ```
+
+   The runtime dependencies are in `omarchy/packages.txt`. Hex also needs a
+   working Vulkan driver for the machine's GPU. Check the
+   [Linux installation guide](https://github.com/anomalyco/hex/blob/dev/docs/linux.md)
+   if installation fails. Do not install Arch's `hex` package; it is a different
+   program.
+
 ## 4. Link shared configs
 
 Create absolute symbolic links using the path rules above. Paths in the source
@@ -103,6 +115,7 @@ column are relative to `REPO_DIR`, unless they start with `~`.
 | --- | --- |
 | `shared/nvim` | `~/.config/nvim` (whole directory) |
 | `shared/shell/colors.sh` | `~/.config/shell/colors.sh` |
+| `shared/shell/functions.sh` | `~/.config/shell/functions.sh` |
 | `shared/tmux/tmux.conf` | `~/.config/tmux/tmux.conf` |
 | `shared/tmux/colors.sh` | `~/.config/tmux/colors.sh` |
 | `~/.config/tmux/tmux.conf` | `~/.tmux.conf` |
@@ -285,13 +298,22 @@ widget. That option would change the tracked settings through their link.
   link is broken. Do not install the other platform's settings.
 - Check that local state and override files are still available. Do not print
   credential contents.
-- For dependency setup, check `pi --version`, `tmux -V`, `nvim --version`, and
-  `git lfs version`. Check that Neovim restoration and plugin validation passed.
+- For dependency setup, check `pi --version`, `tmux -V`, `nvim --version`,
+  `git lfs version`, and `fzf --version`. Check that Neovim restoration and
+  plugin validation passed.
   Use `~/.local/bin/pi` if the current shell does not yet include that path.
+- In a new interactive shell, check `command -v nwt`. The shared function must
+  be available in Bash on Omarchy and Zsh on macOS.
 - Check `git status --short` again. Setup must not change tracked source files
   or overwrite the user's existing edits.
 - Report what was installed, failures, and remaining user steps.
   Do not restart the desktop, terminal, or active sessions without a request.
+
+For Hex, check `/Applications/Hex.app` on macOS or `~/.local/bin/hex` on
+Omarchy after package installation. Ask the user to open Hex and complete speech
+model setup. On macOS, grant Microphone and Accessibility access. On Omarchy,
+follow the [Hex shortcut instructions](https://github.com/anomalyco/hex/blob/dev/docs/linux.md#shortcuts)
+to set a local Hyprland shortcut.
 
 On macOS, tell the user to open a new terminal and grant AeroSpace Accessibility
 permission if needed. Git identity, SSH access, and app sign-ins require local

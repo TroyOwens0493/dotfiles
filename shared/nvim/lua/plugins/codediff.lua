@@ -50,9 +50,21 @@ return {
     'TroyOwens0493/codediff.nvim',
     dir = vim.fn.isdirectory(vim.fn.expand('~/nvimPuginDev/codediff.nvim')) == 1
         and vim.fn.expand('~/nvimPuginDev/codediff.nvim') or nil,
-    branch = 'feat/ai-change-summaries',
+    branch = 'main',
     cmd = { 'CodeDiff', 'CodeDiffAI', 'CodeDiffReview' },
     opts = {
+        highlights = {
+            char_whole_line = false,
+        },
+        diff = {
+            layout = 'inline',
+            show_deleted_lines = false,
+            gutter_signs = {
+                insert_text = '+',
+                delete_text = '-',
+                highlight_numbers = true,
+            },
+        },
         -- AI behavior lives in the fork; this table sets personal preferences.
         ai = {
             enabled = true,
@@ -70,9 +82,30 @@ return {
             },
         },
     },
+    config = function(_, opts)
+        require('codediff').setup(opts)
+
+        local function changed_text_only()
+            -- Keep the theme's character highlights, without whole-line shading.
+            vim.api.nvim_set_hl(0, 'CodeDiffLineInsert', {})
+            vim.api.nvim_set_hl(0, 'CodeDiffLineDelete', {})
+            vim.api.nvim_set_hl(0, 'CodeDiffGutterInsert', { link = 'DiagnosticOk' })
+            vim.api.nvim_set_hl(0, 'CodeDiffGutterDelete', { link = 'DiagnosticError' })
+            vim.api.nvim_set_hl(0, 'CodeDiffGutterInsertNumber', { link = 'DiagnosticOk' })
+            vim.api.nvim_set_hl(0, 'CodeDiffGutterDeleteNumber', { link = 'DiagnosticError' })
+        end
+
+        changed_text_only()
+        vim.api.nvim_create_autocmd('ColorScheme', {
+            group = vim.api.nvim_create_augroup('CodeDiffChangedTextOnly', { clear = true }),
+            callback = changed_text_only,
+        })
+    end,
     keys = {
         { '<leader>gp', review_pr, desc = 'Review current branch PR' },
+        { '<leader>gv', '<cmd>CodeDiffReview start<CR>', desc = 'Create or open guided review' },
         { '<leader>gc', '<cmd>CodeDiff HEAD^ HEAD<CR>', desc = 'Review latest commit' },
+        { '<leader>gh', '<cmd>CodeDiff history origin/main..HEAD<CR>', desc = 'Review branch history from origin/main' },
         { '<leader>gu', '<cmd>CodeDiff<CR>', desc = 'Review unstaged changes' },
     },
 }
