@@ -1,9 +1,15 @@
 {
   "host": "omarchy",
   "session": "nomp",
-  "roots": ["ProgrammingDocs", "dataThink"],
+  "roots": ["ProgrammingDocs", "dataThink", ".t3/worktrees"],
   "worktree_setup": {
     "dataThink/nomp": {
+      "cwd": "frontend",
+      "command": ["firebase", "use", "staging"],
+      "verify": ["firebase", "use", "--json"],
+      "expected": "nomp-staging"
+    },
+    ".t3/worktrees/nomp": {
       "cwd": "frontend",
       "command": ["firebase", "use", "staging"],
       "verify": ["firebase", "use", "--json"],

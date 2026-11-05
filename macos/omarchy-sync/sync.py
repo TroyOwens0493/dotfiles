@@ -84,7 +84,8 @@ def clean(path):
 
 def local_path(home, relative, roots):
     rel = Path(relative)
-    if rel.is_absolute() or '..' in rel.parts or not rel.parts or rel.parts[0] not in roots:
+    if (rel.is_absolute() or '..' in rel.parts or not rel.parts
+            or not any(rel == Path(root) or Path(root) in rel.parents for root in roots)):
         raise Skip('invalid remote path')
     path = home / rel
     if path.resolve() != path:

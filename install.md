@@ -337,8 +337,12 @@ uv tool install ssh-auto-forward==0.0.4
 
 Review `macos/omarchy-sync/settings.json` for the project paths to sync. The Mac
 shell's `omarchy` command opens a remote tmux session, forwards its ports, and
-syncs committed project changes to the Mac after a normal detach. Both machines
-need Git and Python 3; Omarchy also needs tmux and `ss` or `netstat`.
+syncs committed project changes to the Mac after a normal detach. This includes
+T3 Code worktrees under `~/.t3/worktrees`, using the same paths on the Mac.
+New Nomp worktrees use Firebase staging. Uncommitted changes are not copied;
+dirty local checkouts, conflicting local commits, and remote detached HEADs are
+skipped. Both machines need Git and Python 3; Omarchy also needs tmux and `ss` or
+`netstat`. Each configured root must exist on Omarchy.
 
 On Omarchy, tell the user to open a new terminal and restart apps as needed.
 When the user is ready to reload the desktop, use `hyprctl reload`, then
