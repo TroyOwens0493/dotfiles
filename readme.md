@@ -27,3 +27,15 @@ Setup links configs from this repo into their application paths, mostly under
 Editing either path changes the same file. Credentials and app data stay local.
 
 Keep the repo at `~/dotfiles` so the links continue to work.
+
+## Custom skills
+
+Edit custom skills here; their application paths link to these directories:
+
+- [PR checklist](shared/codex/skills/pr-checklist/SKILL.md): `~/.codex/skills/pr-checklist`
+- [Code review](shared/agents/skills/code-review/SKILL.md): `~/.agents/skills/code-review`, also linked from Codex, Claude, and OpenCode
+- [Pi skills](shared/pi/skills): `~/.config/pi/skills/`
+
+Create new custom skills in the matching repo directory, then link each skill to
+its application path. See [install.md](install.md#custom-skills) for the link rules.
+Package-managed, plugin, and system skills stay outside this repo.

@@ -114,6 +114,9 @@ column are relative to `REPO_DIR`, unless they start with `~`.
 | Source | Destination |
 | --- | --- |
 | `shared/codex/AGENTS.md` | `~/.codex/AGENTS.md` |
+| Each skill directory under `shared/codex/skills/` | Same name under `~/.codex/skills/` |
+| Each skill directory under `shared/agents/skills/` | Same name under `~/.agents/skills/` |
+| `~/.agents/skills/code-review` | `~/.codex/skills/code-review`, `~/.claude/skills/code-review`, and `~/.config/opencode/skills/code-review` |
 | `shared/nvim` | `~/.config/nvim` (whole directory) |
 | `shared/shell/colors.sh` | `~/.config/shell/colors.sh` |
 | `shared/shell/functions.sh` | `~/.config/shell/functions.sh` |
@@ -145,13 +148,31 @@ Respect `GIT_CONFIG_GLOBAL` when set; otherwise check `~/.gitconfig` and
 
 ### Codex
 
-Keep `~/.codex` as a real directory. Link only `AGENTS.md`; keep credentials,
-sessions, and other local settings in that directory.
+Keep `~/.codex` and `~/.codex/skills` as real directories. Link `AGENTS.md` and
+each tracked skill directory; keep credentials, sessions, bundled `.system`
+skills, and other local settings in place.
 
 On an existing machine, compare its `~/.codex/AGENTS.md` with the shared file
 and preserve any machine-specific instructions before replacing the file with
 the link. Keep a local backup of the existing file. Set up this link once on
 each machine. Later pulls update the instructions through the link.
+
+### Custom skills
+
+Store custom skills in this repo and link each skill directory to its application
+path. Keep the skill's supporting files with its `SKILL.md`.
+
+- Use `shared/codex/skills/` for Codex-only skills such as `pr-checklist`.
+- Use `shared/agents/skills/` for skills shared between agents, such as the locally
+  modified `code-review`. Preserve its source metadata and license.
+- Use `shared/pi/skills/` for Pi-specific skills, as described below.
+
+Keep `~/.agents/skills` as a real directory. Do not replace a whole skills root:
+package-managed, plugin, and system skills must stay separate from custom skills.
+Before replacing an existing custom skill directory, compare it with the repo
+copy, preserve local edits, and keep a local backup outside the repo. Leave
+correct links alone. For a new custom skill, create its source directory in the
+repo first, then add its application link and document any additional agent paths.
 
 ### Pi
 
