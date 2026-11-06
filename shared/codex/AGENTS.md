@@ -10,6 +10,7 @@ When I ask you to estimate how much work something will be, estimate lines of co
 Do not give time estimates, such as hours or workdays, unless I explicitly ask for them.
 
 # T3 Code browser/computer use
+All agents, including subagents and delegated agents, must keep the T3 Code application on the monitor and workspace where I put it. Never move T3 Code to a virtual monitor, private virtual display, or another monitor or workspace. A private virtual display may host a separate browser for the fallback below, but must never host or relocate T3 Code itself.
 When running inside T3 Code on host `omarchy`, use T3 Code's built-in server browser through the `preview_*` tools by default.
 Use `preview_status`, then `preview_open` when needed. Confirm with `t3_preview_list` that the tab has `runtime: "server"` before using it.
 Server-runtime tabs can work while the desktop is locked. Try the server browser before asking me to unlock the desktop. Do not use a desktop-runtime tab for this work.
