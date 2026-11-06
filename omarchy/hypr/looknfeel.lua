@@ -51,3 +51,8 @@
 
 -- Match the two-pixel inner and outer gaps in aerospace/aerospace.toml.
 hl.config({ general = { gaps_in = 2, gaps_out = 2 } })
+
+-- Opt another application in to Omarchy's standard transparency.
+-- Find its class with: hyprctl clients
+-- o.transparent_window("my-app")
+-- o.transparent_window("my-app", "0.9 0.85") -- Custom active/inactive opacity.
