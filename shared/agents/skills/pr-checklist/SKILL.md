@@ -1,18 +1,19 @@
 ---
 name: pr-checklist
-description: "Run an existing pull request's checklist, retry transient Playwright failures, and report whether it is ready for review. Use when asked to run the PR checklist or check PR readiness. Leave Slack messages to the user."
+description: "Use when working in nomp to go through the checklist in the pr desc."
 ---
 
 # PR Checklist
 
 Complete the PR checklist except for Slack messages, which the user will send. End with a clear readiness result.
 
-## Find the checklist and PR
+## Find the checklist and PR and setup
 
 - Use the PR and worktree from the conversation or current branch. If more than one PR could be the target, ask which one while reading the local checklist and task definitions.
 - Read the applicable `AGENTS.md` files, the PR body, and the repository's current PR template. Use these as the source of the checklist; do not rely on a copied list in this skill.
 - Read the actual commands behind named tasks, including `.vscode/tasks.json`, package scripts, and test configuration. For nomp, the template is `.github/pull_request_template.md`, and the named tasks include `PR - Frontend`, `PR - Backend`, and `PR - Playwright`.
 - Inspect the PR diff and base branch so you can assess whether test failures relate to the changes. Use `gh` when available. If T3 Code exposes PR linking tools, register the PR when starting and verify that it is linked before finishing.
+- Create your own dev server pointed at the worktree with a freshly seeded db before running the tests.
 
 ## Run the checks
 
