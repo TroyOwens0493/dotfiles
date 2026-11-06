@@ -19,4 +19,3 @@ Use GPT 6.1 Terra agents on high reasoning for all computer and browser use task
 
 # Projects with work trees
 If you are working in a project with a worktree, you should create your own, fresh dev servers.
-That includes seeding your own, fresh db if there is a seed script.
