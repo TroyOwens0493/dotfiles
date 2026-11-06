@@ -114,9 +114,7 @@ column are relative to `REPO_DIR`, unless they start with `~`.
 | Source | Destination |
 | --- | --- |
 | `shared/codex/AGENTS.md` | `~/.codex/AGENTS.md` |
-| Each skill directory under `shared/codex/skills/` | Same name under `~/.codex/skills/` |
-| Each skill directory under `shared/agents/skills/` | Same name under `~/.agents/skills/` |
-| `~/.agents/skills/code-review` | `~/.codex/skills/code-review`, `~/.claude/skills/code-review`, and `~/.config/opencode/skills/code-review` |
+| Each skill directory under `shared/agents/skills/` | Same name under each skills directory listed in Custom skills below |
 | `shared/nvim` | `~/.config/nvim` (whole directory) |
 | `shared/shell/colors.sh` | `~/.config/shell/colors.sh` |
 | `shared/shell/functions.sh` | `~/.config/shell/functions.sh` |
@@ -159,20 +157,36 @@ each machine. Later pulls update the instructions through the link.
 
 ### Custom skills
 
-Store custom skills in this repo and link each skill directory to its application
-path. Keep the skill's supporting files with its `SKILL.md`.
+Store portable custom skills in `shared/agents/skills/`. Keep one source directory
+per skill, with standard Agent Skills `name` and `description` frontmatter in
+`SKILL.md`. Keep supporting files, source metadata, and licenses with that file.
+Both `pr-checklist` and the locally modified `code-review` use this shared source.
 
-- Use `shared/codex/skills/` for Codex-only skills such as `pr-checklist`.
-- Use `shared/agents/skills/` for skills shared between agents, such as the locally
-  modified `code-review`. Preserve its source metadata and license.
-- Use `shared/pi/skills/` for Pi-specific skills, as described below.
+For each skill in `shared/agents/skills/`, create a same-name directory link in
+each of these locations, pointing to the absolute repo source directory:
 
-Keep `~/.agents/skills` as a real directory. Do not replace a whole skills root:
+| Skills directory | Harness |
+| --- | --- |
+| `~/.agents/skills/` | Agent Skills discovery, including current Codex |
+| `~/.codex/skills/` | Codex compatibility |
+| `~/.claude/skills/` | Claude Code |
+| `~/.config/opencode/skills/` | OpenCode |
+| `~/.config/pi/skills/` | Pi, including runtimes without `.agents` discovery |
+
+Keep these skills roots as real directories. Do not replace a whole skills root:
 package-managed, plugin, and system skills must stay separate from custom skills.
 Before replacing an existing custom skill directory, compare it with the repo
 copy, preserve local edits, and keep a local backup outside the repo. Leave
-correct links alone. For a new custom skill, create its source directory in the
-repo first, then add its application link and document any additional agent paths.
+correct links alone. For a new portable custom skill, create its source directory
+in `shared/agents/skills/` first, then link it in all locations above. For another
+harness that supports Agent Skills, link each source skill into its documented
+user skills directory if it does not discover `~/.agents/skills/`.
+
+Keep tool-specific skills with their harness. `shared/pi/skills/background-terminals`
+and `shared/pi/skills/subagents` require the corresponding Pi extensions and stay
+Pi-only. A shared skill must use available tools or state its dependencies; links
+do not add missing tools. Optional `agents/openai.yaml` files contain Codex UI
+metadata; the shared workflow belongs in `SKILL.md`.
 
 ### Pi
 

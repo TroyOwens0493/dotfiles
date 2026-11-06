@@ -30,12 +30,17 @@ Keep the repo at `~/dotfiles` so the links continue to work.
 
 ## Custom skills
 
-Edit custom skills here; their application paths link to these directories:
+Edit portable custom skills in [shared/agents/skills](shared/agents/skills):
 
-- [PR checklist](shared/codex/skills/pr-checklist/SKILL.md): `~/.codex/skills/pr-checklist`
-- [Code review](shared/agents/skills/code-review/SKILL.md): `~/.agents/skills/code-review`, also linked from Codex, Claude, and OpenCode
-- [Pi skills](shared/pi/skills): `~/.config/pi/skills/`
+- [PR checklist](shared/agents/skills/pr-checklist/SKILL.md)
+- [Code review](shared/agents/skills/code-review/SKILL.md)
 
-Create new custom skills in the matching repo directory, then link each skill to
-its application path. See [install.md](install.md#custom-skills) for the link rules.
-Package-managed, plugin, and system skills stay outside this repo.
+Each skill has links in the user skills directories for Codex, Claude Code,
+OpenCode, Pi, and `~/.agents/skills/`. All links use the same repo source. Create
+new portable skills here and add the links described in
+[install.md](install.md#custom-skills). Other harnesses that support Agent Skills
+can use the same source through their own skill paths.
+
+[Pi extension skills](shared/pi/skills) stay Pi-only because they require Pi's
+background-terminal and subagent tools. Package-managed, plugin, and system
+skills stay outside this repo.
