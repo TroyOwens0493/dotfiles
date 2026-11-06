@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/anthropics/knowledge-work-plugins",
+  "commit": "bc8f6922cfeea215a202cdcc9f0d299a990889a8",
+  "path": "engineering/skills/code-review",
+  "local_changes": [
+    "Move argument-hint into metadata for cross-agent compatibility",
+    "Bundle CONNECTORS.md and fix its relative link"
+  ]
+}
