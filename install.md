@@ -82,7 +82,9 @@ Use the Brewfile as the package list. Do not maintain another copy in this guide
 1. On a new machine, run `omarchy update -y` before adding packages. The offline
    ISO needs the online package databases.
 2. Read `omarchy/packages.txt`. Ignore empty lines and comment lines. Pass the
-   remaining package names to `omarchy pkg add`.
+   remaining package names to `omarchy pkg add`. On ARM machines where
+   `dotnet-sdk` is unavailable, use `dotnet-sdk-bin` instead; it provides the
+   same SDK through the Omarchy package repository.
 3. Check that `mise` is available. Trust the repo config and install its tools
    before replacing the user's global config link:
 
@@ -251,13 +253,22 @@ Preserve `~/.zprofile`. Append this exact line once if it is absent:
 | `omarchy/bash/.bashrc` | `~/.bashrc` |
 | `omarchy/starship.toml` | `~/.config/starship.toml` |
 | Files under `omarchy/hypr/` | Matching paths under `~/.config/hypr/` |
-| Files under `omarchy/omarchy/` | Matching paths under `~/.config/omarchy/` |
+| Files under `omarchy/omarchy/`, except `plugins/` | Matching paths under `~/.config/omarchy/` |
 | `omarchy/ghostty/config` | `~/.config/ghostty/config` |
 | `omarchy/mise/config.toml` | `~/.config/mise/config.toml` |
 
 Remove `~/.config/ghostty/config.ghostty` if present.
 Keep the machine's `monitors.lua` and `local.lua`. Keep Omarchy's packaged
 defaults under `/usr/share/omarchy`; the repo configs load those defaults.
+
+Use Omarchy's split Hyprland configuration: `input.lua`, `bindings.lua`,
+`looknfeel.lua`, and `autostart.lua`, with the additional AeroSpace and Mac-key
+modules. `hyprland.lua` loads these after the packaged defaults and local
+monitors, followed by saved toggles/workspace layouts and finally `local.lua`.
+
+Shell plugins are separate Git repositories managed by `omarchy plugin add`
+and `omarchy plugin update`, as described in section 6. Do not create symlinks
+inside plugin folders or copy plugin sources from this dotfiles checkout.
 
 ## 6. Install config dependencies
 
@@ -320,28 +331,53 @@ helper with a snapshot and a disposable working lock:
 The helper fetches missing pinned commits from shallow caches and checks the
 installed commits. If it fails, report the failure and keep the tracked lockfile.
 
-### Omarchy System Pulse widget
+### Omarchy shell plugins
 
-On Omarchy only, if
-`~/.config/omarchy/plugins/lucas.system-pulse/manifest.json` is absent, run:
+Install both plugins through Omarchy on Linux only. My Workspaces lives in a
+private repository, so check GitHub SSH access before installing it. Report
+missing access without removing an existing working plugin.
+
+If either plugin is an old copied or symlinked directory rather than a Git
+checkout, compare it with its source and preserve local changes first. Back
+it up outside `~/.config/omarchy/plugins/`, then install it using the commands
+below. Leave existing Git-managed installs alone.
 
 ```sh
-omarchy plugin add https://github.com/lucaslus/omarchy-statusline.git --yes
+if [[ ! -f "$HOME/.config/omarchy/plugins/troyowens.workspaces/manifest.json" ]]; then
+  omarchy plugin add git@github.com:TroyOwens0493/omarchy-workspaces.git --yes
+fi
+if [[ ! -f "$HOME/.config/omarchy/plugins/lucas.system-pulse/manifest.json" ]]; then
+  omarchy plugin add https://github.com/lucaslus/omarchy-statusline.git --yes
+fi
 ```
 
 Then run:
 
 ```sh
+omarchy plugin validate "$HOME/.config/omarchy/plugins/troyowens.workspaces"
 omarchy plugin validate "$HOME/.config/omarchy/plugins/lucas.system-pulse"
 ```
 
 Do not pass `--enable`. The tracked `shell.json` already places and enables the
-widget. That option would change the tracked settings through their link.
+widgets. That option would change the tracked settings through their link.
+
+For later updates, use:
+
+```sh
+omarchy plugin update troyowens.workspaces --yes
+omarchy plugin update lucas.system-pulse --yes
+```
+
+Make workspace-widget changes in a separate checkout of
+`TroyOwens0493/omarchy-workspaces`, validate, commit, and push them there, then
+run its plugin update command. Keep installed checkouts clean for updates.
 
 ## 7. Check the result and report
 
 - Check that the selected links resolve to this checkout and that no required
-  link is broken. Do not install the other platform's settings.
+  link is broken. Check that both Omarchy plugins are Git-managed checkouts of
+  the expected repositories, enabled, and pass validation. Do not install the
+  other platform's settings.
 - Check that local state and override files are still available. Do not print
   credential contents.
 - For dependency setup, check `pi --version`, `tmux -V`, `nvim --version`,
