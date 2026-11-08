@@ -9,6 +9,9 @@
 hl.config({
   input = {
     kb_options = "ctrl:swapcaps,altwin:swap_alt_win,shift:both_capslock_cancel",
+    touchpad = {
+      tap_to_click = false,
+    },
   },
 })
 
