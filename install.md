@@ -14,6 +14,9 @@ install script. Use `scripts/restore-nvim.lua` to restore pinned Neovim plugins.
   `CONFIG_DIR`. If `XDG_CONFIG_HOME` points elsewhere, stop and report the conflict.
 - Check `git status --short`. Preserve all existing edits. Do not pull, reset,
   commit, or push unless the user asks for that operation.
+- Detect the operating system and whether the target is Mac hardware. On Linux,
+  check the system vendor and product in `/sys/class/dmi/id/` or the device-tree
+  model. If the hardware type is unclear, ask the user whether this is a Mac.
 - On macOS, use `shared/` and `macos/`.
 - On Linux, use `shared/` and `omarchy/` only if Omarchy is installed and
   `/usr/share/omarchy/default/hypr/bootstrap.lua` exists. This repo requires the
@@ -265,6 +268,19 @@ Use Omarchy's split Hyprland configuration: `input.lua`, `bindings.lua`,
 `looknfeel.lua`, and `autostart.lua`, with the additional AeroSpace and Mac-key
 modules. `hyprland.lua` loads these after the packaged defaults and local
 monitors, followed by saved toggles/workspace layouts and finally `local.lua`.
+
+Set the Alt/Super swap in `~/.config/hypr/input.lua` for the target hardware:
+
+- On a Mac running Omarchy, comment out the `kb_options` line that contains
+  `altwin:swap_alt_win` and uncomment the line without it.
+- On other hardware, uncomment the line that contains `altwin:swap_alt_win`
+  and comment out the line without it.
+- Keep exactly one of these two lines active. Preserve the Caps Lock / Control
+  swap and all other keyboard options.
+
+This step applies to Omarchy only. A macOS install does not use the Hyprland
+config. After the change, run `hyprctl reload` and `hyprctl configerrors` in the
+running Hyprland session. Fix any reported config errors.
 
 Shell plugins are separate Git repositories managed by `omarchy plugin add`
 and `omarchy plugin update`, as described in section 6. Do not create symlinks
