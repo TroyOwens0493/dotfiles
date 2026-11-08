@@ -25,6 +25,13 @@ The Caps Lock / Control swap is retained. The Alt / Super swap applies on both
 sides of the keyboard. If a future keyboard sends Mac key signals, remove
 `altwin:swap_alt_win` before using it.
 
+Run `toggle-alt-super` in a terminal to toggle the Alt/Super swap live for all
+keyboards. Other keyboard options are preserved. On a native Apple keyboard,
+disabling the swap makes Command act as SUPER and Option as ALT; enabling it
+reverses those roles. This does not edit the saved config: a config reload or
+new login restores the configured swap. Open a new terminal or run
+`source ~/.config/shell/omarchy/.bash_aliases` to load the command.
+
 ## Window controls
 
 | Shortcut | Action |
