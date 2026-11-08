@@ -24,5 +24,9 @@ rebar = { version = "latest", asset_pattern = "rebar3" }
 rust = "latest"
 stripe = "latest"
 
+[settings]
+# Use the dotfiles launcher and its lockfile-pinned local runtime.
+disable_tools = ["pi"]
+
 [settings.upgrade]
 auto_prune = false

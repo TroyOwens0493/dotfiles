@@ -3,6 +3,12 @@
 The settings follow `macos/aerospace/aerospace.toml`. The active files in
 `~/.config/hypr/` link to this directory.
 
+Shared Hyprland customizations use Omarchy's split configuration files, with
+additional AeroSpace and Mac-key modules. `hyprland.lua` loads the packaged
+defaults, local `monitors.lua`, personal modules, saved Omarchy toggles/workspace
+layouts, and finally `local.lua`. Keep machine-specific adjustments in those
+two local files.
+
 ## Keyboard
 
 This keyboard sends PC key signals but has Mac keycaps. The key check found:
@@ -61,6 +67,8 @@ Numbers use workspace IDs 1–9. Letter workspaces use IDs 10–31. Tree structu
 orientation, accordion mode, and resized proportions are saved under
 `~/.local/state/omarchy/workspace-layouts/` (or `$XDG_STATE_HOME`). They survive
 config reloads for windows that remain open. New windows reset size proportions.
+Omarchy's per-monitor workspace reconciliation is disabled in `aerospace.lua` so
+reloads and monitor changes do not renumber these global workspaces.
 
 ## App shortcuts
 

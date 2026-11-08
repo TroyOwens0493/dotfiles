@@ -26,6 +26,18 @@ Setup links configs from this repo into their application paths, mostly under
 `~/.config`. For example, `~/.config/nvim` links to `~/dotfiles/shared/nvim`.
 Editing either path changes the same file. Credentials and app data stay local.
 
+Personal Hyprland settings use Omarchy's split configuration files under
+`omarchy/hypr/`, loaded after its packaged defaults. Monitor settings and final
+machine-specific overrides stay local in `~/.config/hypr/monitors.lua` and
+`local.lua`.
+
+Omarchy shell plugins are separate Git repositories installed with
+`omarchy plugin add` and updated with `omarchy plugin update`:
+[My Workspaces](https://github.com/TroyOwens0493/omarchy-workspaces) (private;
+requires GitHub SSH access) and
+[System Pulse](https://github.com/lucaslus/omarchy-statusline).
+Plugin folders contain real files, with no symlinks. See `install.md` for setup.
+
 Keep the repo at `~/dotfiles` so the links continue to work.
 
 ## Custom skills

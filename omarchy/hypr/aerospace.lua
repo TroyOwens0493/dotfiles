@@ -1,3 +1,7 @@
+-- Keep AeroSpace's global numbered/letter workspaces across reloads and monitor changes.
+-- Omarchy's per-monitor workspace callbacks call this method dynamically.
+o.workspaces.reconcile = function() end
+
 -- AeroSpace-style navigation. H/J/K/L are reserved for windows.
 local letters = "ABCDEFGIMNOPQRSTUVWXYZ"
 local M = {}

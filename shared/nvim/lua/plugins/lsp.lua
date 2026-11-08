@@ -61,31 +61,37 @@ local function setup_lsp()
     -- Setup capabilities first
     local cmp_capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-    -- Setup mason-lspconfig
-    require('mason-lspconfig').setup({
-        ensure_installed = {
-            'lua_ls',
-            'vtsls',
-            'jsonls',
-            'rust_analyzer',
-            'pylsp',
-            'gopls',
-            'html',
-            'cssls',
-            'clangd',
-            'omnisharp',
-            'harper_ls',
-            'emmet_language_server',
-            'erlangls',
-            'zls',
-            'astro',
-            'svelte',
-            'powershell_es',
-        },
-    })
+    local servers = {
+        'lua_ls',
+        'vtsls',
+        'jsonls',
+        'rust_analyzer',
+        'pylsp',
+        'gopls',
+        'html',
+        'cssls',
+        'omnisharp',
+        'harper_ls',
+        'emmet_language_server',
+        'erlangls',
+        'zls',
+        'astro',
+        'svelte',
+        'powershell_es',
+    }
+
+    -- The native clang package supplies clangd on ARM, where Mason has no build.
+    local system_clangd = vim.fn.executable('clangd') == 1
+    if not system_clangd then
+        table.insert(servers, 'clangd')
+    end
+    require('mason-lspconfig').setup({ ensure_installed = servers })
 
     -- Mason v2 enables servers through Neovim's native LSP configuration.
     vim.lsp.config('*', { capabilities = cmp_capabilities })
+    if system_clangd then
+        vim.lsp.enable('clangd')
+    end
     vim.lsp.config('lua_ls', {
         settings = {
             Lua = {
