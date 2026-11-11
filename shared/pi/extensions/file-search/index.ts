@@ -18,7 +18,6 @@ import type {
 import { Text } from "@earendil-works/pi-tui";
 import { Cause, Data, Effect, Exit } from "effect";
 import { Type } from "typebox";
-import { StringEnum } from "@earendil-works/pi-ai";
 import {
   buildFdArgs,
   buildRgArgs,
@@ -387,7 +386,8 @@ function fdParameters() {
       Type.String({ description: FD_PARAMETER_DESCRIPTIONS.path }),
     ),
     type: Type.Optional(
-      StringEnum(["file", "directory", "symlink"] as const, {
+      Type.Enum(["file", "directory", "symlink"] as const, {
+        type: "string",
         description: FD_PARAMETER_DESCRIPTIONS.type,
       }),
     ),
