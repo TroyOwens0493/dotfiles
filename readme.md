@@ -40,6 +40,11 @@ Plugin folders contain real files, with no symlinks. See `install.md` for setup.
 
 Keep the repo at `~/dotfiles` so the links continue to work.
 
+[browse](https://github.com/anomalyco/browse) is included in setup for both
+platforms. OpenCode and Pi use its shared MCP entries; setup adds it to Codex,
+Claude Code, Gemini CLI, and Copilot CLI. Each machine needs the browser
+extension and local pairing. See [install.md](install.md#browse).
+
 ## Custom skills
 
 Edit portable custom skills in [shared/agents/skills](shared/agents/skills):
