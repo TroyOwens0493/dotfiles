@@ -291,6 +291,44 @@ inside plugin folders or copy plugin sources from this dotfiles checkout.
 Skip this section for configs-only and preview requests. Report missing required
 tools if packages were skipped. Do not silently mark an incomplete setup as done.
 
+### browse
+
+Install [Anomaly's browse](https://github.com/anomalyco/browse) on both macOS and
+Omarchy. It lets agents use a Chromium browser through its extension.
+If `~/.local/bin/browse` is missing, use the official stable binary installer:
+
+```sh
+curl -fsSL https://opencode.ai/browse/install | bash -s -- --no-setup
+```
+
+Ensure `~/.local/bin` is on `PATH`. The linked OpenCode and Pi configs already
+run `browse mcp` from that path. Keep these entries portable; do not replace
+them with absolute paths or run the browse config installer against these
+linked files.
+
+Configure the other AI CLIs installed by this guide:
+
+```sh
+browse install --agent codex claude gemini copilot --no-open --no-wait
+```
+
+This adds browse to each client's local config and preserves unrelated servers.
+If an existing `browse` entry conflicts, inspect it and preserve local changes.
+Start a new agent session to load the added server.
+Keep the generated client paths and all browse settings, pairing keys, browser
+profiles, sessions, and credentials outside the repo.
+
+In the browser used on this machine, install or enable the
+[browse extension](https://chromewebstore.google.com/detail/mfnicocicmmlkpjnaffgihfjhdgjkdjg).
+Run the same `browse install` command without `--no-open --no-wait` to complete
+pairing. Keep the relay on its default loopback address. A remote shell alone
+does not require `--remote`; use the browser on the target machine.
+
+Check `browse --version`, `browse status`, and `browse doctor`. If the browser
+is closed or pairing needs a user action, report that separately from the CLI
+and agent config installation. Browse checks for updates automatically;
+`browse update` updates it manually.
+
 ### Pi runtime
 
 Use npm and the checked-in lockfile. Run the following if the local Pi executable
@@ -397,8 +435,9 @@ run its plugin update command. Keep installed checkouts clean for updates.
 - Check that local state and override files are still available. Do not print
   credential contents.
 - For dependency setup, check `pi --version`, `tmux -V`, `nvim --version`,
-  `git lfs version`, and `fzf --version`. Check that Neovim restoration and
-  plugin validation passed.
+  `git lfs version`, `fzf --version`, and `browse --version`. Check browse's
+  agent entries and report its browser connection state. Check that Neovim
+  restoration and plugin validation passed.
   Use `~/.local/bin/pi` if the current shell does not yet include that path.
 - In a new interactive shell, check `command -v nwt`. The shared function must
   be available in Bash on Omarchy and Zsh on macOS.

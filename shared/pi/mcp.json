@@ -1,5 +1,9 @@
 {
   "mcpServers": {
+    "browse": {
+      "command": "browse",
+      "args": ["mcp"]
+    },
     "linear": {
       "url": "https://mcp.linear.app/mcp"
     }
