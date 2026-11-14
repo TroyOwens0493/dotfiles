@@ -1,9 +1,9 @@
 ---
-name: update-config
+name: distribute-across-fleet
 description: Use when you are told to update my dotfiles or configs.
 ---
 
-# Update Config
+# Distribute Across Fleet
 
 Keep the local config current. When the user asks you to push dotfiles or config
 changes to the remote, also update every other machine you can access after the
@@ -27,6 +27,11 @@ are not available, report that you cannot start the remote update threads.
    machine and link to its thread with the returned thread link. Report machines
    that are unreachable, have expired access, or could not be updated. Do not
    claim that all machines are current unless each update is verified.
+5. Settle each machine's update thread after its update and checks succeed without
+   issues. Use `t3_thread_organize` with `action: "settle"`, that machine's
+   `environmentId`, and its update `threadId` if the thread has not already settled
+   itself. Leave threads with issues or incomplete updates active and report them.
+   Apply this only to threads used for this distribution, not unrelated threads.
 
 ## Instructions for each machine's thread
 
@@ -46,3 +51,7 @@ are not available, report that you cannot start the remote update threads.
 - Check that the applicable configs and links are current and valid. Report the
   installed commit, what you applied, the checks you ran, and any remaining
   blockers. If a required step cannot be completed, report the update as incomplete.
+- If the update and all checks succeed without issues, settle this update thread
+  with `t3_thread_organize` and `action: "settle"` before your final reply. Omit
+  `threadId` to settle your current thread at turn end. If you encounter any issue
+  or cannot complete the update, leave the thread active and report the issue.
