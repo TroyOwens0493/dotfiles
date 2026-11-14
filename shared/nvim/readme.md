@@ -29,24 +29,25 @@ their `+` or `-` markers without a text background. This uses
 Deleted and original lines are hidden in inline diffs. Set
 `diff.show_deleted_lines = true` in `lua/plugins/codediff.lua` to show them.
 
-To explain code, select it with Visual mode in a diff pane and press `Space ge`.
-The floating window shows the selected code on the left and its explanations
-on the right. Both panes scroll together. Use movement keys to scroll, then
-press `q` or `Esc` to close it. Change
-`ai.explain_keymap` in `lua/plugins/codediff.lua` to use a different shortcut.
-The AI uses ASD-STE100 Simplified Technical English. Character and block
-selections include the full source lines they touch.
-
-CodeDiff's AI features are implemented in the fork: change summaries (`gs`),
-purpose explanations (`gb`), selected-line explanations, loading indicators,
-Codex sign-in, and guided review. The config sets preferences and key bindings;
-it does not build prompts, send AI requests, or render AI results.
+The fork provides AI-guided review through the local Codex CLI and its ChatGPT
+sign-in. The config enables this feature and sets high reasoning effort.
 Press `Space gv` or run `:CodeDiffReview start` to generate or open a guided
 review. This command also loads the plugin when no CodeDiff comparison has
 been opened yet.
 
+The guide opens in a new tab. Select a stop in the sidebar to show its changes.
+Use `:CodeDiffReview next` and `:CodeDiffReview prev` to move between stops.
+Press `Space v` to mark the current stop as reviewed. Use
+`:CodeDiffReview refresh` to generate a new guide after the comparison changes.
+The original comparison stays open in its own tab.
+
+The fork no longer provides change summary popups (`gs`), purpose popups (`gb`),
+or selected-line explanations (`Space ge`). In the file list, `gs` still toggles
+staged changes.
+
 When `~/nvimPuginDev/codediff.nvim` exists, Neovim uses that local checkout.
 Otherwise it uses the configured GitHub fork and branch.
+Use `:Lazy restore codediff.nvim` to restore the version in `lazy-lock.json`.
 
 `Space gp` uses the GitHub CLI (`gh`) to find the current branch's open PR
 number and base branch. It uses the directory shown in Netrw or the current

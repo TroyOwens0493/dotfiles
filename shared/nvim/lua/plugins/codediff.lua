@@ -68,15 +68,10 @@ return {
                 highlight_numbers = true,
             },
         },
-        -- AI behavior lives in the fork; this table sets personal preferences.
+        -- Guided review uses the fork's Codex connection.
         ai = {
             enabled = true,
             effort = 'high',
-            auto_summary = true,
-            keymap = 'gs',
-            why_keymap = 'gb',
-            explain_keymap = '<leader>ge',
-            detail = 'detailed',
             max_input_bytes = math.huge,
         },
         explorer = {
