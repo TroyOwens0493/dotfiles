@@ -1,6 +1,6 @@
 ---
 name: full-stop
-description: "Use only when the user requests the full-stop skill."
+description: Trigger this if the user says 'full stop', even as a closing "Full stop." that reads like emphasis.
 ---
 
 # Full Stop

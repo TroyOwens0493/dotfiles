@@ -52,6 +52,16 @@ Edit portable custom skills in [shared/agents/skills](shared/agents/skills):
 - [PR checklist](shared/agents/skills/pr-checklist/SKILL.md)
 - [Code review](shared/agents/skills/code-review/SKILL.md)
 
+The nine [tstack skills](https://github.com/t3dotgg/tstack) are also included:
+`full-send`, `full-stop`, `council`, `sol-loop`, `file-pr`, `takeover`,
+`babysit-pr`, `modernize`, and `leaving-pr-comments`. These replace the local
+`full-send` and `full-stop` versions. Each includes its upstream commit in
+`SOURCE.md` and its MIT license. Keep upstream supporting files when updating.
+
+The tstack skills require authenticated `gh` and Python 3. `council` and
+`sol-loop` also require access to other providers' models through T3 Code or
+another harness that supports those models.
+
 Each skill has links in the user skills directories for Codex, Claude Code,
 OpenCode, Pi, and `~/.agents/skills/`. All links use the same repo source. Create
 new portable skills here and add the links described in
