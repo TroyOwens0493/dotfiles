@@ -79,6 +79,13 @@ Skip this section for configs-only, skip-packages, and preview requests.
    `brew uninstall opencode`. The Brewfile installs OpenCode 2, which supplies
    the same command.
 5. Run `brew bundle --file="$REPO_DIR/macos/Brewfile"`.
+   On an existing machine, add `--no-upgrade` unless package upgrades were
+   requested.
+6. In a new interactive shell, check `command -v shopify opencode`. If an npm
+   copy takes precedence, verify the Homebrew command first, preserve any local
+   package changes, then remove only that npm package. Keep credentials and
+   application settings. The Brewfile uses Claude Code's `latest` channel;
+   preserve that channel on machines where it is already installed.
 
 Use the Brewfile as the package list. Do not maintain another copy in this guide.
 

@@ -1,6 +1,7 @@
 # macOS packages for the setup in install.md.
 
 tap "nikitabobko/tap"
+tap "shopify/shopify"
 
 # Core shell and source-control tooling.
 brew "bash"
@@ -42,12 +43,12 @@ brew "zls"
 brew "docker"
 brew "kubernetes-cli"
 brew "postgresql@14"
-brew "shopify-cli"
+brew "shopify/shopify/shopify-cli", trusted: true
 brew "stripe"
 
 # AI CLIs.
 brew "gemini-cli"
-brew "anomalyco/tap/opencode-v2"
+brew "anomalyco/tap/opencode-v2", trusted: true
 # Follow install.md to install Pi from shared/pi/package-lock.json.
 
 # Window manager and explicitly requested apps.
@@ -58,6 +59,6 @@ cask "cmux"
 cask "anomalyco/tap/hex"
 
 # AI GUI/terminal casks currently installed on this machine.
-cask "claude-code"
+cask "claude-code@latest"
 cask "codex"
 cask "copilot-cli"

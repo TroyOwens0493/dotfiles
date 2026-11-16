@@ -46,8 +46,9 @@ one appears.
    smallest change that works. Fix the case that happened, not every case
    that could. If you are on the default branch, create a branch first.
 2. **Prove it.** Get proof for every change you made. See "Proof".
-3. **Review the change.** Check the final diff for correctness, security,
-   regressions, and missing checks. Fix findings and verify the fixes.
+3. **Review the change.** Have a sub-agent run the code-review skill on the PR.
+   Check the final diff for correctness, security, regressions, and missing
+   checks. Fix findings and verify the fixes.
 4. **File or update the PR** with the available GitHub tools. Rebase onto the
    latest default branch first. Add one short line to the description that says
    how you proved the change.
