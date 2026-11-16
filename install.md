@@ -12,6 +12,8 @@ install script. Use `scripts/restore-nvim.lua` to restore pinned Neovim plugins.
   that need it.
 - Use the actual, absolute checkout path as `REPO_DIR`. Use `~/.config` as
   `CONFIG_DIR`. If `XDG_CONFIG_HOME` points elsewhere, stop and report the conflict.
+- Do not create backup copies unless the user requests them. If a temporary Git
+  stash is needed for an update, restore it and drop it after verification.
 - Check `git status --short`. Preserve all existing edits. Do not pull, reset,
   commit, or push unless the user asks for that operation.
 - Detect the operating system and whether the target is Mac hardware. On Linux,
@@ -157,8 +159,8 @@ skills, and other local settings in place.
 
 On an existing machine, compare its `~/.codex/AGENTS.md` with the shared file
 and preserve any machine-specific instructions before replacing the file with
-the link. Keep a local backup of the existing file. Set up this link once on
-each machine. Later pulls update the instructions through the link.
+the link. Set up this link once on each machine. Later pulls update the
+instructions through the link.
 
 ### Custom skills
 
@@ -181,11 +183,11 @@ each of these locations, pointing to the absolute repo source directory:
 Keep these skills roots as real directories. Do not replace a whole skills root:
 package-managed, plugin, and system skills must stay separate from custom skills.
 Before replacing an existing custom skill directory, compare it with the repo
-copy, preserve local edits, and keep a local backup outside the repo. Leave
-correct links alone. For a new portable custom skill, create its source directory
-in `shared/agents/skills/` first, then link it in all locations above. For another
-harness that supports Agent Skills, link each source skill into its documented
-user skills directory if it does not discover `~/.agents/skills/`.
+copy and preserve local edits. Leave correct links alone. For a new portable
+custom skill, create its source directory in `shared/agents/skills/` first, then
+link it in all locations above. For another harness that supports Agent Skills,
+link each source skill into its documented user skills directory if it does not
+discover `~/.agents/skills/`.
 
 The tstack skills listed in `readme.md` use the same links. Preserve their
 `SOURCE.md`, MIT `LICENSE`, supporting scripts, and `agents/` files when copying

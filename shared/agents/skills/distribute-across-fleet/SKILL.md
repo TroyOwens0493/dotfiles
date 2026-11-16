@@ -42,6 +42,9 @@ are not available, report that you cannot start the remote update threads.
   local edits and machine-specific settings. Do not discard changes, force a
   reset, or change to an unrelated branch to make the pull succeed. If local
   changes or divergent history prevent a safe update, report the blocker.
+- Do not create backup copies unless the user requests them. If a temporary Git
+  stash is needed, restore it and drop it after verifying the local edits. Do not
+  drop unrelated stashes or a stash whose edits have not been restored.
 - Pull the latest changes from the specified remote branch with a fast-forward
   update. Verify that the checkout contains the pushed commit.
 - Apply all config setup steps that this machine needs from the updated repo.
