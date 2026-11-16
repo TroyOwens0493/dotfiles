@@ -46,21 +46,23 @@ one appears.
    smallest change that works. Fix the case that happened, not every case
    that could. If you are on the default branch, create a branch first.
 2. **Prove it.** Get proof for every change you made. See "Proof".
-3. **Get feedback.** Use the `sol-loop` skill to verify changes.
-4. **File the PR** with the `file-pr` skill. Rebase onto the latest default
-   branch first. Add one short line to the description that says how you proved
-   the change.
-5. **Babysit the PR** with the `babysit-pr` skill. Fix real findings and CI
+3. **Review the change.** Check the final diff for correctness, security,
+   regressions, and missing checks. Fix findings and verify the fixes.
+4. **File or update the PR** with the available GitHub tools. Rebase onto the
+   latest default branch first. Add one short line to the description that says
+   how you proved the change.
+5. **Monitor the PR** with the harness's PR watcher. Fix real findings and CI
    failures. Get proof for each fix before you push it.
 6. **Merge** when the merge gate passes.
 7. **Report** in your final message: the PR link, the merge commit, your proof,
    and each decision you made for the user.
 
 Stay active from step 1 to step 7. If you end your turn while checks or bots are
-pending, the work stops, because nobody will prompt you again. Wait with the
-watcher from `babysit-pr`, so something wakes you when the PR changes. In T3
-Code that is `watch_pull_request`. If you stop before the merge, call
-`unwatch_pull_request` first.
+pending, the work stops, because nobody will prompt you again. Wait with
+the harness's PR watcher so something wakes you when the PR changes. In T3
+Code that is `watch_pull_request`. If no watcher is available, report the
+blocker instead of claiming that monitoring will continue. If you stop before
+the merge, call `unwatch_pull_request` first.
 
 ## Proof
 

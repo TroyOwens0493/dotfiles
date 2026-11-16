@@ -189,13 +189,13 @@ link it in all locations above. For another harness that supports Agent Skills,
 link each source skill into its documented user skills directory if it does not
 discover `~/.agents/skills/`.
 
-The tstack skills listed in `readme.md` use the same links. Preserve their
-`SOURCE.md`, MIT `LICENSE`, supporting scripts, and `agents/` files when copying
-or updating them. Keep `babysit-pr/scripts/pr-wait` executable. Check that
-`gh auth status` succeeds, Python 3 is available, and
-`babysit-pr/scripts/pr-wait --help` runs. `council` and `sol-loop` also need
-access to other providers' models through the active harness; installation
-does not configure provider accounts.
+Only the `full-send` and `full-stop` tstack skills are included. They use the
+same links. Preserve their `SOURCE.md`, MIT `LICENSE`, `agents/` files, and local
+changes when copying or updating them. Check that `gh auth status` succeeds.
+On an existing machine, remove links to the retired tstack skills (`council`,
+`sol-loop`, `file-pr`, `takeover`, `babysit-pr`, `modernize`, and
+`leaving-pr-comments`) from all five skills directories above. Remove only
+links that point to this repo's retired skill directories; preserve other files.
 
 Keep tool-specific skills with their harness. `shared/pi/skills/background-terminals`
 and `shared/pi/skills/subagents` require the corresponding Pi extensions and stay
