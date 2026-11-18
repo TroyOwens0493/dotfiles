@@ -9,4 +9,5 @@ Path: `skills/full-send`
 License: MIT (see [LICENSE](LICENSE)).
 
 Local changes: replaced dependencies on the removed tstack skills with direct
-review, pull request, and monitoring steps.
+review, pull request, and monitoring steps. Added a second review by a model
+from another provider.

@@ -46,9 +46,18 @@ one appears.
    smallest change that works. Fix the case that happened, not every case
    that could. If you are on the default branch, create a branch first.
 2. **Prove it.** Get proof for every change you made. See "Proof".
-3. **Review the change.** Have a sub-agent run the code-review skill on the PR.
-   Check the final diff for correctness, security, regressions, and missing
-   checks. Fix findings and verify the fixes.
+3. **Review the change.** Run two reviews of the diff, in order. Each one
+   checks for correctness, security, regressions, and missing checks. Give each
+   reviewer the goal and the diff, not your conclusions. Fix findings and
+   verify the fixes before the next review.
+   1. Have your own sub-agent run the code-review skill.
+   2. Then have a model from another provider review the updated diff. Use the
+      harness's cross-provider delegation (`delegate_task` in T3 Code):
+      - Claude parent: Codex `gpt-6.2-sol` with `reasoningEffort: high`.
+      - Any other parent: Claude `claude-opus-5-5` with `effort: high`.
+
+      If that model or delegation is unavailable, do not substitute another
+      model. Say so in the PR description and the report.
 4. **File or update the PR** with the available GitHub tools. Rebase onto the
    latest default branch first. Add one short line to the description that says
    how you proved the change.
