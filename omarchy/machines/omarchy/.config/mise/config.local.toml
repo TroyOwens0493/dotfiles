@@ -1,2 +1,1 @@
 [tools]
-"pipx:hermes-agent" = { version = "source", extras = "all" }
