@@ -127,7 +127,8 @@ column are relative to `REPO_DIR`, unless they start with `~`.
 
 | Source | Destination |
 | --- | --- |
-| `shared/codex/AGENTS.md` | `~/.codex/AGENTS.md` |
+| `shared/agents/AGENTS.md` | `~/.codex/AGENTS.md` |
+| `shared/agents/AGENTS.md` | `~/.claude/CLAUDE.md` |
 | Each skill directory under `shared/agents/skills/` | Same name under each skills directory listed in Custom skills below |
 | `shared/nvim` | `~/.config/nvim` (whole directory) |
 | `shared/shell/colors.sh` | `~/.config/shell/colors.sh` |
@@ -158,16 +159,26 @@ git config --global core.excludesFile "$HOME/.config/git/ignore"
 Respect `GIT_CONFIG_GLOBAL` when set; otherwise check `~/.gitconfig` and
 `~/.config/git/config`. Preserve all other Git settings.
 
-### Codex
+### Global agent instructions
 
-Keep `~/.codex` and `~/.codex/skills` as real directories. Link `AGENTS.md` and
-each tracked skill directory; keep credentials, sessions, bundled `.system`
-skills, and other local settings in place.
+`shared/agents/AGENTS.md` holds the short global rules for all agents. Keep it
+small: rules that apply to every task. Put task-specific instructions in a
+custom skill instead.
 
-On an existing machine, compare its `~/.codex/AGENTS.md` with the shared file
-and preserve any machine-specific instructions before replacing the file with
-the link. Set up this link once on each machine. Later pulls update the
-instructions through the link.
+Codex and Claude Code link to this file. OpenCode and Pi keep their own
+instruction files, which end with a copy of the same rules. When you change
+`shared/agents/AGENTS.md`, make the same change at the end of
+`shared/opencode/AGENTS.md` and `shared/pi/AGENTS.md`.
+
+Keep `~/.codex`, `~/.codex/skills`, `~/.claude`, and `~/.claude/skills` as real
+directories. Keep credentials, sessions, bundled `.system` skills, plugins, and
+other local settings in place.
+
+On an existing machine, compare `~/.codex/AGENTS.md` and `~/.claude/CLAUDE.md`
+with the shared file and preserve any machine-specific instructions before
+replacing them with the links. Older setups link `~/.codex/AGENTS.md` to
+`shared/codex/AGENTS.md`, which no longer exists; replace that link. Later pulls
+update the instructions through the links.
 
 ### Custom skills
 

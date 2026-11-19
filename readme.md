@@ -51,6 +51,14 @@ Edit portable custom skills in [shared/agents/skills](shared/agents/skills):
 
 - [PR checklist](shared/agents/skills/pr-checklist/SKILL.md)
 - [Code review](shared/agents/skills/code-review/SKILL.md)
+- [Explain](shared/agents/skills/explain/SKILL.md): explanations in Simplified Technical English
+- [Write as Troy](shared/agents/skills/write-as-troy/SKILL.md): messages on Troy's behalf
+- [Estimate work](shared/agents/skills/estimate-work/SKILL.md): estimates in lines of code and churn
+- [Computer use](shared/agents/skills/computer-use/SKILL.md): browser and computer-use rules
+
+Short global rules for all agents are in
+[shared/agents/AGENTS.md](shared/agents/AGENTS.md). Codex and Claude Code link to
+it; OpenCode and Pi keep a copy at the end of their own instruction files.
 
 Two [tstack skills](https://github.com/t3dotgg/tstack) are also included:
 `full-send` and `full-stop`. Each includes its upstream commit in `SOURCE.md`

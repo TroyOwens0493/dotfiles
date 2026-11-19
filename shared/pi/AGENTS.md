@@ -13,6 +13,8 @@ In general:
 
 - when asking questions, ask them one at a time
 
-# T3 Code browser on this machine
+# T3 Code window
+All agents, including subagents and delegated agents, must keep the T3 Code application on the monitor and workspace where I put it. Never move T3 Code to a virtual monitor, private virtual display, or another monitor or workspace.
 
-When running inside T3 Code on host `omarchy`, use T3 Code's built-in server browser through the `preview_*` tools by default. Prefer server-runtime tabs over desktop-runtime tabs. Browser work must not require a connected physical display or moving T3 Code's main window to a virtual monitor. If the server browser is unavailable, state the limitation instead of silently switching browser systems.
+# Projects with worktrees
+If you are working in a project with a worktree, you should create your own, fresh dev servers.
