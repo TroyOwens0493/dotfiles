@@ -60,12 +60,15 @@ Short global rules for all agents are in
 [shared/agents/AGENTS.md](shared/agents/AGENTS.md). Codex and Claude Code link to
 it; OpenCode and Pi keep a copy at the end of their own instruction files.
 
-Two [tstack skills](https://github.com/t3dotgg/tstack) are also included:
-`full-send` and `full-stop`. Each includes its upstream commit in `SOURCE.md`
-and its MIT license. `full-send` has local changes so neither skill needs the
-other tstack skills. Keep these changes and upstream supporting files when updating.
+Three [tstack skills](https://github.com/t3dotgg/tstack) are also included:
+`full-send`, `full-stop`, and `sol-loop`. Each includes its upstream commit in
+`SOURCE.md` and its MIT license. `full-send` reviews with `sol-loop`, like
+upstream, and has local changes so it needs no other tstack skills. Keep these
+changes and upstream supporting files when updating.
 
-The tstack skills require authenticated `gh` for pull request work.
+The tstack skills require authenticated `gh` for pull request work. `sol-loop`
+also requires access to GPT Sol, and to Claude Opus when an OpenAI model runs
+`full-send`, through T3 Code or another harness that supports those models.
 
 Each skill has links in the user skills directories for Codex, Claude Code,
 OpenCode, Pi, and `~/.agents/skills/`. All links use the same repo source. Create

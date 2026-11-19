@@ -8,6 +8,6 @@ Path: `skills/full-send`
 
 License: MIT (see [LICENSE](LICENSE)).
 
-Local changes: replaced dependencies on the removed tstack skills with direct
-review, pull request, and monitoring steps. Added a second review by a model
-from another provider.
+Local changes: replaced dependencies on the removed `file-pr` and `babysit-pr`
+tstack skills with direct pull request and monitoring steps. When the parent is
+an OpenAI GPT model, the `sol-loop` review uses Claude Opus instead of Sol.

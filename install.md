@@ -207,11 +207,14 @@ link it in all locations above. For another harness that supports Agent Skills,
 link each source skill into its documented user skills directory if it does not
 discover `~/.agents/skills/`.
 
-Only the `full-send` and `full-stop` tstack skills are included. They use the
-same links. Preserve their `SOURCE.md`, MIT `LICENSE`, `agents/` files, and local
-changes when copying or updating them. Check that `gh auth status` succeeds.
-On an existing machine, remove links to the retired tstack skills (`council`,
-`sol-loop`, `file-pr`, `takeover`, `babysit-pr`, `modernize`, and
+Only the `full-send`, `full-stop`, and `sol-loop` tstack skills are included.
+They use the same links. Preserve their `SOURCE.md`, MIT `LICENSE`, `agents/`
+files, and local changes when copying or updating them. Check that
+`gh auth status` succeeds. `sol-loop`, and `full-send` through it, also need
+access to GPT Sol (and Claude Opus for OpenAI parents) through T3 Code or another
+harness that supports those models; installation does not configure provider
+accounts. On an existing machine, remove links to the retired tstack skills
+(`council`, `file-pr`, `takeover`, `babysit-pr`, `modernize`, and
 `leaving-pr-comments`) from all five skills directories above. Remove only
 links that point to this repo's retired skill directories; preserve other files.
 
