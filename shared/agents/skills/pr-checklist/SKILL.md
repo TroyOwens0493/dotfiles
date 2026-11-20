@@ -1,6 +1,6 @@
 ---
 name: pr-checklist
-description: "Use when working in nomp to go through the checklist in the pr desc."
+description: "Use when working in nomp to go through the checklist in the pr desc. If asked to full-stop or full-send in nomp, you should make sure to do this before finishing off the pr."
 ---
 
 # PR Checklist
