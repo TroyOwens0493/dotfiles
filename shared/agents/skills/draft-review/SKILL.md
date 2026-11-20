@@ -1,9 +1,9 @@
 ---
-name: leave-review
+name: draft-review
 description: Use when Troy asks you to leave review comments on a pull request on his behalf. Save the comments in a draft review for him to edit and submit.
 ---
 
-# Leave a PR review
+# Draft a PR review
 
 ## Write the comments
 

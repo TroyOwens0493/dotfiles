@@ -217,6 +217,8 @@ accounts. On an existing machine, remove links to the retired tstack skills
 (`council`, `file-pr`, `takeover`, `babysit-pr`, `modernize`, and
 `leaving-pr-comments`) from all five skills directories above. Remove only
 links that point to this repo's retired skill directories; preserve other files.
+The `leave-review` skill is now `draft-review`. On an existing machine, remove
+`leave-review` links that point to this repo and link `draft-review` instead.
 
 Keep tool-specific skills with their harness. `shared/pi/skills/background-terminals`
 and `shared/pi/skills/subagents` require the corresponding Pi extensions and stay
