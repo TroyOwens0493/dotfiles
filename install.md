@@ -180,6 +180,16 @@ replacing them with the links. Older setups link `~/.codex/AGENTS.md` to
 `shared/codex/AGENTS.md`, which no longer exists; replace that link. Later pulls
 update the instructions through the links.
 
+### Claude Code memory
+
+Keep Claude Code auto memory off. In `~/.claude/settings.json`, set
+`"autoMemoryEnabled": false` at the top level. Create the file with only that
+key if it does not exist. Keep all other keys in the file, including `env`
+entries and tokens. This file stays local; do not link it to the repo.
+
+Delete each `memory` directory under `~/.claude/projects/*/`. Do not delete the
+other files in the project directories; they hold session history.
+
 ### Custom skills
 
 Store portable custom skills in `shared/agents/skills/`. Keep one source directory
