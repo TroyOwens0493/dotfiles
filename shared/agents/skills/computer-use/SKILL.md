@@ -7,7 +7,7 @@ description: Use for any browser or computer-use task, such as opening or testin
 
 ## Who does the work
 
-Use GPT 6.1 Terra agents on high reasoning for all computer and browser use tasks. If you are already that agent, do the work yourself.
+Use the newest GPT Terra agents on high reasoning for all computer and browser use tasks. If you are already that agent, do the work yourself.
 
 ## Keep T3 Code in place
 
