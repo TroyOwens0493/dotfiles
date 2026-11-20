@@ -25,7 +25,7 @@ type Rgb = [number, number, number];
 interface RenderableNode {
   children?: RenderableNode[];
   invalidate(): void;
-  render(width: number): string[];
+  render(width: number): readonly string[];
 }
 
 interface DashboardTui extends RenderableNode {
