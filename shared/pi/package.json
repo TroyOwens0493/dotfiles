@@ -19,5 +19,10 @@
     "check": "tsc --noEmit",
     "format": "prettier --write \"extensions/**/*.{ts,cjs}\" \"*.json\"",
     "format:check": "prettier --check \"extensions/**/*.{ts,cjs}\" \"*.json\""
+  },
+  "overrides": {
+    "effect": {
+      "toml": "5.0.1"
+    }
   }
 }
