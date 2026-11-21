@@ -403,8 +403,18 @@ Claude Code keeps user servers in `~/.claude.json`, or in
 Check both files. A "not found" result for one file is fine. Also check
 project entries in those files, `~/.codex/config.toml`,
 `~/.gemini/settings.json`, `~/.copilot/mcp-config.json`, and the OpenCode and
-Pi MCP configs for an `executor` server. Remove only that entry. Start a new
-agent session to drop the removed tools.
+Pi MCP configs for an `executor` server. Remove only that entry.
+
+Codex can also get Executor's MCP server from the remote Executor plugin, which
+does not appear in `config.toml` or `codex mcp list`. If
+`codex plugin list | grep '^executor@'` shows it installed, remove it:
+
+```sh
+codex plugin remove executor@openai-curated-remote
+```
+
+Also check `claude plugin list`, with and without `CLAUDE_CONFIG_DIR`, for an
+Executor plugin. Start a new agent session to drop the removed tools.
 
 Sign in to hosted Executor with `executor login`. It prints a link and code
 and waits; from an agent, run it in the background and show both to the user.
@@ -523,8 +533,9 @@ run its plugin update command. Keep installed checkouts clean for updates.
   credential contents.
 - For dependency setup, check `pi --version`, `tmux -V`, `nvim --version`,
   `git lfs version`, `fzf --version`, `browse --version`, and
-  `executor --version`. Check that no harness has an `executor` MCP entry and
-  that `executor whoami` reports the hosted sign-in. Check browse's
+  `executor --version`. Check that no harness has an `executor` MCP entry or Executor
+  plugin, including `codex plugin list`, and that `executor whoami` reports the
+  hosted sign-in. Check browse's
   agent entries and report its browser connection state. Check that Neovim
   restoration and plugin validation passed.
   Use `~/.local/bin/pi` if the current shell does not yet include that path.
