@@ -2,6 +2,7 @@
 
 tap "nikitabobko/tap"
 tap "shopify/shopify"
+tap "usefulsoftwareco/tap"
 
 # Core shell and source-control tooling.
 brew "bash"
@@ -50,6 +51,8 @@ brew "stripe"
 brew "gemini-cli"
 brew "anomalyco/tap/opencode-v2", trusted: true
 # Follow install.md to install Pi from shared/pi/package-lock.json.
+# Executor v2 CLI. Agents use it from the shell instead of an MCP server.
+brew "usefulsoftwareco/tap/executor-beta"
 
 # Window manager and explicitly requested apps.
 cask "nikitabobko/tap/aerospace"

@@ -45,6 +45,13 @@ platforms. OpenCode and Pi use its shared MCP entries; setup adds it to Codex,
 Claude Code, Gemini CLI, and Copilot CLI. Each machine needs the browser
 extension and local pairing. See [install.md](install.md#browse).
 
+[Executor](https://executor.sh) is used through its v2 CLI, not an MCP server.
+Setup installs `executor` on both platforms, removes old Executor MCP entries,
+and each machine signs in with `executor login`. The
+[executor skill](shared/agents/skills/executor/SKILL.md) tells agents how to
+search, call, and resume Executor tools from the shell.
+See [install.md](install.md#executor).
+
 ## Custom skills
 
 Edit portable custom skills in [shared/agents/skills](shared/agents/skills):
@@ -55,6 +62,7 @@ Edit portable custom skills in [shared/agents/skills](shared/agents/skills):
 - [Write as Troy](shared/agents/skills/write-as-troy/SKILL.md): messages on Troy's behalf
 - [Estimate work](shared/agents/skills/estimate-work/SKILL.md): estimates in lines of code and churn
 - [Computer use](shared/agents/skills/computer-use/SKILL.md): browser and computer-use rules
+- [Executor](shared/agents/skills/executor/SKILL.md): connected apps through the Executor CLI
 
 Short global rules for all agents are in
 [shared/agents/AGENTS.md](shared/agents/AGENTS.md). Codex and Claude Code link to

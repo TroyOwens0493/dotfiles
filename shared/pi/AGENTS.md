@@ -18,3 +18,6 @@ All agents, including subagents and delegated agents, must keep the T3 Code appl
 
 # Projects with worktrees
 If you are working in a project with a worktree, you should create your own, fresh dev servers.
+
+# Executor
+Executor is set up as a CLI, not an MCP server. For tasks you would traditionally do through an MCP server for a connected app or account, such as email, calendars, docs, or issue trackers, use the `executor` CLI in the shell unless another tool is already set up for that service. Read the `executor` skill first, then start with `executor search "<task>"`. Do not add an Executor MCP server.

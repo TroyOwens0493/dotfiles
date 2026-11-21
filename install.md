@@ -372,6 +372,50 @@ is closed or pairing needs a user action, report that separately from the CLI
 and agent config installation. Browse checks for updates automatically;
 `browse update` updates it manually.
 
+### Executor
+
+Install the [Executor](https://executor.sh/docs/run/cli) v2 CLI on both
+platforms. Agents call Executor apps from the shell with `executor`, through
+the shared `executor` skill. Do not configure Executor as an MCP server in any
+harness.
+
+- macOS: the Brewfile installs `usefulsoftwareco/tap/executor-beta`.
+- Omarchy: if `~/.local/bin/executor` is missing, use the official installer.
+  It installs the runtime under `~/.executor/v2` and links that path:
+
+  ```sh
+  curl -fsSL https://executor.sh/docs/install.sh | sh
+  ```
+
+Do not install the npm `executor` package with `latest`; that tag is the
+retired v1 CLI. If `executor --version` reports v1, find the old copy with
+`type -a executor`, remove only that copy, and check again.
+
+Remove old Executor MCP entries from each AI CLI, and preserve other servers:
+
+```sh
+env -u CLAUDE_CONFIG_DIR claude mcp remove executor --scope user
+CLAUDE_CONFIG_DIR="$HOME/.claude" claude mcp remove executor --scope user
+```
+
+Claude Code keeps user servers in `~/.claude.json`, or in
+`~/.claude/.claude.json` when `CLAUDE_CONFIG_DIR` is set, as T3 Code does.
+Check both files. A "not found" result for one file is fine. Also check
+project entries in those files, `~/.codex/config.toml`,
+`~/.gemini/settings.json`, `~/.copilot/mcp-config.json`, and the OpenCode and
+Pi MCP configs for an `executor` server. Remove only that entry. Start a new
+agent session to drop the removed tools.
+
+Sign in to hosted Executor with `executor login`. It prints a link and code
+and waits; from an agent, run it in the background and show both to the user.
+The user must open the link, approve the sign-in, and choose its apps and
+approval mode. The sign-in stays in the OS credential store or under
+`~/.local/state/executor/auth`; keep it out of the repo. Do not run `executor`
+without arguments for setup; that starts a local server and opens its dashboard.
+
+Check `executor --version` (v2), `executor whoami`, and
+`executor search "email" --limit 1`.
+
 ### Pi runtime
 
 Use npm and the checked-in lockfile. Run the following if the local Pi executable
@@ -478,7 +522,9 @@ run its plugin update command. Keep installed checkouts clean for updates.
 - Check that local state and override files are still available. Do not print
   credential contents.
 - For dependency setup, check `pi --version`, `tmux -V`, `nvim --version`,
-  `git lfs version`, `fzf --version`, and `browse --version`. Check browse's
+  `git lfs version`, `fzf --version`, `browse --version`, and
+  `executor --version`. Check that no harness has an `executor` MCP entry and
+  that `executor whoami` reports the hosted sign-in. Check browse's
   agent entries and report its browser connection state. Check that Neovim
   restoration and plugin validation passed.
   Use `~/.local/bin/pi` if the current shell does not yet include that path.
