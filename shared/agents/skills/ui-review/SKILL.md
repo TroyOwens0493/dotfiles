@@ -24,3 +24,4 @@ Walk Troy through the UI changes in a running app.
 
 1. After Troy responds to the last stop, summarize the feedback by stop and list any open questions.
 2. If there are fixes to make, ask Troy to approve starting a follow-up thread. After he approves, start it with the full feedback and the context needed to locate each change.
+3. Settle your own thread when finished.
