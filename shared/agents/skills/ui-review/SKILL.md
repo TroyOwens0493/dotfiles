@@ -5,24 +5,21 @@ description: Use when Troy asks for a UI review or names the ui-review skill. Wa
 
 # UI review
 
-Walk Troy through the UI changes in a running app. Each page or view with changes is a stop.
+Walk Troy through the UI changes in a running app.
 
 ## Set up
 
-1. Start a fresh dev server for the changes. Seed a fresh database if the project has a seed script.
-2. Use the browse skill on the machine that Troy names. If he does not name one, ask him which machine to use.
-3. Find all of the UI changes and put them in order. This is the list of stops.
+1. Start a fresh dev server. Seed a fresh database if the project has a seed script.
+2. Use the browse skill on the machine Troy names. Ask which machine to use if he has not named one.
+3. List the UI changes in walkthrough order. Give each change that requires interaction its own stop. Group small static changes on the same view into one stop.
 
 ## At each stop
 
-1. Navigate to the stop.
-2. Give a brief summary of what changed on this page.
-3. If the changes are small or hard to see, include a screenshot. Highlight the changed UI elements in the screenshot.
-4. Wait for Troy to reply:
-   - If he says "next", go to the next stop.
-   - If he gives feedback, write it down with the stop that it applies to. Do not make changes to fix it now. Then wait for him to say "next".
+1. Open the relevant view. If the change requires interaction, do not perform it. Give Troy short, numbered steps to try it himself.
+2. Briefly describe the change at this stop. Include a screenshot with the changed elements highlighted if they are small or hard to see.
+3. Wait for Troy's reply. Record any feedback against the stop and leave fixes for the follow-up thread. Advance when he says "next" or gives feedback. Stay if he asks a question or asks to stay.
 
 ## Finish
 
-1. After the last stop, show Troy the list of feedback, grouped by stop, and open questions (if any.)
-2. Once given the go ahead, start a new thread to make the changes. Give it the full feedback list and the context it needs to find each change.
+1. After Troy responds to the last stop, summarize the feedback by stop and list any open questions.
+2. If there are fixes to make, ask Troy to approve starting a follow-up thread. After he approves, start it with the full feedback and the context needed to locate each change.
