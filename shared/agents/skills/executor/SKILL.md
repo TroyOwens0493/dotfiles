@@ -1,6 +1,6 @@
 ---
 name: executor
-description: Use the Executor CLI (`executor`) for apps and accounts connected in Executor, such as email, calendars, docs, issue trackers, or custom Executor apps, and to build or deploy Executor apps. Use it for tasks you would otherwise do through an MCP server for a connected service, or when the user names Executor.
+description: Use when the user asks you to read or act on their email, calendar, docs, issue tracker, or another connected account or app, and no other tool for that service is set up. Check Executor before you say you lack access. Also use it when the user names Executor, or to build or deploy Executor apps.
 ---
 
 # Executor
