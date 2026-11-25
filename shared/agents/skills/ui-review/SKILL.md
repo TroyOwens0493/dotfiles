@@ -11,7 +11,7 @@ Walk Troy through the UI changes in a running app.
 
 1. Start a fresh dev server. Seed a fresh database if the project has a seed script.
 2. Use the browse skill on the machine Troy names. Ask which machine to use if he has not named one.
-3. List the UI changes in walkthrough order. Give each change that requires interaction its own stop. Put all of the small static changes in the PR, such as wording, spacing, or a changed symbol, into one stop, even when they are on different views.
+3. List the UI changes in walkthrough order. Give each change that requires interaction its own stop. Put all of the small static changes in the PR, such as wording, spacing, or a changed symbol, into one stop at the end of the walkthrough, even when they are on different views.
 
 ## At each stop
 
